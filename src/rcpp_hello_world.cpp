@@ -53,11 +53,11 @@
 #include <estimation/Estimation.h>
 #include <estimation/Estimation.cpp>
 #include <estimation/bayesian/BayesianEstimation.h>
-#include <estimation/bayesian/BayesianEstimation.cpp>
+//#include <estimation/bayesian/BayesianEstimation.cpp>
 #include <estimation/bayesian/LatentTraitEstimation.h>
-#include <estimation/bayesian/LatentTraitEstimation.cpp>
+//#include <estimation/bayesian/LatentTraitEstimation.cpp>
 #include <estimation/classical/ClassicalEstimation.h>
-#include <estimation/classical/ClassicalEstimation.cpp>
+//#include <estimation/classical/ClassicalEstimation.cpp>
 #include <estimation/classical/EMEstimation.h>
 
 #include <estimation/classical/EMEstimation.cpp>
