@@ -1,0 +1,3 @@
+[submodule "src/SICSRepository"]
+	path = src/SICSRepository
+	url = https://github.com/jcliberatol/SICSRepository.git
