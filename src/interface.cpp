@@ -74,7 +74,8 @@ void estimatingParameters(int ** dataI, int nRowsDataI, int nColumnsDataI, char 
 	em->setProfiler(profiler);
 	//Run the estimation
 	em->estimate();
-	model->parameterModel->getParameters(parametersO);
+  double *** parset; // yield in parameters0
+	model->parameterModel->getParameters(parset);
 	delete modelFactory;
 	delete dataSet;
 	delete em;

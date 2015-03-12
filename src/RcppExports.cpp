@@ -5,14 +5,21 @@
 
 using namespace Rcpp;
 
-// rcpp_hello_world
-List rcpp_hello_world();
-RcppExport SEXP IRTpp_rcpp_hello_world() {
+// irtpp
+List irtpp(IntegerMatrix data, CharacterVector nameOfModel, IntegerVector dim, CharacterVector nameOfInitVal, NumericVector vEpsilonConv, IntegerVector maxIt, LogicalVector vVerbose);
+RcppExport SEXP IRTpp_irtpp(SEXP dataSEXP, SEXP nameOfModelSEXP, SEXP dimSEXP, SEXP nameOfInitValSEXP, SEXP vEpsilonConvSEXP, SEXP maxItSEXP, SEXP vVerboseSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
-        List __result = rcpp_hello_world();
+        Rcpp::traits::input_parameter< IntegerMatrix >::type data(dataSEXP );
+        Rcpp::traits::input_parameter< CharacterVector >::type nameOfModel(nameOfModelSEXP );
+        Rcpp::traits::input_parameter< IntegerVector >::type dim(dimSEXP );
+        Rcpp::traits::input_parameter< CharacterVector >::type nameOfInitVal(nameOfInitValSEXP );
+        Rcpp::traits::input_parameter< NumericVector >::type vEpsilonConv(vEpsilonConvSEXP );
+        Rcpp::traits::input_parameter< IntegerVector >::type maxIt(maxItSEXP );
+        Rcpp::traits::input_parameter< LogicalVector >::type vVerbose(vVerboseSEXP );
+        List __result = irtpp(data, nameOfModel, dim, nameOfInitVal, vEpsilonConv, maxIt, vVerbose);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);
