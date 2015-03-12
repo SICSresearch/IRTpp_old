@@ -1,2 +1,1 @@
-
-PKG_CXXFLAGS=" -std=c++11 -I/home/liberato/git/IRTpp/src/SICSRepository/SICS/src"
+PKG_CXXFLAGS=" -std=c++11 -I../inst/SICSRepository/SICS/src"
