@@ -30,20 +30,20 @@ private:
 public:
 
 	static double successProbability(double, double, double, double);
+	double successProbability(double, double *);
 	static double successProbability_cPrime (double, double, double, double);
 	// Constructor
 	ThreePLModel();
 
 	// Methods
 	void setEstimationNodes(QuadratureNodes * );
-	void buildParameterSet(ItemModel *, DimensionModel *);
 	void successProbability(DimensionModel *, QuadratureNodes *);
 	static double logLikelihood(double*, double*, int, int);
 	static void gradient(double*,double*,int,int,double*);
 	// Getters and Setters
 	double*** getParameterSet() ;
-	void setParameterSet(double ***);
 	void getParameters(double * );
+	void setParameterSet(double ***);
 	void printParameterSet(ostream&);
 	string getStringParameters();
 	double getProbability(int, int);

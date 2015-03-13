@@ -35,43 +35,6 @@ string ThreePLModel::getStringParameters(){
 void ThreePLModel::setEstimationNodes(QuadratureNodes* n) {
 	this->nodes = n;
 }
-//Nodes must be brought as a parameter of the dimension model
-void ThreePLModel::buildParameterSet(ItemModel* itemModel,
-		DimensionModel* dimensionModel) {
-
-	if (typeid(*itemModel) == typeid(DichotomousModel)) {
-
-		if (typeid(*dimensionModel) == typeid(UnidimensionalModel)) {
-
-			items = itemModel->countItems();
-
-			parameterSet = new double** [3];
-			parameterSet[0] = new double *[1];
-			parameterSet[1] = new double *[1];
-			parameterSet[2] = new double *[1];
-
-			parameterSet[0][0] = new double [items];
-			parameterSet[1][0] = new double [items];
-			parameterSet[2][0] = new double [items];
-
-
-		}
-
-		else if (typeid(*dimensionModel) == typeid(MultidimensionalModel)) {
-			// TODO: Dichotomous Multidimensional
-		}
-
-		else if (typeid(*dimensionModel) == typeid(MultiUniDimModel)) {
-			// TODO: Dichotomous MultiUniDimensional
-		}
-
-	}
-
-	else if (typeid(*dimensionModel) == typeid(PolytomousModel)) {
-		// TODO: Polytomous Model for Unidimensional, Multidimensional and MultiUni
-	}
-
-}
 
 void ThreePLModel::successProbability(DimensionModel *dimensionModel, QuadratureNodes * quadNodes) {
 
@@ -81,8 +44,6 @@ void ThreePLModel::successProbability(DimensionModel *dimensionModel, Quadrature
 	if ( dimensionModel != NULL ) {
 		q = quadNodes->size();
 	}
-
-
 
 	if(typeid(*dimensionModel)==typeid(UnidimensionalModel)) {
 		if(probabilityMatrix == NULL){
@@ -128,6 +89,35 @@ double ThreePLModel::successProbability(double theta, double a, double d,
 
 	exponential = exp(-exponential) ;
 	double ec = exp(c);
+	return ( (ec/(1+ec)) + (1 - (ec/(1+ec))) * (1/(1+exponential)) );
+}
+void ThreePLModel::getParameters(double * parameters)
+{
+	int i = 0;
+	for (int j = 0; j < items; j++) {
+		parameters[i++] = parameterSet[0][0][j];
+	}
+	for (int j = 0; j < items; j++) {
+		parameters[i++] = parameterSet[1][0][j];
+	}
+	for (int j = 0; j < items; j++) {
+		parameters[i++] = parameterSet[2][0][j];
+	}
+}
+double ThreePLModel::successProbability(double theta, double * zita) {
+
+	long double exponential = (Constant::NORM_CONST)*(zita[0]*theta+zita[1]);
+
+	if ( exponential > Constant::MAX_EXP ) {
+		exponential = Constant::MAX_EXP;
+	}
+
+	else if ( exponential < -(Constant::MAX_EXP*1.0) ) {
+		exponential = -Constant::MAX_EXP;
+	}
+
+	exponential = exp(-exponential) ;
+	double ec = exp(zita[2]);
 	return ( (ec/(1+ec)) + (1 - (ec/(1+ec))) * (1/(1+exponential)) );
 }
 
@@ -270,7 +260,7 @@ void ThreePLModel::gradient (double* args, double* pars, int nargs, int npars, d
 }
 double ThreePLModel::logLikelihood (double* args, double* pars, int nargs,
 		int npars) {
-  
+
 	//args
 	/*
 	 * a[i]
@@ -286,7 +276,7 @@ double ThreePLModel::logLikelihood (double* args, double* pars, int nargs,
 	 * f[q]
 	 * r[q*I]
 	 */
-  /*
+
 	int nA = 0;
 	int nP = 0;
 
@@ -346,9 +336,9 @@ double ThreePLModel::logLikelihood (double* args, double* pars, int nargs,
 	for (int k = 0; k < q; ++k) {
 		for (unsigned int i = 0; i < It; ++i) {
 			tp = (ThreePLModel::successProbability ( theta[k], a[i], b[i], c[i]));
-			if (tp==0)tp=0.00000001;
+			if (tp==0)tp=1e-08;
 			tq = 1-tp;
-			if (tq==0)tq=0.00000001;
+			if (tq==0)tq=1e-08;
 			sum+=(r[k * It + i]*log(tp))+(f[k]-r[k * It + i])*log(tq);
 		}
 	}
@@ -360,8 +350,7 @@ double ThreePLModel::logLikelihood (double* args, double* pars, int nargs,
 	delete[] c;
 
 	return (-sum);
-  */
-  return 0;
+
 
 }
 
@@ -396,17 +385,4 @@ void ThreePLModel::printParameterSet(ostream& out) {
 				<< endl;
 	}
 
-}
-void ThreePLModel::getParameters(double * parameters)
-{
-	int i = 0;
-	for (int j = 0; i < items; i++) {
-		parameters[i++] = parameterSet[0][0][j];
-	}
-	for (int j = 0; i < items; i++) {
-		parameters[i++] = parameterSet[1][0][j];
-	}
-	for (int j = 0; i < items; i++) {
-		parameters[i++] = parameterSet[2][0][j];
-	}
 }

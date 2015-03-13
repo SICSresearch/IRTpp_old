@@ -7,44 +7,22 @@
 
 #include <model/parameter/OnePLModel.h>
 
-
 OnePLModel::OnePLModel() {
 
 	parameterSet = NULL;
 	probabilityMatrix = NULL;
 }
 
-string OnePLModel::getStringParameters(){
+string OnePLModel::getStringParameters() {
 	return ("stringPars");
 }
-
-void OnePLModel::buildParameterSet(ItemModel* itemModel,
-		DimensionModel* dimensionModel) {
-
-	if (typeid(*itemModel) == typeid(DichotomousModel)) {
-
-		if (typeid(*dimensionModel) == typeid(UnidimensionalModel)) {
-
-			items = itemModel->countItems();
-			parameterSet = new double**[1];
-			parameterSet[0] = new double*[1];
-			parameterSet[0][0] = new double [items];
-		}
-
-		else if (typeid(*dimensionModel) == typeid(MultidimensionalModel)) {
-			// TODO: Dichotomous Multidimensional
-		}
-
-		else if (typeid(*dimensionModel) == typeid(MultiUniDimModel)) {
-			// TODO: Dichotomous MultiUniDimensional
-		}
-	}
-	else if (typeid(*dimensionModel) == typeid(PolytomousModel)) {
-		// TODO: Polytomous Model for Unidimensional, Multidimensional and MultiUni
+void OnePLModel::getParameters(double * parameters)
+{
+	for ( int i = 0; i < items; i++ )
+	{
+		parameters[i] = parameterSet[1][0][i];
 	}
 }
-
-
 inline void OnePLModel::successProbability(DimensionModel *dimensionModel,
 		QuadratureNodes * quadNodes) {
 
@@ -62,24 +40,38 @@ inline void OnePLModel::successProbability(DimensionModel *dimensionModel,
 		for (int k = 0; k < q; k++) {
 			for (int i = 0; i < items; i++) {
 				// Rasch Success Probability Function
-				(*probabilityMatrix)(k, i) = successProbability(&(*quadNodes->getTheta())(0, k), &(parameterSet[0][0][i]));
+				(*probabilityMatrix)(k, i) = successProbability(
+						(*quadNodes->getTheta())(0, k),
+						(parameterSet[0][0][i]));
 			}
 		}
 	}
 }
 
-inline double OnePLModel::successProbability(double* theta, double* b) {
+inline double OnePLModel::successProbability(double theta, double b) {
 
-	long double exponential = ((*theta) - *b);
+	long double exponential = ((theta) - b);
 
 	if (exponential > Constant::MAX_EXP) {
 		exponential = Constant::MAX_EXP;
-	}
-	else if (exponential < -(Constant::MAX_EXP)) {
+	} else if (exponential < -(Constant::MAX_EXP)) {
 		exponential = -Constant::MAX_EXP;
 	}
 
-	return (1 / (1.0 +exp(-exponential)));
+	return (1 / (1.0 + exp(-exponential)));
+}
+
+inline double OnePLModel::successProbability(double theta, double * zita) {
+
+	long double exponential = ((theta) - zita[0]);
+
+	if (exponential > Constant::MAX_EXP) {
+		exponential = Constant::MAX_EXP;
+	} else if (exponential < -(Constant::MAX_EXP)) {
+		exponential = -Constant::MAX_EXP;
+	}
+
+	return (1 / (1.0 + exp(-exponential)));
 }
 
 void OnePLModel::setParameterSet(double*** par) {
@@ -94,17 +86,10 @@ double OnePLModel::getProbability(int node, int item) {
 	return ((*probabilityMatrix)(node, item));
 }
 
-void OnePLModel::printParameterSet(ostream& out){
-	out <<"\"a\" \"b\" \"c\""<<"\n";
+void OnePLModel::printParameterSet(ostream& out) {
+	out << "\"a\" \"b\" \"c\"" << "\n";
 	for (int k = 0; k < items; k++) {
-		out<<1<<" "<<(parameterSet[0][0][k])<<" "<<0 <<"\n";
-	}
-}
-void OnePLModel::getParameters(double * parameters)
-{
-	for ( int i = 0; i < items; i++ )
-	{
-		parameters[i] = parameterSet[1][0][i];
+		out << 1 << " " << (parameterSet[0][0][k]) << " " << 0 << "\n";
 	}
 }
 
@@ -140,7 +125,6 @@ double OnePLModel::logLikelihood(double* args, double* pars, int nargs,
 
 	b = new double[It];
 
-
 	// Obtain b
 	for (i = 0; i < It; i++) {
 		b[i] = args[nA++];
@@ -151,13 +135,15 @@ double OnePLModel::logLikelihood(double* args, double* pars, int nargs,
 
 	for (k = 0; k < q; ++k) {
 		for (i = 0; i < It; ++i) {
-			tp = (OnePLModel::successProbability(&pars[k+2], &b[i]));
+			tp = (OnePLModel::successProbability(pars[k + 2], b[i]));
 			if (tp == 0)
 				tp = 1e-08;
 			tq = 1 - tp;
 			if (tq == 0)
 				tq = 1e-08;
-			sum += (pars[k * It + i + 2 + (2*q)] * log(tp)) + (pars[k + 2 + q] - pars[k * It + i+ 2 + 2*q]) * log(tq);
+			sum += (pars[k * It + i + 2 + (2 * q)] * log(tp))
+					+ (pars[k + 2 + q] - pars[k * It + i + 2 + 2 * q])
+							* log(tq);
 		}
 	}
 
@@ -166,12 +152,11 @@ double OnePLModel::logLikelihood(double* args, double* pars, int nargs,
 }
 /*
 
-void OnePLModel::Hessian(double* args, double* pars, int nargs, int npars,
-		double* hessian) {
+ void OnePLModel::Hessian(double* args, double* pars, int nargs, int npars,
+ double* hessian) {
 
-}
+ }
  */
-
 
 void OnePLModel::gradient(double* args, double* pars, int nargs, int npars,
 		double* gradient) {
@@ -210,8 +195,9 @@ void OnePLModel::gradient(double* args, double* pars, int nargs, int npars,
 
 	for (k = 0; k < q; k++) {
 		for (i = 0; i < items; i++) {
-			P[k * items + i] = successProbability(&pars[k+2], &b[i]);
-			factor[k * items + i] = (pars[k * items + i + 2 + 2*q] - pars[k+2+q] * P[k * items + i]);
+			P[k * items + i] = successProbability(pars[k + 2], b[i]);
+			factor[k * items + i] = (pars[k * items + i + 2 + 2 * q]
+					- pars[k + 2 + q] * P[k * items + i]);
 		}
 	}
 	memset(h, 0, sizeof(long double) * items);
@@ -233,7 +219,7 @@ void OnePLModel::gradient(double* args, double* pars, int nargs, int npars,
 
 OnePLModel::~OnePLModel() {
 
-	if (parameterSet != NULL){
+	if (parameterSet != NULL) {
 		delete[] parameterSet[0][0];
 		delete[] parameterSet[0];
 		delete[] parameterSet;

@@ -586,3 +586,279 @@ Second for time:0
 M step time:0.000247682
 F and R transference time:0
 optim time:0
+_______________________________
+Profiling file : Profile.log
+Total time :0.0760016
+Input time :0.0756895
+Initial time :9.57e-06
+Estimation time :0.000291121
+E step time:3.506e-05
+First for time:0
+Second for time:0
+M step time:0.000189065
+F and R transference time:0
+optim time:0
+_______________________________
+Profiling file : Profile.log
+Total time :0.000428455
+Input time :6.6816e-05
+Initial time :6.905e-06
+Estimation time :0.0003482
+E step time:6.7843e-05
+First for time:0
+Second for time:0
+M step time:0.000243747
+F and R transference time:0
+optim time:0
+_______________________________
+Profiling file : Profile.log
+Total time :0.102627
+Input time :6.9504e-05
+Initial time :2.5956e-05
+Estimation time :0
+E step time:0
+First for time:0
+Second for time:0
+M step time:0
+F and R transference time:0
+optim time:0
+_______________________________
+Profiling file : Profile.log
+Total time :0.114449
+Input time :9.0555e-05
+Initial time :2.7095e-05
+Estimation time :0
+E step time:0
+First for time:0
+Second for time:0
+M step time:0
+F and R transference time:0
+optim time:0
+_______________________________
+Profiling file : Profile.log
+Total time :0.106123
+Input time :8.7401e-05
+Initial time :2.8509e-05
+Estimation time :0
+E step time:0
+First for time:0
+Second for time:0
+M step time:0
+F and R transference time:0
+optim time:0
+_______________________________
+Profiling file : Profile.log
+Total time :0.118599
+Input time :0.000102624
+Initial time :2.4041e-05
+Estimation time :0
+E step time:0
+First for time:0
+Second for time:0
+M step time:0
+F and R transference time:0
+optim time:0
+_______________________________
+Profiling file : Profile.log
+Total time :0.115407
+Input time :0.000128902
+Initial time :4.5621e-05
+Estimation time :0
+E step time:0
+First for time:0
+Second for time:0
+M step time:0
+F and R transference time:0
+optim time:0
+_______________________________
+Profiling file : Profile.log
+Total time :0.301208
+Input time :0.0108591
+Initial time :0.0149975
+Estimation time :0
+E step time:0
+First for time:0
+Second for time:0
+M step time:0
+F and R transference time:0
+optim time:0
+_______________________________
+Profiling file : Profile.log
+Total time :0.317408
+Input time :0.00943579
+Initial time :0.0145949
+Estimation time :0
+E step time:0
+First for time:0
+Second for time:0
+M step time:0
+F and R transference time:0
+optim time:0
+_______________________________
+Profiling file : Profile.log
+Total time :0.32707
+Input time :0.011564
+Initial time :0.0156234
+Estimation time :0
+E step time:0
+First for time:0
+Second for time:0
+M step time:0
+F and R transference time:0
+optim time:0
+_______________________________
+Profiling file : Profile.log
+Total time :0.123835
+Input time :0.00109922
+Initial time :0.000355676
+Estimation time :0
+E step time:0
+First for time:0
+Second for time:0
+M step time:0
+F and R transference time:0
+optim time:0
+_______________________________
+Profiling file : Profile.log
+Total time :0.0252676
+Input time :0.00149887
+Initial time :0.000322499
+Estimation time :0
+E step time:0
+First for time:0
+Second for time:0
+M step time:0
+F and R transference time:0
+optim time:0
+_______________________________
+Profiling file : Profile.log
+Total time :0.351873
+Input time :0.0128794
+Initial time :0.0244874
+Estimation time :0
+E step time:0
+First for time:0
+Second for time:0
+M step time:0
+F and R transference time:0
+optim time:0
+_______________________________
+Profiling file : Profile.log
+Total time :0.429826
+Input time :0.0102293
+Initial time :0.0177066
+Estimation time :0
+E step time:0
+First for time:0
+Second for time:0
+M step time:0
+F and R transference time:0
+optim time:0
+_______________________________
+Profiling file : Profile.log
+Total time :3.32028
+Input time :0.0186476
+Initial time :0.0336626
+Estimation time :0
+E step time:0
+First for time:0
+Second for time:0
+M step time:0
+F and R transference time:0
+optim time:0
+_______________________________
+Profiling file : Profile.log
+Total time :6.87504
+Input time :0.00740275
+Initial time :0.0154212
+Estimation time :0
+E step time:0
+First for time:0
+Second for time:0
+M step time:0
+F and R transference time:0
+optim time:0
+_______________________________
+Profiling file : Profile.log
+Total time :6.84072
+Input time :0.011159
+Initial time :0.0167655
+Estimation time :0
+E step time:0
+First for time:0
+Second for time:0
+M step time:0
+F and R transference time:0
+optim time:0
+_______________________________
+Profiling file : Profile.log
+Total time :3.13622
+Input time :0.010815
+Initial time :0.021065
+Estimation time :0
+E step time:0
+First for time:0
+Second for time:0
+M step time:0
+F and R transference time:0
+optim time:0
+_______________________________
+Profiling file : Profile.log
+Total time :3.11375
+Input time :0.00659313
+Initial time :0.0146096
+Estimation time :0
+E step time:0
+First for time:0
+Second for time:0
+M step time:0
+F and R transference time:0
+optim time:0
+_______________________________
+Profiling file : Profile.log
+Total time :6.69727
+Input time :0.0113381
+Initial time :0.0217891
+Estimation time :0
+E step time:0
+First for time:0
+Second for time:0
+M step time:0
+F and R transference time:0
+optim time:0
+_______________________________
+Profiling file : Profile.log
+Total time :3.15941
+Input time :0.0123055
+Initial time :0.0230252
+Estimation time :0
+E step time:0
+First for time:0
+Second for time:0
+M step time:0
+F and R transference time:0
+optim time:0
+_______________________________
+Profiling file : Profile.log
+Total time :3.16869
+Input time :0.0107111
+Initial time :0.0202716
+Estimation time :0
+E step time:0
+First for time:0
+Second for time:0
+M step time:0
+F and R transference time:0
+optim time:0
+_______________________________
+Profiling file : Profile.log
+Total time :3.49252
+Input time :0.00775373
+Initial time :0.0179187
+Estimation time :0
+E step time:0
+First for time:0
+Second for time:0
+M step time:0
+F and R transference time:0
+optim time:0

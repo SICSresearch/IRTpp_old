@@ -24,13 +24,17 @@ private:
 public:
 	int size;
 	map<vector<char>, int> matrix;
+	bool** bitset_list;
 	int * count_set_bits;
+	int * frequency_list;
 
 	//Constructor
 	PatternMatrix(int size);
 
 	// Methods
 	std::map<vector<char>, int>::const_iterator iterator; /**use this when reading in order*/
+	map<vector<char>, int>::const_iterator begin = matrix.begin();
+	map<vector<char>, int>::const_iterator end = matrix.end();
 	inline void resetIterator(){iterator = matrix.begin();}
 	inline bool checkEnd(){return (iterator==matrix.end());}
 	inline void iterate(){++iterator;}
@@ -44,11 +48,15 @@ public:
 	void flush();/**Use this to clean matrix*/
 	void print();
 
+
 	friend std::ostream& operator<< (std::ostream &, PatternMatrix &);/**Output operator*/
 
 	//DataSet implementations
 	int countItems () const;
 	int countIndividuals () const;
+
+	bool ** getBitsetList();
+	int * getFrequencyList();
 
 	//Destructor
 	virtual ~PatternMatrix();

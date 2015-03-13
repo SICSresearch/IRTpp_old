@@ -10,25 +10,6 @@
 #include <estimation/classical/EMEstimators/EMEstimator.h>
 #include <model/parameter/ThreePLModel.h>
 class EM3PL: public EMEstimator {
-private:
-	PatternMatrix* data;
-	Model* m;
-	int items;
-	ParameterModel* pm;
-	QuadratureNodes* nodes;
-	int q;
-	Matrix<double>* weights;
-	long double * faux;
-	long double sum;
-	Matrix<double>* f;
-	Matrix<double>* r;
-	double (*fptr)(double*, double*, int, int);
-	void (*gptr)(double*, double*, int, int, double*);
-	void (*hptr)(double*, double*, int, int, double*);
-	bool** bitset_list;
-	int size;
-	int * frequency_list;
-
 public:
 	virtual ~EM3PL() {
 	}
@@ -67,7 +48,8 @@ public:
 
 	virtual void setInitialValues(int method, Model* m) {
 		items = m->getParameterModel()->items;
-		double *** pset = m->getParameterModel()->getParameterSet();
+
+		pset = m->getParameterModel()->getParameterSet();
 		for (int i = 0; i < items; i++) {
 			pset[0][0][i] = 0;
 			pset[1][0][i] = 0;
@@ -95,65 +77,9 @@ public:
 		}
 		//ANDRADE O( items * numberOfPattern )
 		if (method == Constant::ANDRADE) {
-			int pSize = 0;
-			int iter, ifault;
-			PatternMatrix* data =
-					dynamic_cast<PatternMatrix *>(m->getItemModel()->getDataset());
-			double Ni = data->countIndividuals(), PII, frequencyV, mT, mU, mTU,
-					mUU, covar, sdU, sdT, corr, result;
-			for (data->resetIterator(); !data->checkEnd(); data->iterate())
-				pSize++;
-			double *T = new double[pSize], *U = new double[pSize], *TU =
-					new double[pSize], *UU = new double[pSize], *Tm =
-					new double[pSize], *Um = new double[pSize];
+			Andrade();
 			for (int i = 0; i < items; i++) {
-				iter = 0;
-				PII = 0;
-				mT = mU = mTU = mUU = 0.0;
-				for (data->resetIterator(); !data->checkEnd();
-						data->iterate()) {
-					frequencyV = data->getCurrentFrequency();
-
-					T[iter] = 0;
-					for (int i_ = 0; i_ < data->size; i_++) {
-						if (data->getCurrentBitSet()[i_])
-							T[iter]++;
-					}
-					PII += frequencyV * data->getCurrentBitSet()[items - i - 1];
-					U[iter] = data->getCurrentBitSet()[items - i - 1];
-					TU[iter] = T[iter] * U[iter];
-					UU[iter] = U[iter] * U[iter];
-					mT += frequencyV * T[iter];
-					mU += frequencyV * U[iter];
-					mTU += frequencyV * TU[iter];
-					mUU += frequencyV * UU[iter];
-					iter++;
-				}
-				PII /= Ni;
-				mT /= Ni;
-				mU /= Ni;
-				mTU /= Ni;
-				mUU /= Ni;
-				covar = mTU - mU * mT;
-				iter = 0;
-				sdT = 0.0;
-				sdU = 0.0;
-				for (data->resetIterator(); !data->checkEnd();
-						data->iterate()) {
-					frequencyV = data->getCurrentFrequency();
-					Tm[iter] = T[iter] - mT;
-					Um[iter] = U[iter] - mU;
-					sdT += frequencyV * Tm[iter] * Tm[iter];
-					sdU += frequencyV * Um[iter] * Um[iter];
-					iter++;
-				}
-				sdT = std::sqrt(sdT / (Ni - 1.0));
-				sdU = std::sqrt(sdU / (Ni - 1.0));
-				corr = covar / (sdT * sdU);
-				pset[0][0][i] = std::sqrt((corr * corr) / (1.0 - corr * corr));
-				pset[1][0][i] = -(ppnd(PII, &ifault)) / corr;
 				pset[2][0][i] = 0.2;
-
 			}
 		}
 	}
@@ -175,79 +101,14 @@ public:
 		gptr = &ThreePLModel::gradient;
 		hptr = NULL;
 
-		map<vector<char>, int>::const_iterator it;
-		map<vector<char>, int>::const_iterator begin = data->matrix.begin();
-		map<vector<char>, int>::const_iterator end = data->matrix.end();
-
-		bitset_list = new bool*[data->matrix.size()];
-		for (int j = 0; j < data->matrix.size(); j++) {
-			bitset_list[j] = new bool[data->size];
-		}
+		bitset_list = data->getBitsetList();
+		frequency_list = data->getFrequencyList();
 
 		size = data->matrix.size();
 
-		frequency_list = new int[size];
-
-		int counter = 0;
-		for (it = begin; it != end; ++it, ++counter) {
-			copy(it->first.begin(), it->first.end(), bitset_list[counter]);
-			frequency_list[counter] = it->second;
-		}
 	}
 
-	virtual void stepE() {
-		sum = 0.0;
-		f->reset();
-		r->reset();
-		//Calculates the success probability for all the nodes.
-		m->successProbability(nodes);
-
-		int k, i;
-		double prob;
-		double prob_matrix[q][(int) items];
-
-		int counter_temp[items];
-		int counter_set;
-
-		for (k = 0; k < q; k++) {
-			for (i = 0; i < items; i++) {
-				prob_matrix[k][i] = pm->getProbability(k, i);
-			}
-		}
-		//TODO CAREFULLY
-		for (int index = 0; index < size; index++) {
-					sum = 0.0;
-					//Calculate g*(k) for all the k's
-					//first calculate the P for each k and store it in the array f aux
-					for (k = 0; k < q; k++) {
-						faux[k] = (*weights)(0, k);
-						//Calculate the p (iterate over the items in the productory)
-						counter_set = 0;
-						for (i = 0; i < items; i++) {
-							if (bitset_list[index][items - i - 1]) {
-								counter_temp[counter_set++] = i + 1;
-								prob = prob_matrix[k][i];
-							} else {
-								prob = 1 - prob_matrix[k][i];
-							}
-							faux[k] *= prob;
-						}
-						//At this point the productory is calculated and faux[k] is equivalent to p(u_j,theta_k)
-						//Now multiply by the weight
-						sum += faux[k];
-					}
-
-					for (k = 0; k < q; k++) {
-						faux[k] *= frequency_list[index] / sum; //This is g*_j_k
-						(*f)(0, k) += faux[k];
-						for (i = 0; i < counter_set; i++)
-							(*r)(k, counter_temp[i] - 1) += faux[k];
-					} // for
-				}
-
-	}
-
-	virtual void stepM() {
+	virtual void stepM(double *** parameters) {
 		/*
 		 */
 		//Step M implementation using the BFGS Algorithm
@@ -333,21 +194,11 @@ public:
 		 */
 		Optimizer* optim;
 		optim = new Optimizer();
-		m->Hessiana = new double[(nargs*(nargs+1))/2];
-		optim->searchOptimal(fptr, gptr, hptr, args, pars, nargs, npars, m->Hessiana);
-		if (Constant::ITER > 3) {
-			if (Constant::ITER % 3 == 1) {
-				m->back_2 = new double[nargs];
-				for ( int ii = 0; ii < nargs; ii++ ) m->back_2[ii] = args[ii];
+		optim->searchOptimal(fptr, gptr, hptr, args, pars, nargs, npars);
 
-			} else if (Constant::ITER % 3 == 2) {
-				m->back_1 = new double[nargs];
-				for ( int ii = 0; ii < nargs; ii++ ) m->back_1[ii] = args[ii];
-
-			} else {
-				ramsay(args, m->back_1, m->back_2, nargs);
-			}
-		}
+		std::copy(&((*parameters)[1][0]), (&((*parameters)[1][0])) + nargs, &((*parameters)[0][0]));
+		std::copy(&((*parameters)[2][0]), (&((*parameters)[2][0])) + nargs, &((*parameters)[1][0]));
+		std::copy(&args[0], &args[0] + nargs, &((*parameters)[2][0]));
 		// Now pass the optimals to the Arrays.
 
 		nA = 0;
@@ -363,7 +214,10 @@ public:
 		// Obtain b
 		for (int i = 0; i < It; i++) {
 			B[0][i] = args[nA++];
-			if (fabs(B[0][i]) > abs(5)) {
+			double a = A[0][i];
+			double d = B[0][i];
+			double b = -d / a;
+			if (fabs(b) > abs(5)) {
 				B[0][i] = 0;
 				//cout<<"B";
 			}
@@ -403,6 +257,8 @@ public:
 
 		}
 		//TODO change by constant file
+		Constant::EPSILONC = maxDelta;
+		Constant::LOGLIKO = fptr(args, pars, nargs, npars);
 		if (maxDelta < Constant::CONVERGENCE_DELTA) {
 			m->itemParametersEstimated = true;
 		}

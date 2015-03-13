@@ -24,9 +24,9 @@ public:
 	TwoPLModel();
 
 	// Methods
-	void buildParameterSet(ItemModel *, DimensionModel *);
 	inline void successProbability(DimensionModel *, QuadratureNodes *);
-	inline static double successProbability(double *, double *, double *);
+	inline static double successProbability(double , double , double );
+	double successProbability(double, double*);
 	static double logLikelihood(double*, double*, int, int);
 	static double patternProbability();
 	static void gradientAux(long double tp, long double tq,
@@ -45,8 +45,8 @@ public:
 	// Getters and Setters
 	double *** getParameterSet();
 	void setParameterSet(double***);
-	double getProbability(int, int);
 	void getParameters(double * );
+	double getProbability(int, int);
 	void printParameterSet(ostream&);
 	string getStringParameters();
 	// Destructor

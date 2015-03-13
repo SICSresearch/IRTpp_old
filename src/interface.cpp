@@ -1,9 +1,16 @@
 #include "interface.h"
-#define ESTIMATION_MODEL Constant::RASCH_A_CONSTANT
+//#define ESTIMATION_MODEL Constant::RASCH_A_CONSTANT
 
-void estimatingParameters(int ** dataI, int nRowsDataI, int nColumnsDataI, char * modelI, int dimI, char * initValI, double epsilonConvI, int maxIterI, bool verboseI, double *parametersO) {
+
+// remember dimI, initValI,
+void estimatingParameters(int ** dataI, int nRowsDataI, int nColumnsDataI, int modelI, int dimI, char * initValI, double epsilonConvI, int maxIterI, bool verboseI, double *parametersO, int & numberOfCyclesO, double & logLikO, double & convEp) {
+
+
+
+	int ESTIMATION_MODEL = modelI;  //*** to Inteface
 	Input input;
-	Constant::EPSILON = epsilonConvI;
+	Constant::CONVERGENCE_DELTA = epsilonConvI; //*** to Interface
+	Constant::MAX_EM_ITERS = maxIterI; //*** to Interface
 	Matrix<double> cuad(41, 2);
 	//Create the profiler to profile the program
 	Trace* profiler = new Trace("Profile.log");
@@ -25,20 +32,21 @@ void estimatingParameters(int ** dataI, int nRowsDataI, int nColumnsDataI, char 
 	// Load matrix
 	//input.importCSV(args, *dataSet, 1, 0);
 
+	//<*** to Interface
 	//copy matrix
 	for( int _i_ = 0; _i_ < nRowsDataI; _i_++ )
 	{
 		vector<char> dset(nColumnsDataI);
 		for ( int _j_ = 0; _j_ < nColumnsDataI; _j_++ )
 		{
-			if ( dataI[_i_][_j_] == 1) dset[nColumnsDataI- _j_ - 1] = true;  // taken of Input.cpp
+			if ( dataI[_i_][_j_] == 1) dset[_j_] = true;  // taken of Input.cpp
+      else dset[_j_] = false;
 		}
 		dataSet->size = nColumnsDataI;
 		dataSet->push(dset);
 	}
+	//***> to Interface
 
-
-	//
 
 	// set dataset
 	//RASCH_A1, RASCH_A_CONSTANT, TWO_PL, THREE_PL
@@ -74,7 +82,10 @@ void estimatingParameters(int ** dataI, int nRowsDataI, int nColumnsDataI, char 
 	em->setProfiler(profiler);
 	//Run the estimation
 	em->estimate();
-	model->parameterModel->getParameters(parametersO);
+	model->parameterModel->getParameters(parametersO); //*** to Interface
+	numberOfCyclesO = Constant::ITER; //*** to Interface
+	convEp = Constant::EPSILONC; //*** to Inferface
+	logLikO = Constant::LOGLIKO;
 	delete modelFactory;
 	delete dataSet;
 	delete em;
@@ -156,4 +167,3 @@ void profilerOut(Trace* profile, int type) {
 		(*profile)("No profiling selected please select a profiling mode");
 	}
 }
-

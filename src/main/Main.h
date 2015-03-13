@@ -1,4 +1,13 @@
-#ifndef _INTERFACE_H
+/*
+ * SICS.h
+ *
+ *  Created on: May 27, 2014
+ *      Author: mirt
+ */
+
+#ifndef SICS_H_
+#define SICS_H_
+
 #include <iostream>
 #include <type/Matrix.h>
 #include <boost/dynamic_bitset.hpp>
@@ -10,9 +19,9 @@
 #include <input/Input.h>
 #include <time.h>
 #include <trace/Trace.h>
+#include <interface.h>
+#include <util/util.h>
 
 
-#define _INTERFACE_H
-	void estimatingParameters(int **, int, int, int, int , char *, double, int, bool, double *, int &, double &, double &);
-	void profilerOut(Trace*, int );
-#endif
+
+#endif /* SICS_H_ */

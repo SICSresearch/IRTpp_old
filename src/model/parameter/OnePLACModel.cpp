@@ -8,48 +8,12 @@ OnePLACModel::OnePLACModel() {
 
 }
 
-string OnePLACModel::getStringParameters(){
+string OnePLACModel::getStringParameters() {
 	return ("stringPars");
 }
 
 void OnePLACModel::setEstimationNodes(QuadratureNodes* n) {
 	this->nodes = n;
-}
-//Nodes must be brought as a parameter of the dimension model
-void OnePLACModel::buildParameterSet(ItemModel* itemModel,
-		DimensionModel* dimensionModel) {
-
-	if (typeid(*itemModel) == typeid(DichotomousModel)) {
-
-		if (typeid(*dimensionModel) == typeid(UnidimensionalModel)) {
-			parameterSet = new double ** [2]; // two parameters
-
-			parameterSet[0] = new double *[1]; // parameter a
-			parameterSet[1] = new double *[1]; // parameter b
-			items = itemModel->countItems();
-
-			parameterSet[0][0] = new double [1];
-			parameterSet[1][0] = new double [items];
-
-
-			//parameterSet[a] = new Matrix<double>(1, 1);
-			//parameterSet[d] = new Matrix<double>(1, items);
-
-		}
-
-		else if (typeid(*dimensionModel) == typeid(MultidimensionalModel)) {
-			// TODO: Dichotomous Multidimensional
-		}
-
-		else if (typeid(*dimensionModel) == typeid(MultiUniDimModel)) {
-			// TODO: Dichotomous MultiUniDimensional
-		}
-	}
-
-	else if (typeid(*dimensionModel) == typeid(PolytomousModel)) {
-		// TODO: Polytomous Model for Unidimensional, Multidimensional and MultiUni
-	}
-
 }
 
 void OnePLACModel::successProbability(DimensionModel *dimensionModel,
@@ -88,13 +52,21 @@ double *** OnePLACModel::getParameterSet() {
 	return (this->parameterSet);
 }
 
-void OnePLACModel::setParameterSet(
-		double *** parameterSet) {
+void OnePLACModel::setParameterSet(double *** parameterSet) {
 	this->parameterSet = parameterSet;
 }
 
 double OnePLACModel::successProbability(double theta, double a, double d) {
 	long double exponential = (Constant::NORM_CONST) * (a * theta + d);
+	if (exponential > Constant::MAX_EXP)
+		exponential = Constant::MAX_EXP;
+	else if (exponential < -(Constant::MAX_EXP * 1.0))
+		exponential = -Constant::MAX_EXP;
+	return (1.0 / (1.0 + exp(-exponential)));
+}
+
+double OnePLACModel::successProbability(double theta, double * zita) {
+	long double exponential = (Constant::NORM_CONST) * (zita[0] * theta + zita[1]);
 	if (exponential > Constant::MAX_EXP)
 		exponential = Constant::MAX_EXP;
 	else if (exponential < -(Constant::MAX_EXP * 1.0))
@@ -151,19 +123,18 @@ void OnePLACModel::gradient(double* args, double* pars, int nargs, int npars,
 	double sumTA = 0.0;
 	double sumTBs = 0.0;
 	double aux;
-	for ( int i = 0; i < items; i++ )
-	{
+	for (int i = 0; i < items; i++) {
 		sumTBs = 0.0;
-		for ( int k = 0; k < q; k++ )
-		{
-			aux = (r[k*items+i]-f[k]*successProbability(theta[k], a[0], d[i]));
+		for (int k = 0; k < q; k++) {
+			aux = (r[k * items + i]
+					- f[k] * successProbability(theta[k], a[0], d[i]));
 			sumTBs += aux;
-			sumTA += theta[k]*aux;
+			sumTA += theta[k] * aux;
 		}
-		gradient[1+i] = -sumTBs;
+		gradient[1 + i] = -sumTBs;
 	}
 
-    gradient[0] = -sumTA;
+	gradient[0] = -sumTA;
 	delete[] theta;
 	delete[] r;
 	delete[] f;
@@ -258,22 +229,13 @@ double OnePLACModel::logLikelihood(double* args, double* pars, int nargs,
 
 OnePLACModel::~OnePLACModel() {
 //Carefully destroy according to the model
-	if (parameterSet != NULL){
-	delete[] parameterSet[1][0];
-	delete[] parameterSet[0][0];
-	delete[] parameterSet[0];
-	delete[] parameterSet[1];
-	delete[] parameterSet;
+	if (parameterSet != NULL) {
+		delete[] parameterSet[1][0];
+		delete[] parameterSet[0][0];
+		delete[] parameterSet[0];
+		delete[] parameterSet[1];
+		delete[] parameterSet;
 	}
-}
-
-void OnePLACModel::printParameterSet(ostream& out){
-		out << "\"a\" \"b\" \"c\"" << endl;
-
-			for (int _i = 0; _i < items; _i++) {
-				out << parameterSet[0][0][0] << " " << parameterSet[1][0][_i]
-						<< " 0" << endl;
-		}
 }
 void OnePLACModel::getParameters(double * parameters)
 {
@@ -283,4 +245,11 @@ void OnePLACModel::getParameters(double * parameters)
 		parameters[i+1] = parameterSet[1][0][i];
 	}
 }
+void OnePLACModel::printParameterSet(ostream& out) {
+	out << "\"a\" \"b\" \"c\"" << endl;
 
+	for (int _i = 0; _i < items; _i++) {
+		out << parameterSet[0][0][0] << " " << parameterSet[1][0][_i] << " 0.25"
+				<< endl;
+	}
+}

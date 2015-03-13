@@ -21,7 +21,7 @@
  * */
 int static bfgs(double (*&fntomin)(double*, double*, int, int),
 		void (*&gradient)(double*, double*, int, int, double*), double * args,
-		double * pars, int nvars, int npars, int maxiter, double *VecHessiana) {
+		double * pars, int nvars, int npars, int maxiter) {
 	/*
 	 //call of function
 	 double result;
@@ -64,8 +64,7 @@ int static bfgs(double (*&fntomin)(double*, double*, int, int),
 	X = new double[n];
 	c = new double[n];
 	//Assign memory to the triangular lower matrix
-	int lengthB = n * (n + 1) / 2;
-	B = new double[lengthB];
+	B = new double[n * (n + 1) / 2];
 	//evaluate the function at the initial points
 	f = (*fntomin)(args, pars, nvars, npars);
 	if (!(f < Constant::INFINITE)) {
@@ -196,11 +195,6 @@ int static bfgs(double (*&fntomin)(double*, double*, int, int),
 			ilast = gradcount; /* periodic restart */
 	} while (count != n || ilast != gradcount);
 	if (iter < maxiter) {
-		for ( int _i = 0; _i < lengthB; _i++ )
-		{
-			VecHessiana[_i] = B[_i];
-
-		}
 		return (0); //SUCCESS;
 
 	}

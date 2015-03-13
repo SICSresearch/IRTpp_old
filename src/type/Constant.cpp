@@ -7,7 +7,7 @@
 
 #include <type/Constant.h>
 
-double Constant::CONVERGENCE_DELTA = 0.0001;
+double Constant::CONVERGENCE_DELTA = 0.0002;
 int Constant::MAX_EM_ITERS = 300;
 double Constant::NORM_CONST = 1;
 double Constant::MAX_EXP = 35.0;
@@ -22,3 +22,5 @@ double Constant::reltol  =    1e-8;
 double Constant::D_CONST = 1;
 int Constant::ITER = 0;
 bool Constant::CAPTURE_HESSIANA = true;
+double Constant::EPSILONC = 10000;
+double Constant::LOGLIKO = 0;

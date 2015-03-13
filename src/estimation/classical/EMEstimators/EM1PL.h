@@ -2,7 +2,7 @@
  * EM1PL.h
  *
  *  Created on: Nov 16, 2014
- *      Author: anmrodriguezre
+ *      Author: jcliberatol
  */
 
 #ifndef EM1PL_H_
@@ -11,23 +11,6 @@
 #include <model/parameter/OnePLModel.h>
 class EM1PL: public EMEstimator {
 private:
-	PatternMatrix* data;
-	Model* m;
-	int items;
-	ParameterModel* pm;
-	QuadratureNodes* nodes;
-	int q;
-	Matrix<double>* weights;
-	long double * faux;
-	long double sum;
-	Matrix<double>* f;
-	Matrix<double>* r;
-	double (*fptr)(double*, double*, int, int);
-	void (*gptr)(double*, double*, int, int, double*);
-	void (*hptr)(double*, double*, int, int, double*);
-	bool** bitset_list;
-	int size;
-	int * frequency_list;
 
 public:
 	virtual ~EM1PL() {
@@ -54,7 +37,7 @@ public:
 		 * The default method is OSPINA
 		 */
 		int items = m->getParameterModel()->items;
-		double *** pset = m->getParameterModel()->getParameterSet();
+		pset = m->getParameterModel()->getParameterSet();
 		if (method == Constant::RANDOM) {
 			std::srand(std::time(0));
 			// use current time as seed for random generator
@@ -66,62 +49,66 @@ public:
 
 		if (method == Constant::ANDRADE) {
 			int pSize = 0;
-			int iter, ifault;
+			int ifault;
 			PatternMatrix* data =
 					dynamic_cast<PatternMatrix *>(m->getItemModel()->getDataset());
 			double Ni = data->countIndividuals();
-			double PII, frequencyV, mT, mU, mTU, mUU, covar, sdU, sdT, corr,
-					result;
-			for (data->resetIterator(); !data->checkEnd(); data->iterate())
-				pSize++; // esto se debe poder hacer de una forma mas optima! en patternMatrix tener el tamaño!
-			double *T = new double[pSize], *U =
-					new double[pSize], *TU =
-					new double[pSize], *UU =
-					new double[pSize], *Tm =
-					new double[pSize], *Um =
-					new double[pSize];
+			double PII;
+			double frequencyV;
+			double mT;
+			double mU;
+			double mTU;
+			double mUU;
+			double covar;
+			double sdU;
+			double sdT;
+			double corr;
+			double result;
+
+			pSize = data->matrix.size();
+
+			double *T = new double[pSize];
+			double *U = new double[pSize];
+			double *TU = new double[pSize];
+			double *UU = new double[pSize];
+			double *Tm = new double[pSize];
+			double *Um = new double[pSize];
+
 			for (int i = 0; i < items; i++) {
-				iter = 0;
 				PII = 0;
 				mT = mU = mTU = mUU = 0.0;
-				for (data->resetIterator(); !data->checkEnd();
-						data->iterate()) {
-					frequencyV = data->getCurrentFrequency();
+				for (int index = 0; index < size; index++) {
+					frequencyV = frequency_list[index];
 
-					T[iter] = 0;
-					for (int i_ = 0; i_ < data->size; i_++) {
-						if (data->getCurrentBitSet()[i_])
-							T[iter]++;
-					}
-					//T[iter] = data->getCurrentBitSet().count();
-					PII += frequencyV * data->getCurrentBitSet()[items - i - 1];
-					U[iter] = data->getCurrentBitSet()[items - i - 1];
-					TU[iter] = T[iter] * U[iter];
-					UU[iter] = U[iter] * U[iter];
-					mT += frequencyV * T[iter];
-					mU += frequencyV * U[iter];
-					mTU += frequencyV * TU[iter];
-					mUU += frequencyV * UU[iter];
-					iter++;
+					T[index] = 0;
+					T[index] = data->countBitSet(bitset_list[index], index);
+					PII += frequencyV * bitset_list[index][i];
+					U[index] = bitset_list[index][i];
+					TU[index] = T[index] * U[index];
+					UU[index] = U[index] * U[index];
+					mT += frequencyV * T[index];
+					mU += frequencyV * U[index];
+					mTU += frequencyV * TU[index];
+					mUU += frequencyV * UU[index];
 				}
+
 				PII /= Ni;
 				mT /= Ni;
 				mU /= Ni;
 				mTU /= Ni;
 				mUU /= Ni;
 				covar = mTU - mU * mT;
-				iter = 0;
 				sdT = 0.0;
 				sdU = 0.0;
-				for (data->resetIterator(); !data->checkEnd();
-						data->iterate()) {
-					frequencyV = data->getCurrentFrequency();
-					Tm[iter] = T[iter] - mT;
-					Um[iter] = U[iter] - mU;
-					sdT += frequencyV * Tm[iter] * Tm[iter];
-					sdU += frequencyV * Um[iter] * Um[iter];
-					iter++;
+
+				for (int index = 0; index < size; index++) {
+					frequencyV = frequency_list[index];
+					Tm[index] = T[index] - mT;
+					Um[index] = U[index] - mU;
+					sdT += frequencyV * Tm[index] * Tm[index];
+					sdU += frequencyV * Um[index] * Um[index];
 				}
+
 				sdT = std::sqrt(sdT / (Ni - 1.0));
 				sdU = std::sqrt(sdU / (Ni - 1.0));
 				corr = covar / (sdT * sdU);
@@ -147,84 +134,13 @@ public:
 		gptr = &OnePLModel::gradient;
 		hptr = NULL;
 
-		map<vector<char>, int>::const_iterator it;
-		map<vector<char>, int>::const_iterator begin = data->matrix.begin();
-		map<vector<char>, int>::const_iterator end = data->matrix.end();
-
-		bitset_list = new bool*[data->matrix.size()];
-		for (int j = 0; j < data->matrix.size(); j++) {
-			bitset_list[j] = new bool[data->size];
-		}
+		bitset_list = data->getBitsetList();
+		frequency_list = data->getFrequencyList();
 
 		size = data->matrix.size();
-
-		frequency_list = new int[size];
-
-		int counter = 0;
-		for (it = begin; it != end; ++it, ++counter) {
-			copy(it->first.begin(), it->first.end(), bitset_list[counter]);
-			frequency_list[counter] = it->second;
-		}
-	}
-	virtual void stepE() {
-		sum = 0.0;
-		f->reset();
-		r->reset();
-		//Calculates the success probability for all the nodes.
-		m->successProbability(nodes);
-
-		int k, i;
-		double prob;
-		double prob_matrix[q][(int) items];
-
-		for (k = 0; k < q; k++) {
-			for (i = 0; i < items; i++) {
-				prob_matrix[k][i] = pm->getProbability(k, i);
-			}
-		}
-
-		//TODO CAREFULLY PARALLELIZE FOR
-		for (int index = 0; index < size; index++) {
-			sum = 0.0;
-			//Calculate g*(k) for all the k's
-			//first calculate the P for each k and store it in the array f aux
-
-			int counter_temp[items];
-			for (int p = 0; p < items; ++p) {
-				counter_temp[p]=0;
-			}
-			for (k = 0; k < q; k++) {
-				faux[k] = (*weights)(0, k);
-				//Calculate the p (iterate over the items in the productory)
-				int counter_set = 0;
-				for (i = 0; i < items; i++) {
-					if (bitset_list[index][items - i - 1]) {
-						counter_temp[counter_set++] = i + 1;
-						prob = prob_matrix[k][i];
-					} else {
-						prob = 1 - prob_matrix[k][i];
-					}
-					faux[k] = faux[k] * prob;
-				}
-				//At this point the productory is calculated and faux[k] is equivalent to p(u_j,theta_k)
-				//Now multiply by the weight
-				sum += faux[k];
-			}
-			for (k = 0; k < q; k++) {
-				faux[k] *= frequency_list[index]/ sum;
-				(*f)(0, k) += faux[k];
-				//Now selectively add the faux to the r
-				for (i = 0; i < items; i++) {
-					if (counter_temp[i] == 0)
-						break;
-					(*r)(k, counter_temp[i]- 1) += faux[k];
-				} // for
-			} // for
-		}
-
 	}
 
-	virtual void stepM() {
+	virtual void stepM(double *** parameters) {
 		/*
 		 */
 		//Step M implementation using the BFGS Algorithm
@@ -270,7 +186,7 @@ public:
 
 		Matrix<double>* thetas = nodes->getTheta();
 		for (int k = 0; k < q; k++) {
-			pars[nP++] = (*thetas)(0, k);	//TODO correct indexing on this and nearby matrices
+			pars[nP++] = (*thetas)(0, k);//TODO correct indexing on this and nearby matrices
 		}
 		// Obtain f
 		for (int k = 0; k < q; k++) {
@@ -292,22 +208,13 @@ public:
 		 */
 		Optimizer* optim;
 		optim = new Optimizer();
-		m->Hessiana = new double[(nargs*(nargs+1))/2];
-		optim->searchOptimal(fptr, gptr, hptr, args, pars, nargs, npars, m->Hessiana);
-		if (Constant::ITER > 3) {
-			if (Constant::ITER % 3 == 1) {
-				m->back_2 = new double[nargs];
-				for ( int ii = 0; ii < nargs; ii++ ) m->back_2[ii] = args[ii];
-
-			} else if (Constant::ITER % 3 == 2) {
-				m->back_1 = new double[nargs];
-				for ( int ii = 0; ii < nargs; ii++ ) m->back_1[ii] = args[ii];
-
-			} else {
-				ramsay(args, m->back_1, m->back_2, nargs);
-			}
-		}
+		optim->searchOptimal(fptr, gptr, hptr, args, pars, nargs, npars);
 		delete optim;
+
+		std::copy(&((*parameters)[1][0]), (&((*parameters)[1][0])) + nargs, &((*parameters)[0][0]));
+		std::copy(&((*parameters)[2][0]), (&((*parameters)[2][0])) + nargs, &((*parameters)[1][0]));
+		std::copy(&args[0], &args[0] + nargs, &((*parameters)[2][0]));
+
 		// Now pass the optimals to the Arrays.
 		nA = 0;
 		// Obtain b
@@ -315,7 +222,7 @@ public:
 			B[0][i] = args[nA++];
 			if (fabs(B[0][i]) > abs(-50)) {
 				B[0][i] = 0.5;
-							cout << "B reset." << endl;
+				cout << "B reset." << endl;
 			}
 		}
 
@@ -332,10 +239,12 @@ public:
 				maxDelta = fabs(DB(0, v1));
 			}
 		}
-
+		Constant::EPSILONC = maxDelta;
+		Constant::LOGLIKO = fptr(args, pars, nargs, npars);
 		if (maxDelta < Constant::CONVERGENCE_DELTA) {
 			m->itemParametersEstimated = true;
 		}
+
 		//And set the parameter sets
 		double*** parSet;
 		//Must set the parset equal to the original memory in the parameter set
@@ -348,7 +257,5 @@ public:
 	;
 
 };
-
-
 
 #endif /* EM1PL_H_ */
