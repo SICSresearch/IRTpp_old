@@ -107,7 +107,7 @@ List irtpp( IntegerMatrix data,  CharacterVector nameOfModel, IntegerVector dim,
   	DataI = new int *[nRow];
   	for ( int i = 0; i < nRow; i++ ) DataI[i] = new int[nColumn];
   	char *model, *initValues;    
-  	for ( int i = 0; i < nRow; i++ )  for ( int j = 0; j<  nColumn; j++ ) DataI[i][j] = data[j+i*nColumn];
+  	for ( int j = 0; j<  nColumn; j++ ) for ( int i = 0; i < nRow; i++ ) DataI[i][j] = data[i+j*nRow];
   	model = nameOfModel[0];
   	initValues = "ANDRADE";
   	double epsilon = vEpsilonConv[0];
@@ -152,6 +152,7 @@ List irtpp( IntegerMatrix data,  CharacterVector nameOfModel, IntegerVector dim,
     logLikA[0] = logLik;
     NumericVector convEpA(1);
     convEpA[0] = convEp;
+    Rcout<<"output :\n1) parameters\n2) number of cycles\n3) loglik\n4) convEp"<<endl;
     List z = List::create( parametersA, numberOfCyclesA, logLikA, convEpA ) ;
     return z ;
 }

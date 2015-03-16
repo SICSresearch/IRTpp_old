@@ -4,11 +4,12 @@
  *  Created on: Nov 16, 2014
  *      Author: anmrodriguezre
  */
-
+#include <Rcpp.h>
 #include <model/parameter/OnePLModel.h>
 
 OnePLModel::OnePLModel() {
-
+  int items = 0;
+  int nodes = 0;
 	parameterSet = NULL;
 	probabilityMatrix = NULL;
 }
@@ -18,9 +19,9 @@ string OnePLModel::getStringParameters() {
 }
 void OnePLModel::getParameters(double * parameters)
 {
-	for ( int i = 0; i < items; i++ )
+	for ( int k = 0; k < items; k++ )
 	{
-		parameters[i] = parameterSet[1][0][i];
+		parameters[k] = parameterSet[0][0][k];
 	}
 }
 inline void OnePLModel::successProbability(DimensionModel *dimensionModel,
@@ -89,7 +90,7 @@ double OnePLModel::getProbability(int node, int item) {
 void OnePLModel::printParameterSet(ostream& out) {
 	out << "\"a\" \"b\" \"c\"" << "\n";
 	for (int k = 0; k < items; k++) {
-		out << 1 << " " << (parameterSet[0][0][k]) << " " << 0 << "\n";
+	 	out << 1 << " " << (parameterSet[0][0][k]) << " " << 0 << "\n";
 	}
 }
 

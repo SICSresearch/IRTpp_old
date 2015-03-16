@@ -19,8 +19,9 @@
 #include <input/Input.h>
 #include <time.h>
 #include <trace/Trace.h>
-#include <interface.h>
-#include <util/util.h>
+#include <estimation/bayesian/LatentTraitEstimation.h>
+#include <type/LatentTraits.h>
+
 
 
 
