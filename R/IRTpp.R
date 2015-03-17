@@ -50,9 +50,3 @@ IRTpp = function(data, ini = c("glm","andrade"),item = c("3PL","2PL","Rasch","1P
   class(fit) = "irtClass"
   fit
 }
-
-
-data=matrix(sapply(X = 1:10000,FUN = function(X)ifelse(runif(1) > .5,1,0)),ncol=10)
-data[3,7] = NA
-#data[5,8] = 2
-IRTpp(data,ini = "glm",item = "3PL",epsilon = 10^(-4),export.path = NULL)

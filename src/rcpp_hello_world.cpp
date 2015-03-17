@@ -1,7 +1,5 @@
-
 #include <Rcpp.h>
-#include "interface.h"
-#include "interface.cpp"
+#include <string.h>
 
 #include <model/parameter/OnePLACModel.h>
 #include <model/parameter/OnePLACModel.cpp>
@@ -52,12 +50,8 @@
 //estimation
 #include <estimation/Estimation.h>
 #include <estimation/Estimation.cpp>
-#include <estimation/bayesian/BayesianEstimation.h>
-//#include <estimation/bayesian/BayesianEstimation.cpp>
-#include <estimation/bayesian/LatentTraitEstimation.h>
-//#include <estimation/bayesian/LatentTraitEstimation.cpp>
 #include <estimation/classical/ClassicalEstimation.h>
-//#include <estimation/classical/ClassicalEstimation.cpp>
+#include <estimation/classical/ClassicalEstimation.cpp>
 #include <estimation/classical/EMEstimation.h>
 
 #include <estimation/classical/EMEstimation.cpp>
@@ -89,6 +83,9 @@
 #include <model/item/ItemModel.cpp>
 #include <model/item/PolytomousModel.h>
 #include <model/item/PolytomousModel.cpp>
+
+#include "interface.h"
+
 using namespace Rcpp;
 
 // [[Rcpp::export]]
@@ -105,32 +102,47 @@ List irtpp( IntegerMatrix data,  CharacterVector nameOfModel, IntegerVector dim,
     Rcout<<maxIt[0]<<endl;
     Rcout<<"value of verbose: ";
     Rcout<<vVerbose[0]<<endl;
-    double b  = randomd();
-    const int items = 5, peoples = 5;
-    int **DataI;
-  	DataI = new int *[peoples];
-  	for ( int i = 0; i < peoples; i++ ) DataI[i] = new int[items];
-  	char *model, *initValues;
-    int nColumn = 4, nRow = 4;    
-  	for ( int i = 0; i < nRow; i++ ) for ( int j = 0; j<  nColumn; j++ ) DataI[i][j] = data[j+i*nColumn];
-  	model = "RASCH_A_CONSTANT";
+    int nColumn = data.ncol(), nRow = data.nrow(); 
+    int **DataI, nuM, nPar;
+    DataI = new int *[nRow];
+  	for ( int i = 0; i < nRow; i++ ) DataI[i] = new int[nColumn];
+  	char *model, *initValues;    
+  	for ( int j = 0; j<  nColumn; j++ ) for ( int i = 0; i < nRow; i++ ) DataI[i][j] = data[i+j*nRow];
+  	model = nameOfModel[0];
   	initValues = "ANDRADE";
-  	double epsilon = 0.001;
-  	int maxNIteration = 200;
+  	double epsilon = vEpsilonConv[0];
+  	int maxNIteration = maxIt[0];
   	bool verbose = true;
   	double *parameters;
-  	parameters = new double[items+1];
+  	
     int numberOfCycles = -1;
     double logLik = -1;
 	  double convEp = -1;
-  	estimatingParameters(DataI, data.ncol(),data.nrow(), nameOfModel[0], 1, initValues, epsilon, maxNIteration, verbose, parameters);
-  	for ( int i = 0;i  <= items; i++ )
-  	{
-  		std::cout<<parameters[i] <<" ";
-  	}
-    std::cout<<endl;
-    NumericVector parametersA(items+1); // items + 1 is for RASCH_A_CONSTANT
-    for ( int i = 0;i  <= items; i++ )
+    Rcout<<model<<endl;
+    if ( strcmp(model , "RASCH_A1" ) == 0)
+    {
+      nuM = Constant::RASCH_A1;
+      nPar = nColumn;
+    }
+    else if ( strcmp(model , "RASCH_A_CONSTANT" ) == 0)
+    {
+      nuM = Constant::RASCH_A_CONSTANT;
+      nPar = nColumn+1;
+    }
+    else if( strcmp(model , "TWO_PL" ) == 0)
+    {
+      nuM = Constant::TWO_PL;
+      nPar = 2*nColumn;
+    }
+    else
+    {
+      nuM = Constant::THREE_PL;
+      nPar = 3*nColumn;
+    }
+    parameters = new double[nPar];
+  	estimatingParameterse(DataI, data.nrow() , data.ncol(), nuM , 1, initValues, epsilon, maxNIteration, verbose, parameters, numberOfCycles, logLik, convEp);   
+    NumericVector parametersA(nPar);
+    for ( int i = 0;i  < nPar; i++ )
     {
   		parametersA[i] = parameters[i];
   	}
@@ -140,6 +152,7 @@ List irtpp( IntegerMatrix data,  CharacterVector nameOfModel, IntegerVector dim,
     logLikA[0] = logLik;
     NumericVector convEpA(1);
     convEpA[0] = convEp;
+    Rcout<<"output :\n1) parameters\n2) number of cycles\n3) loglik\n4) convEp"<<endl;
     List z = List::create( parametersA, numberOfCyclesA, logLikA, convEpA ) ;
     return z ;
 }

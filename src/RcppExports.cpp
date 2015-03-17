@@ -26,33 +26,3 @@ BEGIN_RCPP
     return __sexp_result;
 END_RCPP
 }
-// timesTwo
-int timesTwo(int x);
-RcppExport SEXP IRTpp_timesTwo(SEXP xSEXP) {
-BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< int >::type x(xSEXP );
-        int __result = timesTwo(x);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
-END_RCPP
-}
-// cpower
-int cpower(int x);
-RcppExport SEXP IRTpp_cpower(SEXP xSEXP) {
-BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< int >::type x(xSEXP );
-        int __result = cpower(x);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
-END_RCPP
-}

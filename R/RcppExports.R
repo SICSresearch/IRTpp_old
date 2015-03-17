@@ -5,11 +5,3 @@ irtpp <- function(data, nameOfModel, dim, nameOfInitVal, vEpsilonConv, maxIt, vV
     .Call('IRTpp_irtpp', PACKAGE = 'IRTpp', data, nameOfModel, dim, nameOfInitVal, vEpsilonConv, maxIt, vVerbose)
 }
 
-timesTwo <- function(x) {
-    .Call('IRTpp_timesTwo', PACKAGE = 'IRTpp', x)
-}
-
-cpower <- function(x) {
-    .Call('IRTpp_cpower', PACKAGE = 'IRTpp', x)
-}
-
