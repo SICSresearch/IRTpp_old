@@ -13,13 +13,12 @@
 
 
 #define _INTERFACE_H
-  void estimatingParameterse(int **, int, int, int, int , char *, double, int, bool, double *, int &, double &, double &);
-  
-  #include "interface.h"
+void estimatingParameters(int **, int, int, int, int , char *, double, int, bool, double *, int &, double &, double &);
+
 // remember dimI, initValI,
-void estimatingParameterse(int ** dataI, int nRowsDataI, int nColumnsDataI, int modelI, int dimI, char * initValI, double epsilonConvI, int maxIterI, bool verboseI, double *parametersO, int & numberOfCyclesO, double & logLikO, double & convEp) {
+void estimatingParameters(int ** dataI, int nRowsDataI, int nColumnsDataI, int modelI, int dimI, char * initValI, double epsilonConvI, int maxIterI, bool verboseI, double *parametersO, int & numberOfCyclesO, double & logLikO, double & convEp) {
   int ESTIMATION_MODEL = modelI;  //*** to Inteface
-  Input input;
+	Input input;
 	Constant::CONVERGENCE_DELTA = epsilonConvI; //*** to Interface
 	Constant::MAX_EM_ITERS = maxIterI; //*** to Interface
 	Matrix<double> cuad(41, 2);
@@ -102,7 +101,7 @@ void estimatingParameterse(int ** dataI, int nRowsDataI, int nColumnsDataI, int 
 	delete model;
 	profiler->stopTimer("total");
 	//Out the profiler here
-	//profilerOute(profiler, 4);
+	//profilerOut(profiler, 4);
 	delete profiler;
 }
 #endif

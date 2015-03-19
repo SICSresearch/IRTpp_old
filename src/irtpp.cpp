@@ -1,4 +1,5 @@
 #include <Rcpp.h>
+#include "interface.h"
 #include <string.h>
 
 #include <model/parameter/OnePLACModel.h>
@@ -84,8 +85,6 @@
 #include <model/item/PolytomousModel.h>
 #include <model/item/PolytomousModel.cpp>
 
-#include "interface.h"
-
 using namespace Rcpp;
 
 // [[Rcpp::export]]
@@ -140,7 +139,7 @@ List irtpp( IntegerMatrix data,  CharacterVector nameOfModel, IntegerVector dim,
       nPar = 3*nColumn;
     }
     parameters = new double[nPar];
-  	estimatingParameterse(DataI, data.nrow() , data.ncol(), nuM , 1, initValues, epsilon, maxNIteration, verbose, parameters, numberOfCycles, logLik, convEp);   
+  	estimatingParameters(DataI, data.nrow() , data.ncol(), nuM , 1, initValues, epsilon, maxNIteration, verbose, parameters, numberOfCycles, logLik, convEp);   
     NumericVector parametersA(nPar);
     for ( int i = 0;i  < nPar; i++ )
     {
