@@ -5,3 +5,7 @@ irtpp <- function(data, nameOfModel, dim, nameOfInitVal, vEpsilonConv, maxIt, vV
     .Call('IRTpp_irtpp', PACKAGE = 'IRTpp', data, nameOfModel, dim, nameOfInitVal, vEpsilonConv, maxIt, vVerbose)
 }
 
+itemfitpp <- function(parametersO, data, nameOfModel, vVerbose) {
+    .Call('IRTpp_itemfitpp', PACKAGE = 'IRTpp', parametersO, data, nameOfModel, vVerbose)
+}
+

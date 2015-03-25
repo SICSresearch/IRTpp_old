@@ -155,3 +155,63 @@ List irtpp( IntegerMatrix data,  CharacterVector nameOfModel, IntegerVector dim,
     List z = List::create( parametersA, numberOfCyclesA, logLikA, convEpA ) ;
     return z ;
 }
+
+
+// [[Rcpp::export]]
+List itemfitpp(NumericVector parametersO, IntegerMatrix data, CharacterVector nameOfModel, LogicalVector vVerbose) {
+    Rcout<<"model "<< ", Column = "<<data.ncol()<<", Row = "<<data.nrow()<<endl;
+    Rcout<<"name of Model: "<<nameOfModel[0]<<endl;
+    Rcout<<"value of verbose: ";
+    Rcout<<vVerbose[0]<<endl;
+    int nColumn = data.ncol(), nRow = data.nrow(); 
+    int **DataI, nuM, nPar;
+    DataI = new int *[nRow];
+    for ( int i = 0; i < nRow; i++ ) DataI[i] = new int[nColumn];
+    char *model, *initValues;    
+  	for ( int j = 0; j<  nColumn; j++ ) for ( int i = 0; i < nRow; i++ ) DataI[i][j] = data[i+j*nRow];
+  	model = nameOfModel[0];
+  	bool verbose = true;
+  	double *parameters;
+  
+    Rcout<<model<<endl;
+    if ( strcmp(model , "RASCH_A1" ) == 0)
+    {
+      nuM = Constant::RASCH_A1;
+      nPar = nColumn;
+    }
+    else if ( strcmp(model , "RASCH_A_CONSTANT" ) == 0)
+    {
+      nuM = Constant::RASCH_A_CONSTANT;
+      nPar = nColumn+1;
+    }
+    else if( strcmp(model , "TWO_PL" ) == 0)
+    {
+      nuM = Constant::TWO_PL;
+      nPar = 2*nColumn;
+    }
+    else
+    {
+      nuM = Constant::THREE_PL;
+      nPar = 3*nColumn;
+    }
+    parameters = new double[nPar];
+    
+    for ( int i = 0;i  < nPar; i++ )
+    {
+    	parameters[i] = parametersO[i];
+  	}
+    
+    double* itemsf = new double[ data.ncol()];
+  	calcItemFit(DataI, data.nrow() , data.ncol(), nuM, verbose, parameters, itemsf);   
+    
+    NumericVector itemsF( data.ncol());
+    for ( int i = 0;i  < data.ncol(); i++ )
+    {
+    	itemsF[i] = itemsf[i];
+  	}
+    
+    Rcout<<"output :\n1) itemfit "<<endl;
+    List z = List::create( itemsF) ;
+    return z ;
+}
+

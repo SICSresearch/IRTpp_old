@@ -26,3 +26,21 @@ BEGIN_RCPP
     return __sexp_result;
 END_RCPP
 }
+// itemfitpp
+List itemfitpp(NumericVector parametersO, IntegerMatrix data, CharacterVector nameOfModel, LogicalVector vVerbose);
+RcppExport SEXP IRTpp_itemfitpp(SEXP parametersOSEXP, SEXP dataSEXP, SEXP nameOfModelSEXP, SEXP vVerboseSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< NumericVector >::type parametersO(parametersOSEXP );
+        Rcpp::traits::input_parameter< IntegerMatrix >::type data(dataSEXP );
+        Rcpp::traits::input_parameter< CharacterVector >::type nameOfModel(nameOfModelSEXP );
+        Rcpp::traits::input_parameter< LogicalVector >::type vVerbose(vVerboseSEXP );
+        List __result = itemfitpp(parametersO, data, nameOfModel, vVerbose);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
