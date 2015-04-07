@@ -17,7 +17,7 @@
 
 #define _INTERFACE_H
 void estimatingParameters(int **, int, int, int, int , char *, double, int, bool, double *, int &, double &, double &);
-void calcItemFit(int **, int, int, int, bool, double *, double *);
+void calcItemFit(double *,int **, int, int, int, bool, double *, double *);
 
 
 // remember dimI, initValI,
@@ -111,19 +111,16 @@ void estimatingParameters(int ** dataI, int nRowsDataI, int nColumnsDataI, int m
 }
 
 // remember dimI, initValI,
-void calcItemFit(int ** dataI, int nRowsDataI, int nColumnsDataI, int modelI, bool verboseI, double *parametersO, double* itemsf) {
+void calcItemFit(double *scores, int ** dataI, int nRowsDataI, int nColumnsDataI, int modelI, bool verboseI, double *parametersO, double* itemsf) {
   int ESTIMATION_MODEL = modelI;  //*** to Inteface
 	Input input;
-	Matrix<double> cuad(41, 2);
-	//Cuads
-	input.importCSV((char *) "Cuads.csv", cuad, 1, 0);
 	// **** **** Run model complete and ordered process **** ****
 	// Create general pars
 	Model *model = new Model();
 	// Create general model
 	ModelFactory *modelFactory = new SICSGeneralModel();
 	PatternMatrix *dataSet = new PatternMatrix(0);
-  
+
 	//<*** to Interface
 	//copy matrix
 	for( int i = 0; i < nRowsDataI; i++ )
@@ -137,48 +134,15 @@ void calcItemFit(int ** dataI, int nRowsDataI, int nColumnsDataI, int modelI, bo
 		dataSet->push(dset);
 	}
 	//***> to Interface
-
-
-	// set dataset
 	//RASCH_A1, RASCH_A_CONSTANT, TWO_PL, THREE_PL
 	model->setModel(modelFactory, ESTIMATION_MODEL);
-	//This is where it is decided what model is the test to make
-	model->getItemModel()->setDataset(dataSet);		//Sets the dataset.
-	// set Theta and weight for the EM Estimation
-	Matrix<double> *theta = new Matrix<double>(1, 41);
-	Matrix<double> *weight = new Matrix<double>(1, 41);
-	for (int k = 0; k < cuad.nR(); k++) {
-		(*theta)(0, k) = cuad(k, 0);
-		(*weight)(0, k) = cuad(k, 1);
-	}
-
 	// build parameter set
-	model->getParameterModel()->buildParameterSet(model->getItemModel(),
-			model->getDimensionModel());
-
-	//Here is where quadratures must be set.
-	QuadratureNodes nodes(theta, weight);
-  
   model->parameterModel->setParameters(parametersO);
-    /*
-	 * Now we will run the estimation of individual parameter
-	 */
-	//first create the latenTrait objects
-	LatentTraits * latentTraits;
-	latentTraits = new LatentTraits(dataSet);
-	//Now create the estimation
-	LatentTraitEstimation * lte = new LatentTraitEstimation();
-	//Pass the model
-	lte->setModel(model);
-	//Pass the latent traits
-	lte->setLatentTraits(latentTraits);
-	//Pass the quadrature nodes
-	lte->setQuadratureNodes(&nodes);
-	//Ready to estimate
-	lte->estimateLatentTraitsEAP();
-	//lte->estimateLatentTraitsMAP();
-	//finished
-	//lte->getLatentTraits()->print();
+  Matrix<double> traits((int)dataSet->matrix.size(), 1);
+  
+  for(int i = 0; i < (int)dataSet->matrix.size(); i++){
+    traits(i, 0) = scores[i];
+  }
 
 	Matrix<double> data(dataSet->countIndividuals(), dataSet->countItems());
 	
@@ -188,12 +152,12 @@ void calcItemFit(int ** dataI, int nRowsDataI, int nColumnsDataI, int modelI, bo
 	{
 		for ( int j = 0; j < nColumnsDataI; j++ )
 		{
-		  data(i,j) = dataI[i][i] ;
+		  data(i,j) = dataI[i][j] ;
 		}
 	}
 	//***> to Interface
 
-	itemFit(latentTraits, data, model->getParameterModel()->getParameterSet(), ESTIMATION_MODEL, itemsf);
+	itemFit(dataSet, traits, data, model->getParameterModel()->getParameterSet(), ESTIMATION_MODEL, itemsf);
 	
 	delete modelFactory;
 	delete dataSet;

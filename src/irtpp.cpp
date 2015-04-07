@@ -158,7 +158,8 @@ List irtpp( IntegerMatrix data,  CharacterVector nameOfModel, IntegerVector dim,
 
 
 // [[Rcpp::export]]
-List itemfitpp(NumericVector parametersO, IntegerMatrix data, CharacterVector nameOfModel, LogicalVector vVerbose) {
+List itemfitpp(NumericVector parametersO, IntegerMatrix data, NumericVector scores, CharacterVector nameOfModel, LogicalVector vVerbose) {
+  
     Rcout<<"model "<< ", Column = "<<data.ncol()<<", Row = "<<data.nrow()<<endl;
     Rcout<<"name of Model: "<<nameOfModel[0]<<endl;
     Rcout<<"value of verbose: ";
@@ -201,17 +202,28 @@ List itemfitpp(NumericVector parametersO, IntegerMatrix data, CharacterVector na
     	parameters[i] = parametersO[i];
   	}
     
+    double *traits = new double[scores.size()];
+    if(Rf_isNull(scores)){
+      //call scores interface
+      List z = List::create() ;
+    return z ;
+    }else{
+      for(int i = 0; i < scores.size(); i++){
+        traits[i] = scores[i];
+      }
+    }
+    
     double* itemsf = new double[ data.ncol()];
-  	calcItemFit(DataI, data.nrow() , data.ncol(), nuM, verbose, parameters, itemsf);   
+  	calcItemFit(traits, DataI, data.nrow() , data.ncol(), nuM, verbose, parameters, itemsf);   
     
     NumericVector itemsF( data.ncol());
     for ( int i = 0;i  < data.ncol(); i++ )
     {
     	itemsF[i] = itemsf[i];
   	}
-    
+  
     Rcout<<"output :\n1) itemfit "<<endl;
-    List z = List::create( itemsF) ;
+    List z = List::create( ) ;
     return z ;
 }
 
