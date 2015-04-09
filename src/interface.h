@@ -114,7 +114,6 @@ void estimatingParameters(int ** dataI, int nRowsDataI, int nColumnsDataI, int m
 void calcItemFit(double *scores, int ** dataI, int nRowsDataI, int nColumnsDataI, int modelI, bool verboseI, double *parametersO, double* itemsf) {
   int ESTIMATION_MODEL = modelI;  //*** to Inteface
 	Input input;
-	// **** **** Run model complete and ordered process **** ****
 	// Create general pars
 	Model *model = new Model();
 	// Create general model
@@ -136,11 +135,15 @@ void calcItemFit(double *scores, int ** dataI, int nRowsDataI, int nColumnsDataI
 	//***> to Interface
 	//RASCH_A1, RASCH_A_CONSTANT, TWO_PL, THREE_PL
 	model->setModel(modelFactory, ESTIMATION_MODEL);
+  model->getItemModel()->setDataset(dataSet);
 	// build parameter set
-  model->parameterModel->setParameters(parametersO);
-  Matrix<double> traits((int)dataSet->matrix.size(), 1);
+  model->getParameterModel()->buildParameterSet(model->getItemModel(),model->getDimensionModel());
+  model->getParameterModel()->setParameters(parametersO);
+  int dim = 1;
+  int s_traits = (int)dataSet->matrix.size();
+  Matrix<double> traits(s_traits, dim);
   
-  for(int i = 0; i < (int)dataSet->matrix.size(); i++){
+  for(int i = 0; i < s_traits; i++){
     traits(i, 0) = scores[i];
   }
 

@@ -206,7 +206,7 @@ List itemfitpp(NumericVector parametersO, IntegerMatrix data, NumericVector scor
     if(Rf_isNull(scores)){
       //call scores interface
       List z = List::create() ;
-    return z ;
+      return z ;
     }else{
       for(int i = 0; i < scores.size(); i++){
         traits[i] = scores[i];
@@ -223,7 +223,7 @@ List itemfitpp(NumericVector parametersO, IntegerMatrix data, NumericVector scor
   	}
   
     Rcout<<"output :\n1) itemfit "<<endl;
-    List z = List::create( ) ;
+    List z = List::create(itemsF) ;
     return z ;
 }
 
