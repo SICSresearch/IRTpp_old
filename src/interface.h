@@ -32,7 +32,7 @@ void estimatingParameters(int ** dataI, int nRowsDataI, int nColumnsDataI, int m
 	profiler->resetTimer("for2");
 	profiler->resetTimer("fyr");
 	profiler->resetTimer("optim");
-	input.importCSV((char *) "Cuads.csv", cuad, 1, 0);
+	input.importCSV((char *) "../IRTpp/inst/SICSRepository/SICS/Cuads.csv", cuad, 1, 0);
 	// **** **** Run model complete and ordered process **** ****
 	// Create general pars
 	Model *model = new Model();
