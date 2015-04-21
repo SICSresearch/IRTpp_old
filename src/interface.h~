@@ -79,6 +79,7 @@ void estimatingParameters(int ** dataI, int nRowsDataI, int nColumnsDataI, int m
 	for (int k = 0; k < 41; k++) {
 		(*theta)(0, k) = matrixCuads[k][0];
 		(*weight)(0, k) = matrixCuads[k][1];
+		cout<<(*theta)(0, k)<<" "<<(*weight)(0, k)<<endl;
 	}
 
 	// build parameter set
