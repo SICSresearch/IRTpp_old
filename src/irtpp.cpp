@@ -88,6 +88,73 @@
 using namespace Rcpp;
 
 // [[Rcpp::export]]
+List loglikitem (NumericVector oargs, NumericVector args , NumericVector pars , NumericVector lens, NumericVector index){
+  int nargs = lens[0];
+  nargs = 30;
+  int npars = lens[1];
+  npars = 494;
+  int nindex = index[0];
+  double* ars = new double [nargs];
+  double* par = new double [495];
+  for (int i = 0 ; i < nargs; i++){
+    ars[i] = args[i];
+  }
+  ars[nindex]=oargs[0];
+  ars[nindex+10]=oargs[1];
+  ars[nindex+20]=oargs[2];
+  for (int i = 0 ; i < npars; i++){
+    par[i] = pars[i];
+  }
+  par[494] = 0; //item cero
+  double l=0;
+  npars = npars + 1;
+  
+  //l = loglikitem3pl(ars,par,nargs,npars);
+  par[494] = nindex;
+  cout<<par[494]<<"."<<endl;
+  fflush(stdout);
+  for (int y = 0 ; y < 30 ; y++){
+    cout<<ars[y]<<",";
+  }cout<<endl;
+  cout<<"p"<<par[494]<<" "<<endl;
+  l = ThreePLModel::itemLogLik(ars,par,3,495);
+  return List::create( l );
+  delete [] ars;
+  delete [] par;
+}
+
+// [[Rcpp::export]]
+List loglik (NumericVector args , NumericVector pars , NumericVector lens){
+  int nargs = lens[0];
+  int npars = lens[1];
+  
+  double* ars = new double [nargs];
+  double* par = new double [npars];
+  for (int i = 0 ; i < nargs; i++){
+    ars[i] = args[i];
+  }
+  for (int i = 0 ; i < npars; i++){
+    par[i] = pars[i];
+  }
+  
+  double l=0;
+  l = loglik3pl(ars,par,nargs,npars);
+  return List::create( l );
+}
+// [[Rcpp::export]]
+List banana (NumericVector input) {
+  double l = 0;
+  double x , y;
+  x = input[0];
+  y = input[1];
+  l = printFunc(x,y);
+  Rcout<<"banananit"<<endl;
+  List z = List::create( l ) ;
+  return z;
+}
+
+
+// [[Rcpp::export]]
 List irtpp( IntegerMatrix data,  CharacterVector nameOfModel, IntegerVector dim, CharacterVector nameOfInitVal, NumericVector vEpsilonConv, IntegerVector maxIt, LogicalVector vVerbose) {
     Rcout<<"model "<< ", Column = "<<data.ncol()<<", Row = "<<data.nrow()<<endl;
     Rcout<<"name of Model: "<<nameOfModel[0]<<endl;

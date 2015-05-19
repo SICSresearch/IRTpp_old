@@ -13,8 +13,44 @@
 
 
 #define _INTERFACE_H
-void estimatingParameters(int **, int, int, int, int , char *, double, int, bool, double *, int &, double &, double &);
+double loglikitem3pl(double*,double*,int,int);
+double loglik3pl(double*,double*,int,int);
+double printFunc(double, double);
+double loglik3pl(double* args, double* pars, int a, int b){
+  double loglik = 0;
+  double (*fptr)(double*, double*, int, int);
+  fptr = &ThreePLModel::logLikelihood;
+  loglik = (*fptr)(args, pars, a,b);
+  return loglik;
+}
 
+double loglikitem3pl(double* args, double* pars, int a, int b){
+  double loglik = 0;
+  double (*fptr)(double*, double*, int, int);
+  fptr = &ThreePLModel::itemLogLik;
+  loglik = (*fptr)(args, pars, a,b);
+  return loglik;
+}
+void estimatingParameters(int **, int, int, int, int , char *, double, int, bool, double *, int &, double &, double &);
+//printFunc();
+double printFunc(double xa , double xb){
+  //call the banana function
+  //banana mark : double* args, double* pars, int nargs, int npars
+  //call with two arguments and two values
+  double* p = new double [2];
+  double* a = new double [2];
+  int nargs = 2;
+  int npars = 2;
+  a[0] = xa;
+  a[1] = xb;
+  double (*fptr)(double*, double*, int, int);
+  fptr = &ThreePLModel::banana;
+  Rcpp::Rcout<<"Loading the banana"<<endl;
+  double result;
+  result = (*fptr)(a, p, nargs,npars);
+  Rcpp::Rcout << result << " : "<< "Resultado "<<endl;
+  return result;
+}
 // remember dimI, initValI,
 void estimatingParameters(int ** dataI, int nRowsDataI, int nColumnsDataI, int modelI, int dimI, char * initValI, double epsilonConvI, int maxIterI, bool verboseI, double *parametersO, int & numberOfCyclesO, double & logLikO, double & convEp) {
   int ESTIMATION_MODEL = modelI;  //*** to Inteface
@@ -63,13 +99,23 @@ void estimatingParameters(int ** dataI, int nRowsDataI, int nColumnsDataI, int m
 	//This is where it is decided what model is the test to make
 	model->getItemModel()->setDataset(dataSet);		//Sets the dataset.
 	// set Theta and weight for the EM Estimation
-	Matrix<double> *theta = new Matrix<double>(1, 41);
+  cout<<"Still not declared thetas"<<endl;
+  double theta2 [] = {-5.1225, -4.86637, -4.61025, -4.35412, -4.098, -3.84187, -3.58575,-3.32962, -3.0735, -2.81737, -2.56125, -2.30512, -2.049, -1.79287, -1.53675, -1.28062, -1.0245, -0.768375, -0.51225, -0.256125, 0,0.256125, 0.51225, 0.768375, 1.0245, 1.28062, 1.53675, 1.79287, 2.049, 2.30512, 2.56125, 2.81737, 3.0735, 3.32962, 3.58575, 3.84187,4.098, 4.35412, 4.61025, 4.86637, 5.1225};
+  double weight2 [] = {0.000000204842,0.000000736153,0.00000247758,0.00000780904,0.0000230504,0.000063719,0.000164957,0.000399927,0.000908035,0.00193079,0.00384482,0.00717015,0.0125225,0.0204816,0.0313724,0.0450029,0.0604567,0.0760603,0.0896154,0.098882,0.102179,0.098882,0.0896154,0.0760603,0.0604567,0.0450029,0.0313724,0.0204816,0.0125225,0.00717015,0.00384482,0.00193079,0.000908035,0.000399927,0.000164957,0.000063719,0.0000230504,0.00000780904,0.00000247758,0.000000736153,0.000000204842};
+	cout<<"Declared and set but unused"<<endl;
+  Matrix<double> *theta = new Matrix<double>(1, 41);
 	Matrix<double> *weight = new Matrix<double>(1, 41);
+  cout<<"Ready to copy"<<endl;
 	for (int k = 0; k < cuad.nR(); k++) {
 		(*theta)(0, k) = cuad(k, 0);
+    (*theta)(0,k) = theta2[k];
 		(*weight)(0, k) = cuad(k, 1);
+    (*weight)(0,k) = weight2[k];
 	}
-
+  cout<<"Copied the thetas , lets out the matrices"<<endl;
+  cout<<(*theta);
+  cout<<(*weight);
+  cout<<"Outed the matrices"<<endl;
 	// build parameter set
 	model->getParameterModel()->buildParameterSet(model->getItemModel(),
 			model->getDimensionModel());

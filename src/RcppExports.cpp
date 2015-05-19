@@ -5,6 +5,57 @@
 
 using namespace Rcpp;
 
+// loglikitem
+List loglikitem(NumericVector oargs, NumericVector args, NumericVector pars, NumericVector lens, NumericVector index);
+RcppExport SEXP IRTpp_loglikitem(SEXP oargsSEXP, SEXP argsSEXP, SEXP parsSEXP, SEXP lensSEXP, SEXP indexSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< NumericVector >::type oargs(oargsSEXP );
+        Rcpp::traits::input_parameter< NumericVector >::type args(argsSEXP );
+        Rcpp::traits::input_parameter< NumericVector >::type pars(parsSEXP );
+        Rcpp::traits::input_parameter< NumericVector >::type lens(lensSEXP );
+        Rcpp::traits::input_parameter< NumericVector >::type index(indexSEXP );
+        List __result = loglikitem(oargs, args, pars, lens, index);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// loglik
+List loglik(NumericVector args, NumericVector pars, NumericVector lens);
+RcppExport SEXP IRTpp_loglik(SEXP argsSEXP, SEXP parsSEXP, SEXP lensSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< NumericVector >::type args(argsSEXP );
+        Rcpp::traits::input_parameter< NumericVector >::type pars(parsSEXP );
+        Rcpp::traits::input_parameter< NumericVector >::type lens(lensSEXP );
+        List __result = loglik(args, pars, lens);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// banana
+List banana(NumericVector input);
+RcppExport SEXP IRTpp_banana(SEXP inputSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< NumericVector >::type input(inputSEXP );
+        List __result = banana(input);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
 // irtpp
 List irtpp(IntegerMatrix data, CharacterVector nameOfModel, IntegerVector dim, CharacterVector nameOfInitVal, NumericVector vEpsilonConv, IntegerVector maxIt, LogicalVector vVerbose);
 RcppExport SEXP IRTpp_irtpp(SEXP dataSEXP, SEXP nameOfModelSEXP, SEXP dimSEXP, SEXP nameOfInitValSEXP, SEXP vEpsilonConvSEXP, SEXP maxItSEXP, SEXP vVerboseSEXP) {

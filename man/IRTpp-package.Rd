@@ -28,11 +28,12 @@ Andrade
 }
 \keyword{ package }
 \seealso{
-\code{\link[<pkg>:<pkg>-package]{<pkg>}}
+
 }
 \examples{
 \dontrun{
 irtpp()
+loglik()
 }
 
 }
