@@ -6,8 +6,8 @@
 #Generate individuals
 #Simulate responses
 
-#' Simulate a test according to a model.
-#' 
+#' SimulateTest.
+#' Simulates a test according to a model
 #' Example \eqn{a + b^2}
 #' @author Juan Liberato
 #' @return A data frame with the simulated dataset
