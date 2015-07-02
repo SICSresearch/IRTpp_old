@@ -15,6 +15,6 @@ Cronbach's alpha for the test.
 }
 \description{
 Cronbach's alpha measures how correlated are the items in a test
-License: \tab GPL (>= 2) Extacted from multilevel_2.5 package \cr
+License :GPL (>= 2) Extacted from multilevel_2.5 package
 }
 
