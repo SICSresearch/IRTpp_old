@@ -1,2 +1,0 @@
-PKG_CXXFLAGS="-I../inst/SICSRepository/SICS/src"
-CXX_STD = CXX11

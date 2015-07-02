@@ -1,14 +1,10 @@
-.onUnload <- function (libpath) {
-  library.dynam.unload("IRTpp", libpath)
-}
-
 ######################################################
 # Función principal para correr el algoritmo de SICS #
 ######################################################
 
 IRTpp = function(data, ini = c("glm","andrade"),item = c("3PL","2PL","Rasch","1PL"),epsilon = 10^(-4),maxit = 500,verbose = TRUE,export = FALSE,
                  export.path = NULL,dims = 1){
-  cl <- match.call()
+  #cl <- match.call()
   ######################
   # Seccion de control #
   ######################
@@ -52,5 +48,4 @@ IRTpp = function(data, ini = c("glm","andrade"),item = c("3PL","2PL","Rasch","1P
   
   fit = list(coefs = 0,conv = 0,LL = 0,cycles = 0,pats = 0,call=cl,numCuads =0,AIC=0,BIC=0)
   class(fit) = "irtClass"
-  fit
 }

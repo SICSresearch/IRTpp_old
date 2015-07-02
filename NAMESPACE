@@ -1,4 +1,0 @@
-useDynLib("IRTpp")
-exportPattern("^[[:alpha:]]+")
-importFrom(Rcpp, evalCpp)
-export(irtpp)
