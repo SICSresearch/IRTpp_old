@@ -31,7 +31,10 @@ double loglikitem3pl(double* args, double* pars, int a, int b){
   loglik = (*fptr)(args, pars, a,b);
   return loglik;
 }
-void estimatingParameters(int **, int, int, int, int , char *, double, int, bool, double *, int &, double &, double &);
+
+
+
+void estimatingParameters(int**,int,int,int,int,char*,double,int,bool,double*,int&,double&,double&);
 //printFunc();
 double printFunc(double xa , double xb){
   //call the banana function
@@ -51,6 +54,24 @@ double printFunc(double xa , double xb){
   Rcpp::Rcout << result << " : "<< "Resultado "<<endl;
   return result;
 }
+
+void EAP(double* zeta, int model, int** dataset){
+  Input input;
+  Matrix<double> cuad(41, 2);
+  Model *model = new Model();
+  ModelFactory *modelFactory = new SICSGeneralModel();
+  model->setModel(modelFactory, ESTIMATION_MODEL);
+  model->getParameterModel()->buildParameterSet(model->getItemModel(),
+  model->getDimensionModel());
+  LatentTraits * latentTraits;
+  latentTraits = new LatentTraits(dataSet);
+  LatentTraitEstimation * lte = new LatentTraitEstimation();
+	lte->setModel(model);
+	lte->setLatentTraits(latentTraits);
+	lte->setQuadratureNodes(&nodes);
+	lte->estimateLatentTraitsEAP();
+}
+
 // remember dimI, initValI,
 void estimatingParameters(int ** dataI, int nRowsDataI, int nColumnsDataI, int modelI, int dimI, char * initValI, double epsilonConvI, int maxIterI, bool verboseI, double *parametersO, int & numberOfCyclesO, double & logLikO, double & convEp) {
   int ESTIMATION_MODEL = modelI;  //*** to Inteface
