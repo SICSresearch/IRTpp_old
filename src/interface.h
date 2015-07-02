@@ -54,7 +54,7 @@ double printFunc(double xa , double xb){
   Rcpp::Rcout << result << " : "<< "Resultado "<<endl;
   return result;
 }
-
+/* COMPILATION ERROR FIX PLEASE
 void EAP(double* zeta, int model, int** dataset){
   Input input;
   Matrix<double> cuad(41, 2);
@@ -71,7 +71,7 @@ void EAP(double* zeta, int model, int** dataset){
 	lte->setQuadratureNodes(&nodes);
 	lte->estimateLatentTraitsEAP();
 }
-
+*/
 // remember dimI, initValI,
 void estimatingParameters(int ** dataI, int nRowsDataI, int nColumnsDataI, int modelI, int dimI, char * initValI, double epsilonConvI, int maxIterI, bool verboseI, double *parametersO, int & numberOfCyclesO, double & logLikO, double & convEp) {
   int ESTIMATION_MODEL = modelI;  //*** to Inteface

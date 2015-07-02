@@ -1,7 +1,8 @@
 #######################################################################
-#' @name Cronbach's alpha
+#' @name Cronbachs alpha
+#' @title Alpha de Cronbach
 #' @description Cronbach's alpha measures how correlated are the items in a test
-#' License: \tab GPL (>= 2) Extacted from multilevel_2.5 package \cr
+#' License :GPL (>= 2) Extacted from multilevel_2.5 package
 #' @param items Dataframe that holds the test response data
 #' @return Cronbach's alpha for the test.
 cronbach<-function(items)

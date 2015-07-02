@@ -8,6 +8,7 @@
 
 #' Simulate a test according to a model.
 #' 
+#' Example \eqn{a + b^2}
 #' @author Juan Liberato
 #' @return A data frame with the simulated dataset
 #' @param model A string with the model to simulate, please refer to the model documentation in irtpp documentation.
@@ -22,7 +23,7 @@
 simulateTest<-function(model,items,individuals,independent=TRUE,reps=1,dims=1,boundaries=NULL,generated=TRUE,itempars=NULL,seed=NULL)
 {
   #set the seed if not set
-  seed = ua(seed,floor(runif(1)*10000000);)
+  seed = ua(seed,floor(runif(1)*10000000))
   set.seed(seed);
   smodel = 0;
   if(model == "1PLAD") smodel=1
@@ -36,10 +37,6 @@ simulateTest<-function(model,items,individuals,independent=TRUE,reps=1,dims=1,bo
   th = rnorm(individuals);
   #Generate the tests
 }
-floor(runif(1)*10000000);
-rnorm(10)
-
-simulateTest("1PL",1,1)
 
 #' Undefined assignment, Helper function
 #' @param var , The variable to test
@@ -63,6 +60,7 @@ simulateItemParameters<- function(items, model, dims=1, boundaries=NULL){
   bd$a_lower = ua(bd$a_lower,0.0001); 
   bd$c_upper = ua(bd$c_upper,0.35); 
   bd$c_lower = ua(bd$c_lower,0);
+  print("juan david")
   b = rnorm(items);
   if(model == "3PL"){
     a = rlnorm(items,meanlog=0,sdlog=1/4)

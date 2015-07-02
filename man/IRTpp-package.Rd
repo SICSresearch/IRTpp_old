@@ -21,7 +21,7 @@ Use the function irtpp
 \author{
 SICS Research Team
 
-Maintainer: Who to complain to <jcliberatol@unal.edu.co>
+Maintainer:  <jcliberatol@unal.edu.co>
 }
 \references{
 Andrade
