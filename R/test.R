@@ -2,6 +2,8 @@
 #' @param var , The variable to test
 #' @param val , The value to return if the tested variables is NULL
 #' @return Returns the value of the tested variable if it is not NULL, otherwise, returns the default
+#' @examples
+#' ua(itempars,simulateItemParameters(items,model,dims,boundaries));
 ua<-function(var,val){
   if(is.null(var)){val}
   else{var}
