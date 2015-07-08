@@ -15,3 +15,59 @@ cronbach<-function(items)
   OUT<-list(Alpha=ALPHA,N=nrow(items))        
   return(OUT)
 }
+
+
+#' Undefined assignment, Helper function
+#' @param var , The variable to test
+#' @param val , The value to return if the tested variables is NULL
+#' @return Returns the value of the tested variable if it is not NULL, otherwise, returns the default
+#' @examples
+#' ua(itempars,simulateItemParameters(items,model,dims,boundaries));
+ua<-function(var,val){
+  if(is.null(var)){val}
+  else{var}
+}
+#' Print Sentence, Helper function
+#' Prints different strings concatenating them with a " "
+#' @param ... The strings to print.
+#' @param sep The separator to pass
+print.sentence<-function(...,sep=" "){
+  print(paste(sep=sep,...))
+}
+
+#' Check Model
+#' Checks a test according to the model library to validate if it can be estimated or abort the current procedure
+#' @param model The model to check
+#' @param msg Additional error message
+#' @param stop Optional, If false, this function wont throw a stop. 
+#' @return No return, in case that the model is not valid throws a stop, if error is false, Only prints a message
+checkModel<-function(model,msg="",error=T){
+  #check if a model is valid according to the model list.
+  if(!(model=="1PL"||model=="2PL"||model=="3PL"||model=="1PLAD"))
+    if(error){
+      stop(model," Is not a valid model",call.=F,msg)
+    }
+  else {
+    print.sentence(model,"Is not a valid model",msg,sep=" ");
+  }
+}
+
+
+#' Apply a function to the indices of a list
+#' @param X a vector
+#' @param FUN a function
+#' @param idx a vector with the indices to consider from the list
+#' @example
+#' k=list(3,4,5,6)
+#' idx=list(2,4)
+#' iapply(function(x) x*x,k,idx)
+iapply <- function(FUN,X,idx,...){
+  #extract a list with the values to treat and compute the function for each value of the list
+  ia.values = lapply(lapply(idx,function(x) X[[x]]),FUN,...)
+  #copy the new value to the X list value that is the correspondent
+  mapply(function(x,y) {X[[x]]<<-ia.values[[y]]},idx,seq(length(idx)))
+  #return the list modified
+  X
+}
+
+
