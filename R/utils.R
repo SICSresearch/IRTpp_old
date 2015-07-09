@@ -31,8 +31,8 @@ ua<-function(var,val){
 #' Prints different strings concatenating them with a " "
 #' @param ... The strings to print.
 #' @param sep The separator to pass
-print.sentence<-function(...,sep=" "){
-  print(paste(sep=sep,...))
+print.sentence<-function(...,sep=" ",verbose=T){
+  if(verbose){print(paste(sep=sep,...))}
 }
 
 #' Check Model
@@ -68,6 +68,29 @@ iapply <- function(FUN,X,idx,...){
   mapply(function(x,y) {X[[x]]<<-ia.values[[y]]},idx,seq(length(idx)))
   #return the list modified
   X
+}
+#' Apply a function over indices of multiple lists and store in the original array
+#' Warning, some functions need dots to be added to pass the additional arguments
+#' @examples
+#' k=list(3,4,5,6)
+#' y=list(1,0,1,0)
+#' idx=list(2,4)
+#' p=mapply(function(x,y) x*y,k,y)
+#' p
+#' y=list(1,1,1,1)
+#' imapply(p,function(x,y,...){x*y},idx,k,y)
+imapply<- function(X,FUN,idx,...){
+  ima.values = mapply(FUN,idx,...)
+  mapply(function(x,y) {X[[x]]<<-ima.values[[y]]},idx,seq(length(idx)))
+  X
+}
+
+#' Return the elements of a list on some indices
+#'@examples
+#'k=list(3,4,5,6)
+#'search.index(k,c(2,3))
+search.index<-function(x,idx){
+  lapply(idx,function(y) x[[y]])
 }
 
 
