@@ -1,38 +1,3 @@
-#' Undefined assignment, Helper function
-#' @param var , The variable to test
-#' @param val , The value to return if the tested variables is NULL
-#' @return Returns the value of the tested variable if it is not NULL, otherwise, returns the default
-#' @examples
-#' ua(itempars,simulateItemParameters(items,model,dims,boundaries));
-ua<-function(var,val){
-  if(is.null(var)){val}
-  else{var}
-}
-#' Print Sentence, Helper function
-#' Prints different strings concatenating them with a " "
-#' @param ... The strings to print.
-#' @param sep The separator to pass
-print.sentence<-function(...,sep=" "){
-  print(paste(sep=sep,...))
-}
-
-#' Check Model
-#' Checks a test according to the model library to validate if it can be estimated or abort the current procedure
-#' @param model The model to check
-#' @param msg Additional error message
-#' @param stop Optional, If false, this function wont throw a stop. 
-#' @return No return, in case that the model is not valid throws a stop, if error is false, Only prints a message
-checkModel<-function(model,msg="",error=T){
-  #check if a model is valid according to the model list.
-  if(!(model=="1PL"||model=="2PL"||model=="3PL"||model=="1PLAD"))
-    if(error){
-     stop(model," Is not a valid model",call.=F,msg)
-    }
-  else {
-    print.sentence(model,"Is not a valid model",msg,sep=" ");
-  }
-}
-
 #' SimulateTest.
 #' Simulates a test according to a model
 #' Example \eqn{a + b^2}
@@ -48,8 +13,12 @@ checkModel<-function(model,msg="",error=T){
 #' @param itempars Optional. Item parameters to be used in the simulation. When the parameters are not generated, the item parameters must be specified.
 #' @param seed Optional. Seed to use to generate all the data
 #' @param cores Optional. If set to a number set those cores to perform simulations, Only available on UNIX Systems
-simulateTest<-function(model,items,individuals,independent=TRUE,reps=1,dims=1,boundaries=NULL,generated=TRUE,itempars=NULL,seed=NULL,cores=NULL)
-{
+#' @param verbose Optional. If true, output is made to know the status of the algorithm
+#' @example
+#' k=simulateTest(items=20,individuals=2000,threshold=0.01,dims=1,reps=3,model="3PL")
+simulateTest<-function(model,items,individuals,independent=TRUE,reps=1,dims=1,boundaries=NULL,generated=TRUE,itempars=NULL,seed=NULL,cores=NULL,verbose=F,threshold=0.05)
+{ 
+  dims=1
   ret = NULL;
   ret$model = model;
   #set the seed if not set
@@ -61,15 +30,43 @@ simulateTest<-function(model,items,individuals,independent=TRUE,reps=1,dims=1,bo
   z = ua(itempars,simulateItemParameters(items,model,dims,boundaries));
   ret$itempars = z;
   #Generate the individual parameters (assume normal for now, change later)
-  th = matrix(rnorm(individuals*dims),ncol=dims);
+  th=rnorm(individuals*dims,0,1)
+  th=(th-mean(th))/sd(th)
+  th = matrix(th,ncol=dims);
   ret$latentTraits = th
   #Generate the tests
-  if(!is.null(cores)){
-    library(parallel);
-    ret$test=replicate(reps, do.call(rbind,mclapply(th,function(x,z) ifelse(runif(1)>probability.3pl(theta=x,z=z),1,0),z=z,mc.cores=cores)),simplify=F)
-  }
-  else{
-    ret$test=replicate(reps, do.call(rbind,lapply(th,function(x,z) ifelse(runif(1)>probability.3pl(theta=x,z=z),1,0),z=z)),simplify=F)
+  ret$prob=replicate(reps,do.call(rbind,lapply(th,function(x,z) probability.3pl(theta=x,z=z),z=z)),simplify=F)
+  coins=replicate(reps,matrix(runif(items*individuals),ncol=items),simplify=F);
+  ret$test=mapply(function(x,y){ifelse(x>y,1,0)},ret$prob,coins,SIMPLIFY=F);
+  #Impute the test to exclude individuals in the threshold
+  repeat{
+    #scores of individuals and items
+    individual.scores = lapply(ret$test,function(x) rowSums(x)/items) 
+    item.scores = lapply(ret$est,function(x) colSums(x)/individuals)
+    #outlier scores
+    outliers.flags = lapply(individual.scores,function(x) ifelse(x<threshold | x>(1-threshold),T,F))
+    outliers.indices = lapply(outliers.flags,function(x) as.list(which(x)))
+    outliers.missing = lapply(outliers.indices,length)
+    outliers.total = Reduce(sum,outliers.missing)
+     if(outliers.total<2){
+       print.sentence("No outliers left",verbose=verbose)
+        break
+      }
+    else{
+      print.sentence("Outliers left",outliers.total,verbose=verbose)
+    }
+    #resimulate the coins
+    newcoins = sapply(outliers.missing,function(x){matrix(runif(x*items),ncol=items)},simplify=F)
+    probs = mapply(function(x,y){x[as.numeric(y),]},ret$prob,outliers.indices)
+    newscores=mapply(function(x,y){ifelse(x>y,1,0)},probs,newcoins,SIMPLIFY=F);
+    #assign the new scores in the the old test
+    mapply(function(x,y,z){
+      if(outliers.missing[[z]]>0){
+      mapply(function(a,b){
+        ret$test[[z]][a,]<<-y[b,]
+      },x,seq(length(x)),SIMPLIFY=F);
+      }
+    },outliers.indices,newscores,seq(length(outliers.indices)),SIMPLIFY=F);
   }
   ret
 }
