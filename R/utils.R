@@ -1,22 +1,3 @@
-#######################################################################
-#' @name Cronbachs alpha
-#' @title Alpha de Cronbach
-#' @description Cronbach's alpha measures how correlated are the items in a test
-#' License :GPL (>= 2) Extacted from multilevel_2.5 package
-#' @param items Dataframe that holds the test response data
-#' @return Cronbach's alpha for the test.
-cronbach<-function(items)
-{
-  items<-na.exclude(items)	
-  N <- ncol(items)
-  TOTVAR <- var(apply(items, 1, sum))
-  SUMVAR <- sum(apply(items, 2, var))
-  ALPHA <- (N/(N - 1)) * (1 - (SUMVAR/TOTVAR))
-  OUT<-list(Alpha=ALPHA,N=nrow(items))        
-  return(OUT)
-}
-
-
 #' Undefined assignment, Helper function
 #' @param var , The variable to test
 #' @param val , The value to return if the tested variables is NULL
