@@ -2,11 +2,12 @@
 % Please edit documentation in R/test.R
 \name{simulateTest}
 \alias{simulateTest}
-\title{Simulate a test according to a model.}
+\title{SimulateTest.
+Simulates a test according to a model}
 \usage{
 simulateTest(model, items, individuals, independent = TRUE, reps = 1,
   dims = 1, boundaries = NULL, generated = TRUE, itempars = NULL,
-  seed = NULL)
+  seed = NULL, cores = NULL, verbose = F, threshold = 0.05)
 }
 \arguments{
 \item{model}{A string with the model to simulate, please refer to the model documentation in irtpp documentation.}
@@ -19,19 +20,26 @@ simulateTest(model, items, individuals, independent = TRUE, reps = 1,
 
 \item{reps}{The number of tests to generate with this settings}
 
-\item{dims}{Optional. The number of dimensions to simulate in the test if the model is multidimensional}
+\item{dims}{Optional. The number of dimensions to simulate in the test if the model is multidimensional TODO (Untested in multidimensional, please do not use this parameter for now)}
 
 \item{boundaries}{Optional. The kind of boundaries that are specified for the parameters.}
 
 \item{itempars}{Optional. Item parameters to be used in the simulation. When the parameters are not generated, the item parameters must be specified.}
 
 \item{seed}{Optional. Seed to use to generate all the data}
+
+\item{cores}{Optional. If set to a number set those cores to perform simulations, Only available on UNIX Systems}
+
+\item{verbose}{Optional. If true, output is made to know the status of the algorithm}
 }
 \value{
-A data frame with the simulated dataset
+A List with the model, the seed , itempars the item parameters
 }
 \description{
-Example \eqn{a + b^2}
+This function simulates tests according to a IRT model.
+}
+\examples{
+k=simulateTest(items=20,individuals=2000,threshold=0.01,dims=1,reps=3,model="3PL")
 }
 \author{
 Juan Liberato

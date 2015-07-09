@@ -1,6 +1,6 @@
 #' SimulateTest.
 #' Simulates a test according to a model
-#' Example \eqn{a + b^2}
+#' @description This function simulates tests according to a IRT model.
 #' @author Juan Liberato
 #' @return A List with the model, the seed , itempars the item parameters
 #' @param model A string with the model to simulate, please refer to the model documentation in irtpp documentation.
@@ -14,7 +14,7 @@
 #' @param seed Optional. Seed to use to generate all the data
 #' @param cores Optional. If set to a number set those cores to perform simulations, Only available on UNIX Systems
 #' @param verbose Optional. If true, output is made to know the status of the algorithm
-#' @example
+#' @examples
 #' k=simulateTest(items=20,individuals=2000,threshold=0.01,dims=1,reps=3,model="3PL")
 simulateTest<-function(model,items,individuals,independent=TRUE,reps=1,dims=1,boundaries=NULL,generated=TRUE,itempars=NULL,seed=NULL,cores=NULL,verbose=F,threshold=0.05)
 { 
