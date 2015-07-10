@@ -135,6 +135,10 @@ Rcpp::List irtppinterface(Rcpp::IntegerMatrix data, int e_model, Rcpp::NumericMa
     pars[i] = returnpars[i];
   }
   Rcpp::List z = Rcpp::List::create(pars);
+  delete model;
+  delete dataSet;
+  delete theta;
+  delete weight;
 
   return z;
 }

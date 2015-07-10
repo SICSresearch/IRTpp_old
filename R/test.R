@@ -43,8 +43,7 @@ simulateTest<-function(model,items,individuals,reps=1,dims=1,boundaries=NULL,gen
   #Impute the test to exclude individuals in the threshold
   repeat{
     #scores of individuals and items
-    individual.scores = lapply(ret$test,function(x) rowSums(x)/items) 
-    item.scores = lapply(ret$test,function(x) colSums(x)/individuals)
+    individual.scores = lapply(ret$test,function(x) rowSums(x)/items);
     print.sentence("Item scores",item.scores)
     #outlier scores
     outliers.flags = lapply(individual.scores,function(x) ifelse(x<threshold | x>(1-threshold),T,F))
