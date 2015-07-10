@@ -1,5 +1,7 @@
 #' SimulateTest.
 #' Simulates a test according to a model
+#' 
+#' To add : item threshold
 #' @description This function simulates tests according to a IRT model.
 #' @author Juan Liberato
 #' @return A List with the model, the seed , itempars the item parameters
@@ -7,16 +9,16 @@
 #' @param items the number of items to simulate
 #' @param individuals the number of individuals to simulate
 #' @param reps The number of tests to generate with this settings
+#' @param latentTraits
 #' @param independent Set this to false if all the individuals used to simulate the test must be the same
 #' @param dims Optional. The number of dimensions to simulate in the test if the model is multidimensional TODO (Untested in multidimensional, please do not use this parameter for now)
 #' @param boundaries Optional. The kind of boundaries that are specified for the parameters. 
 #' @param itempars Optional. Item parameters to be used in the simulation. When the parameters are not generated, the item parameters must be specified.
 #' @param seed Optional. Seed to use to generate all the data
-#' @param cores Optional. If set to a number set those cores to perform simulations, Only available on UNIX Systems
 #' @param verbose Optional. If true, output is made to know the status of the algorithm
 #' @examples
 #' k=simulateTest(items=20,individuals=2000,threshold=0.01,dims=1,reps=3,model="3PL")
-simulateTest<-function(model,items,individuals,independent=TRUE,reps=1,dims=1,boundaries=NULL,generated=TRUE,itempars=NULL,seed=NULL,cores=NULL,verbose=F,threshold=0.05)
+simulateTest<-function(model,items,individuals,reps=1,dims=1,boundaries=NULL,generated=TRUE,itempars=NULL,latentTraits=NULL,seed=NULL,verbose=F,threshold=0)
 { 
   dims=1
   ret = NULL;
@@ -42,7 +44,8 @@ simulateTest<-function(model,items,individuals,independent=TRUE,reps=1,dims=1,bo
   repeat{
     #scores of individuals and items
     individual.scores = lapply(ret$test,function(x) rowSums(x)/items) 
-    item.scores = lapply(ret$est,function(x) colSums(x)/individuals)
+    item.scores = lapply(ret$test,function(x) colSums(x)/individuals)
+    print.sentence("Item scores",item.scores)
     #outlier scores
     outliers.flags = lapply(individual.scores,function(x) ifelse(x<threshold | x>(1-threshold),T,F))
     outliers.indices = lapply(outliers.flags,function(x) as.list(which(x)))

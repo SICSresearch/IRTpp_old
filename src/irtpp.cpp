@@ -1,5 +1,4 @@
 #include <Rcpp.h>
-#include "interface.h"
 #include <string.h>
 
 #include <model/parameter/OnePLACModel.h>
@@ -7,16 +6,13 @@
 #include <model/parameter/OnePLModel.h>
 #include <model/parameter/OnePLModel.cpp>
 #include <model/parameter/ParameterModel.h>
-#include <model/parameter/ParameterModel.cpp>
-#include <model/parameter/RaschModel.h>
-#include <model/parameter/RaschModel.cpp>
 #include <model/parameter/TwoPLModel.h>
 #include <model/parameter/TwoPLModel.cpp>
 #include <model/parameter/ThreePLModel.h>
 #include <model/parameter/ThreePLModel.cpp>
 
 //util
-#include <util/asa111.hpp>
+#include <util/asa111.h>
 #include <util/asa111.cpp>
 #include <util/util.h>
 
@@ -24,20 +20,15 @@
 #include <type/Constant.h>
 #include <type/Constant.cpp>
 #include <type/DataSet.h>
-#include <type/DataSet.cpp>
 #include <type/Matrix.h>
 #include <type/PatternMatrix.h>
 #include <type/PatternMatrix.cpp>
 #include <type/QuadratureNodes.h>
 #include <type/QuadratureNodes.cpp>
 
-//trace
-#include <trace/Timer.h>
-#include <trace/Trace.h>
-
 //output
 #include <output/Output.h>
-#include <output/Output.cpp> 
+#include <output/Output.cpp>
 
 //optimizer
 #include <optimizer/BFGSOptimizer.h>
@@ -50,9 +41,7 @@
 
 //estimation
 #include <estimation/Estimation.h>
-#include <estimation/Estimation.cpp>
 #include <estimation/classical/ClassicalEstimation.h>
-#include <estimation/classical/ClassicalEstimation.cpp>
 #include <estimation/classical/EMEstimation.h>
 
 #include <estimation/classical/EMEstimation.cpp>
@@ -67,7 +56,6 @@
 #include <model/Model.h>
 #include <model/Model.cpp>
 #include <model/ModelFactory.h>
-#include <model/ModelFactory.cpp>
 #include <model/SICSGeneralModel.h>
 #include <model/SICSGeneralModel.cpp>
 #include <model/dimension/DimensionModel.h>
@@ -85,140 +73,83 @@
 #include <model/item/PolytomousModel.h>
 #include <model/item/PolytomousModel.cpp>
 
-using namespace Rcpp;
 
-// [[Rcpp::export]]
-List loglikitem (NumericVector oargs, NumericVector args , NumericVector pars , NumericVector lens, NumericVector index){
-  int nargs = lens[0];
-  nargs = 30;
-  int npars = lens[1];
-  npars = 494;
-  int nindex = index[0];
-  double* ars = new double [nargs];
-  double* par = new double [495];
-  for (int i = 0 ; i < nargs; i++){
-    ars[i] = args[i];
-  }
-  ars[nindex]=oargs[0];
-  ars[nindex+10]=oargs[1];
-  ars[nindex+20]=oargs[2];
-  for (int i = 0 ; i < npars; i++){
-    par[i] = pars[i];
-  }
-  par[494] = 0; //item cero
-  double l=0;
-  npars = npars + 1;
-  
-  //l = loglikitem3pl(ars,par,nargs,npars);
-  par[494] = nindex;
-  cout<<par[494]<<"."<<endl;
-  fflush(stdout);
-  for (int y = 0 ; y < 30 ; y++){
-    cout<<ars[y]<<",";
-  }cout<<endl;
-  cout<<"p"<<par[494]<<" "<<endl;
-  l = ThreePLModel::itemLogLik(ars,par,3,495);
-  return List::create( l );
-  delete [] ars;
-  delete [] par;
-}
+//[[Rcpp::export]]
+Rcpp::List irtppinterface(Rcpp::IntegerMatrix data, int e_model, Rcpp::NumericMatrix quads){
+  //Load the model
 
-// [[Rcpp::export]]
-List loglik (NumericVector args , NumericVector pars , NumericVector lens){
-  int nargs = lens[0];
-  int npars = lens[1];
-  
-  double* ars = new double [nargs];
-  double* par = new double [npars];
-  for (int i = 0 ; i < nargs; i++){
-    ars[i] = args[i];
+  Model *model = new Model();
+  ModelFactory *modelFactory;
+  modelFactory = new SICSGeneralModel();
+  model->setModel(modelFactory, e_model);
+  delete modelFactory;
+
+  //Cast the dataset
+  cout<<"data rows"<<data.nrow()<<endl;
+  cout<<"data cols"<<data.ncol()<<endl;
+  PatternMatrix *dataSet = new PatternMatrix(data.ncol());
+  for (int i = 0;  i<data.nrow(); i++) {
+    vector <char> dset(data.ncol());
+    for (int j = 0; j < data.ncol(); j++) {
+      dset[j] = data[i*data.ncol()+j];
+    }
+    dataSet->push(dset);
   }
-  for (int i = 0 ; i < npars; i++){
-    par[i] = pars[i];
+
+  //Matrices for thetas and weights
+  Matrix<double> *theta;
+  Matrix<double> *weight;
+  theta = new Matrix<double>(1,41);
+  weight = new Matrix<double>(1,41);
+
+  //Cast the quadrature matrices
+  for (int k = 0; k < quads.nrow(); k++) {
+    (*theta)(0,k)=quads[k*2];
+    (*weight)(0,k)=quads[k*2+1];
   }
-  
-  double l=0;
-  l = loglik3pl(ars,par,nargs,npars);
-  return List::create( l );
-}
-// [[Rcpp::export]]
-List banana (NumericVector input) {
-  double l = 0;
-  double x , y;
-  x = input[0];
-  y = input[1];
-  l = printFunc(x,y);
-  Rcout<<"banananit"<<endl;
-  List z = List::create( l ) ;
+
+  QuadratureNodes nodes(theta,weight);
+  //Set dataset to model
+  model->getItemModel()->setDataset(dataSet);
+
+  //Build parameter set
+  model->getParameterModel()->buildParameterSet(model->getItemModel(),model->getDimensionModel());
+
+  //create estimation
+  EMEstimation em;
+
+  em.setQuadratureNodes(&nodes);
+
+  em.setModel(model);
+  em.setInitialValues(Constant::ANDRADE);
+
+  //We estimate here
+  em.estimate();
+  double* returnpars;
+  returnpars = new double[3*data.ncol()];
+  cout<<returnpars<<endl<<"address"<<endl;
+  model->parameterModel->getParameters(returnpars);
+
+  //Return in list
+  Rcpp::NumericVector pars(3*data.ncol());
+  for (int i = 0;i < 3*data.ncol();i++) {
+    pars[i] = returnpars[i];
+  }
+  Rcpp::List z = Rcpp::List::create(pars);
+
   return z;
 }
 
 
-// [[Rcpp::export]]
-List irtpp( IntegerMatrix data,  CharacterVector nameOfModel, IntegerVector dim, CharacterVector nameOfInitVal, NumericVector vEpsilonConv, IntegerVector maxIt, LogicalVector vVerbose) {
-    Rcout<<"model "<< ", Column = "<<data.ncol()<<", Row = "<<data.nrow()<<endl;
-    Rcout<<"name of Model: "<<nameOfModel[0]<<endl;
-    Rcout<<"number of dimensions: ";
-    Rcout<<dim[0]<<endl;
-    Rcout<<"name of initials values: ";
-    Rcout<<nameOfInitVal[0]<<endl;
-    Rcout<<"Epsilon for convergence: ";
-    Rcout<<vEpsilonConv[0]<<endl;
-    Rcout<<"maximum number of iterations: ";
-    Rcout<<maxIt[0]<<endl;
-    Rcout<<"value of verbose: ";
-    Rcout<<vVerbose[0]<<endl;
-    int nColumn = data.ncol(), nRow = data.nrow(); 
-    int **DataI, nuM, nPar;
-    DataI = new int *[nRow];
-  	for ( int i = 0; i < nRow; i++ ) DataI[i] = new int[nColumn];
-  	char *model, *initValues;    
-  	for ( int j = 0; j<  nColumn; j++ ) for ( int i = 0; i < nRow; i++ ) DataI[i][j] = data[i+j*nRow];
-  	model = nameOfModel[0];
-  	initValues = "ANDRADE";
-  	double epsilon = vEpsilonConv[0];
-  	int maxNIteration = maxIt[0];
-  	bool verbose = true;
-  	double *parameters;
-  	
-    int numberOfCycles = -1;
-    double logLik = -1;
-	  double convEp = -1;
-    Rcout<<model<<endl;
-    if ( strcmp(model , "RASCH_A1" ) == 0)
-    {
-      nuM = Constant::RASCH_A1;
-      nPar = nColumn;
-    }
-    else if ( strcmp(model , "RASCH_A_CONSTANT" ) == 0)
-    {
-      nuM = Constant::RASCH_A_CONSTANT;
-      nPar = nColumn+1;
-    }
-    else if( strcmp(model , "TWO_PL" ) == 0)
-    {
-      nuM = Constant::TWO_PL;
-      nPar = 2*nColumn;
-    }
-    else
-    {
-      nuM = Constant::THREE_PL;
-      nPar = 3*nColumn;
-    }
-    parameters = new double[nPar];
-  	estimatingParameters(DataI, data.nrow() , data.ncol(), nuM , 1, initValues, epsilon, maxNIteration, verbose, parameters, numberOfCycles, logLik, convEp);   
-    NumericVector parametersA(nPar);
-    for ( int i = 0;i  < nPar; i++ )
-    {
-  		parametersA[i] = parameters[i];
-  	}
-    NumericVector numberOfCyclesA(1);
-    numberOfCyclesA[0] = numberOfCycles;
-    NumericVector logLikA(1);
-    logLikA[0] = logLik;
-    NumericVector convEpA(1);
-    convEpA[0] = convEp;
-    Rcout<<"output :\n1) parameters\n2) number of cycles\n3) loglik\n4) convEp"<<endl;
-    List z = List::create( parametersA, numberOfCyclesA, logLikA, convEpA ) ;
-    return z ;
-}
+/*
+Attaching package: ‘IRTpp’
+
+The following objects are masked _by_ ‘.GlobalEnv’:
+
+    checkModel, cronbach, print.sentence, probability.3pl, simulateItemParameters, simulateTest, ua
+
+The following object is masked from ‘package:graphics’:
+
+    curve
+
+  */
