@@ -85,8 +85,6 @@ Rcpp::List irtppinterface(Rcpp::IntegerMatrix data, int e_model, Rcpp::NumericMa
   delete modelFactory;
 
   //Cast the dataset
-  cout<<"data rows"<<data.nrow()<<endl;
-  cout<<"data cols"<<data.ncol()<<endl;
   PatternMatrix *dataSet = new PatternMatrix(data.ncol());
   for (int i = 0;  i<data.nrow(); i++) {
     vector <char> dset(data.ncol());
@@ -104,10 +102,11 @@ Rcpp::List irtppinterface(Rcpp::IntegerMatrix data, int e_model, Rcpp::NumericMa
 
   //Cast the quadrature matrices
   for (int k = 0; k < quads.nrow(); k++) {
-    (*theta)(0,k)=quads[k*2];
-    (*weight)(0,k)=quads[k*2+1];
+    (*theta)(0,k)=quads[k];
   }
-
+  for (int k = 0; k < quads.nrow(); k++) {
+    (*weight)(0,k)=quads[k+quads.nrow()];
+  }
   QuadratureNodes nodes(theta,weight);
   //Set dataset to model
   model->getItemModel()->setDataset(dataSet);
@@ -126,8 +125,8 @@ Rcpp::List irtppinterface(Rcpp::IntegerMatrix data, int e_model, Rcpp::NumericMa
   //We estimate here
   em.estimate();
   double* returnpars;
+  //TODO size of model.
   returnpars = new double[3*data.ncol()];
-  cout<<returnpars<<endl<<"address"<<endl;
   model->parameterModel->getParameters(returnpars);
 
   //Return in list
@@ -139,17 +138,3 @@ Rcpp::List irtppinterface(Rcpp::IntegerMatrix data, int e_model, Rcpp::NumericMa
 
   return z;
 }
-
-
-/*
-Attaching package: ‘IRTpp’
-
-The following objects are masked _by_ ‘.GlobalEnv’:
-
-    checkModel, cronbach, print.sentence, probability.3pl, simulateItemParameters, simulateTest, ua
-
-The following object is masked from ‘package:graphics’:
-
-    curve
-
-  */
