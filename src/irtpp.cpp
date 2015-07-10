@@ -75,8 +75,12 @@
 
 
 //[[Rcpp::export]]
-Rcpp::List irtppinterface(Rcpp::IntegerMatrix data, int e_model, Rcpp::NumericMatrix quads){
+Rcpp::List irtppinterface(Rcpp::NumericMatrix dat, int e_model, Rcpp::NumericMatrix quads){
   //Load the model
+
+  for (int i = 0; i < 40; i++) {
+    cout<<dat[i]<<" ";
+  }
 
   Model *model = new Model();
   ModelFactory *modelFactory;
@@ -84,15 +88,18 @@ Rcpp::List irtppinterface(Rcpp::IntegerMatrix data, int e_model, Rcpp::NumericMa
   model->setModel(modelFactory, e_model);
   delete modelFactory;
 
-  //Cast the dataset
-  PatternMatrix *dataSet = new PatternMatrix(data.ncol());
-  for (int i = 0;  i<data.nrow(); i++) {
-    vector <char> dset(data.ncol());
-    for (int j = 0; j < data.ncol(); j++) {
-      dset[j] = data[i*data.ncol()+j];
+  //Cast the datset
+  PatternMatrix *datSet = new PatternMatrix(0);
+  for (int i = 0;  i<dat.nrow(); i++) {
+    vector <char> dset(dat.ncol());
+    for (int j = 0; j < dat.ncol(); j++) {
+      dset[j] = dat[j*dat.nrow()+i];
     }
-    dataSet->push(dset);
+    //cout << endl;
+    datSet->size = dat.ncol();
+    datSet->push(dset);
   }
+  datSet->size = dat.ncol();
 
   //Matrices for thetas and weights
   Matrix<double> *theta;
@@ -108,8 +115,8 @@ Rcpp::List irtppinterface(Rcpp::IntegerMatrix data, int e_model, Rcpp::NumericMa
     (*weight)(0,k)=quads[k+quads.nrow()];
   }
   QuadratureNodes nodes(theta,weight);
-  //Set dataset to model
-  model->getItemModel()->setDataset(dataSet);
+  //Set datset to model
+  model->getItemModel()->setDataset(datSet);
 
   //Build parameter set
   model->getParameterModel()->buildParameterSet(model->getItemModel(),model->getDimensionModel());
@@ -126,17 +133,17 @@ Rcpp::List irtppinterface(Rcpp::IntegerMatrix data, int e_model, Rcpp::NumericMa
   em.estimate();
   double* returnpars;
   //TODO size of model.
-  returnpars = new double[3*data.ncol()];
+  returnpars = new double[3*dat.ncol()];
   model->parameterModel->getParameters(returnpars);
 
   //Return in list
-  Rcpp::NumericVector pars(3*data.ncol());
-  for (int i = 0;i < 3*data.ncol();i++) {
+  Rcpp::NumericVector pars(3*dat.ncol());
+  for (int i = 0;i < 3*dat.ncol();i++) {
     pars[i] = returnpars[i];
   }
   Rcpp::List z = Rcpp::List::create(pars);
   delete model;
-  delete dataSet;
+  delete datSet;
   delete theta;
   delete weight;
 
