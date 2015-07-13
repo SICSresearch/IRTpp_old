@@ -78,10 +78,6 @@
 Rcpp::List irtppinterface(Rcpp::NumericMatrix dat, int e_model, Rcpp::NumericMatrix quads){
   //Load the model
 
-  for (int i = 0; i < 40; i++) {
-    cout<<dat[i]<<" ";
-  }
-
   Model *model = new Model();
   ModelFactory *modelFactory;
   modelFactory = new SICSGeneralModel();
@@ -95,7 +91,6 @@ Rcpp::List irtppinterface(Rcpp::NumericMatrix dat, int e_model, Rcpp::NumericMat
     for (int j = 0; j < dat.ncol(); j++) {
       dset[j] = dat[j*dat.nrow()+i];
     }
-    //cout << endl;
     datSet->size = dat.ncol();
     datSet->push(dset);
   }

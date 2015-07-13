@@ -44,7 +44,6 @@ simulateTest<-function(model,items,individuals,reps=1,dims=1,boundaries=NULL,gen
   repeat{
     #scores of individuals and items
     individual.scores = lapply(ret$test,function(x) rowSums(x)/items);
-    print.sentence("Item scores",item.scores)
     #outlier scores
     outliers.flags = lapply(individual.scores,function(x) ifelse(x<threshold | x>(1-threshold),T,F))
     outliers.indices = lapply(outliers.flags,function(x) as.list(which(x)))

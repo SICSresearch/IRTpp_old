@@ -17,8 +17,18 @@ probability.3pl = function(z,a=z$a,b=z$b,c=z$c, theta, d=-a*b,cp=NULL){
 }
 
 #'LogLikelihood of a IRT model
-#'@param model The model to get the probability from
-#'@param est The estimation containing the item parameters, test and individual parameters
-loglik<- function(model,est){
-  
+#'@param test A matrix of 0's and 1's
+#'@param traits A vector with each individual parameter.
+#'@param z A list with the parameters a b and c specified by keys.
+#' Each key must contain a vector of the item parameters for each parameter
+loglik<- function(test,traits,z){
+  #prob matrix
+  pm = lapply(traits,function(x)probability.3pl(z=z,theta=x))
+  #flatten it and flatten the test, then do the if and Sumall with the reduce
+  Reduce("+",mapply(function(x,y){
+    ifelse(y,log(x),log(1-x))
+  },unlist(pm),c(test)))
 }
+
+##Loglik need
+# 
