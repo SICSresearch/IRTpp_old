@@ -8,7 +8,7 @@
 cronbach(items)
 }
 \arguments{
-\item{items}{Dataframe that holds the test response data}
+\item{items.}{Dataframe that holds the test response data}
 }
 \value{
 Cronbach's alpha for the test.
