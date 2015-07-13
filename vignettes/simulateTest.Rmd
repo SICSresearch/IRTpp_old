@@ -1,0 +1,85 @@
+---
+title: "Simulating Tests with IRTpp"
+author: "Juan Liberato"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Simulating Tests with IRTpp}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+Simulating Item Response Theory tests and item parameters
+========================================================
+
+Sometimes it is useful to simulate tests and items in Item Response Theory, this vignette specifies how to simulate tests and use or interpret the output, using the IRTpp package.
+
+To simulate a test use the function `simulateTest` as follows
+```{r}
+library(IRTpp)
+test <- simulateTest(model="2PL",items=10,individuals=1000)
+```
+
+This runs a simulation with a 2 parameter logistic model, using 10 items and 1000 individuals. A list is returned with the item parameters, the test (Correct responses of the individuals are marked as a 1, in dichotomic models).
+For the test we just simulated, item parameters are : 
+
+```{r}
+test$itempars
+```
+
+Where `test$itempars$a` indicates the parameters belonging to the discrimination parameter, and so on. Notice that the c parameter is a vector of 0, since we are simulating a 2 parameter logistic model.
+
+The test element of the list returned by `simulateTest` contain a list of tests generated, notice that if you simulate only one test, the response data will be in :
+
+```{r}
+responses <-test$test[[1]]
+responses[1:10,]
+```
+
+`responses[1:10,]` are the first 10 rows of the simulated test.
+
+
+## Simulating multiple tests
+
+IRTpp has built-in capabilities for simulating multiple tests at once, use the option `reps` to simulate multiple tests at once. All the tests are simulated with the same individual and item parameters.
+
+For example simulating 3 tests of the one parameter logistic model :
+```{r}
+t = simulateTest(model="1PL",items=4,individuals=5,reps=3)
+length(t$test)
+```
+
+## Adding boundaries to the simulation
+
+Sometimes you want the item parameters to fall in a range, use the boundaries option to achieve this.
+The boundaries option receives a list of the parameter bounds you want to implement.
+Let's look at the parameter boundaries in an ordinary 3PL simulated test.
+```{r}
+t3 = simulateTest(model="3PL",items=500,individuals=10);
+summary(t3$itempars$c)
+```
+
+As you can see, the item parameters will most likely fall inside 0 and 0.35 which are the package defaults, however we can impose a lower boundary for the c parameter as follows:
+
+```{r}
+bd = list(c_lower=0.2)
+t3 = simulateTest(model="3PL",items=500,individuals=10,boundaries=bd);
+summary(t3$itempars$c)
+```
+
+Notice how the lower boundary has been imposed in the c parameter.
+
+## Keeping individual scores in a given threshold
+
+When simulating tests, sometimes, perfect responses by an individual can affect procedures made with the tests themselves, or it is required for the simulation that the individuals do not answer less (or more) than a percent of the items, to impose restrictions in the individual classic scores use the threshold parameter.
+
+```{r}
+t3 = simulateTest(model="3PL",items=10,individuals=100,threshold=0.2);
+```
+
+This threshold ensures that the individuals do not answer less than 20% of the answers or more than 80% of the answers.
+
+```{r}
+response <- t3$test[[1]]
+summary(rowSums(response))
+```
