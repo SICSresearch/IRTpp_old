@@ -37,12 +37,15 @@ simulateTest<-function(model,items,individuals,reps=1,dims=1,boundaries=NULL,gen
   th = matrix(th,ncol=dims);
   ret$latentTraits = th
   #Generate the tests
+  if(verbose){print("Starting simulation")}
   ret$prob=replicate(reps,do.call(rbind,lapply(th,function(x,z) probability.3pl(theta=x,z=z),z=z)),simplify=F)
   coins=replicate(reps,matrix(runif(items*individuals),ncol=items),simplify=F);
   ret$test=mapply(function(x,y){ifelse(x>y,1,0)},ret$prob,coins,SIMPLIFY=F);
+  if(verbose){print("Simulation finished ... ")}
   #Impute the test to exclude individuals in the threshold
   repeat{
     #scores of individuals and items
+    if(verbose){print("")}
     individual.scores = lapply(ret$test,function(x) rowSums(x)/items);
     #outlier scores
     outliers.flags = lapply(individual.scores,function(x) ifelse(x<threshold | x>(1-threshold),T,F))
@@ -57,10 +60,13 @@ simulateTest<-function(model,items,individuals,reps=1,dims=1,boundaries=NULL,gen
       print.sentence("Outliers left",outliers.total,verbose=verbose)
     }
     #resimulate the coins
+    if(verbose){print("Resimulating coins ...")}
     newcoins = sapply(outliers.missing,function(x){matrix(runif(x*items),ncol=items)},simplify=F)
-    probs = mapply(function(x,y){x[as.numeric(y),]},ret$prob,outliers.indices)
+    probs = mapply(function(x,y){x[as.numeric(y),]},ret$prob,outliers.indices,SIMPLIFY=F)
+    if(verbose){print("Calculating new scores ...")}
     newscores=mapply(function(x,y){ifelse(x>y,1,0)},probs,newcoins,SIMPLIFY=F);
     #assign the new scores in the the old test
+    if(verbose){print("Re-assigning new scores ...")}
     mapply(function(x,y,z){
       if(outliers.missing[[z]]>0){
       mapply(function(a,b){

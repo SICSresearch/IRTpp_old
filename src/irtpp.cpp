@@ -130,7 +130,12 @@ Rcpp::List irtppinterface(Rcpp::NumericMatrix dat, int e_model, Rcpp::NumericMat
   //TODO size of model.
   returnpars = new double[3*dat.ncol()];
   model->parameterModel->getParameters(returnpars);
-
+  //For 2pl
+  if(e_model == 2){
+    for (int i = 2*dat.ncol();i < 3*dat.ncol();i++) {
+      returnpars[i]=0;
+    }
+  }
   //Return in list
   Rcpp::NumericVector pars(3*dat.ncol());
   for (int i = 0;i < 3*dat.ncol();i++) {

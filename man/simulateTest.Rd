@@ -5,9 +5,9 @@
 \title{SimulateTest.
 Simulates a test according to a model}
 \usage{
-simulateTest(model, items, individuals, independent = TRUE, reps = 1,
-  dims = 1, boundaries = NULL, generated = TRUE, itempars = NULL,
-  seed = NULL, cores = NULL, verbose = F, threshold = 0.05)
+simulateTest(model, items, individuals, reps = 1, dims = 1,
+  boundaries = NULL, generated = TRUE, itempars = NULL,
+  latentTraits = NULL, seed = NULL, verbose = F, threshold = 0)
 }
 \arguments{
 \item{model}{A string with the model to simulate, please refer to the model documentation in irtpp documentation.}
@@ -15,8 +15,6 @@ simulateTest(model, items, individuals, independent = TRUE, reps = 1,
 \item{items}{the number of items to simulate}
 
 \item{individuals}{the number of individuals to simulate}
-
-\item{independent}{Set this to false if all the individuals used to simulate the test must be the same}
 
 \item{reps}{The number of tests to generate with this settings}
 
@@ -26,17 +24,22 @@ simulateTest(model, items, individuals, independent = TRUE, reps = 1,
 
 \item{itempars}{Optional. Item parameters to be used in the simulation. When the parameters are not generated, the item parameters must be specified.}
 
+\item{latentTraits}{}
+
 \item{seed}{Optional. Seed to use to generate all the data}
 
-\item{cores}{Optional. If set to a number set those cores to perform simulations, Only available on UNIX Systems}
-
 \item{verbose}{Optional. If true, output is made to know the status of the algorithm}
+
+\item{independent}{Set this to false if all the individuals used to simulate the test must be the same}
 }
 \value{
 A List with the model, the seed , itempars the item parameters
 }
 \description{
 This function simulates tests according to a IRT model.
+}
+\details{
+To add : item threshold
 }
 \examples{
 k=simulateTest(items=20,individuals=2000,threshold=0.01,dims=1,reps=3,model="3PL")
