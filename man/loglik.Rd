@@ -4,12 +4,15 @@
 \alias{loglik}
 \title{LogLikelihood of a IRT model}
 \usage{
-loglik(model, est)
+loglik(test, traits, z)
 }
 \arguments{
-\item{model}{The model to get the probability from}
+\item{test}{A matrix of 0's and 1's}
 
-\item{est}{The estimation containing the item parameters, test and individual parameters}
+\item{traits}{A vector with each individual parameter.}
+
+\item{z}{A list with the parameters a b and c specified by keys.
+Each key must contain a vector of the item parameters for each parameter}
 }
 \description{
 LogLikelihood of a IRT model

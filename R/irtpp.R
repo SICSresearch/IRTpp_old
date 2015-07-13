@@ -1,5 +1,4 @@
 #' Estimate a test item parameters according to Item Response Theory.
-#' @param 
 #' 
 irtpp <- function(dataset,model){
   cuads= as.matrix(read.table(system.file("extdata","Cuads.csv",package="IRTpp"),sep=",",header=T))

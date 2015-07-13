@@ -1,3 +1,4 @@
+#######################################################################
 ## cronbach - funci?n del paquete multilevel
 ## Package: multilevel
 ## Version: 2.5
@@ -9,7 +10,7 @@
 #' @title Alpha de Cronbach
 #' @description Cronbach's alpha measures how correlated are the items in a test
 #' License :GPL (>= 2) Extacted from multilevel_2.5 package
-#' @param items Dataframe that holds the test response data
+#' @param items. Dataframe that holds the test response data
 #' @return Cronbach's alpha for the test.
 
 cronbach <- function (items) 
@@ -19,13 +20,9 @@ cronbach <- function (items)
   TOTVAR <- var(apply(items, 1, sum)) #varianza de la suma sobre las filas
   SUMVAR <- sum(apply(items, 2, var)) #suma de las varianzas sobre columnas
   ALPHA <- (N/(N - 1)) * (1 - (SUMVAR/TOTVAR))
-  OUT <- list(Alpha = ALPHA, N = nrow(items), S.e = SEM)
+  OUT <- list(Alpha = ALPHA, N = nrow(items))
   return(OUT)
 }
-
-data(bhr2000)
-head(bhr2000)
-cronbach(bhr2000[,2:11])
 
 #### Coeficiente de correlaci?n biserial
 
@@ -38,15 +35,15 @@ cronbach(bhr2000[,2:11])
 #######################################################################
 #' @name Biserial coefficient 
 #' @title Point-Biserial correlation coefficient
-#' @description Point-Biserial correlation coefficient is a correlation coefficient
-#' used when one variable is continuous and the other variable is dichotomous.
+#' @description Point-Biserial correlation coefficient is a correlation coefficient used when one variable is continuous and the other variable is dichotomous.
 #' License :GPL Extracted from ltm_1.0 package
 #' @param x a numeric vector representing the continuous variable. 
 #' @param y a numeric vector representing the dichotomous variable.
 #' @param use Is a option for the use of missing values. 
 #' @param level which level of y to use.
-#' @details 
+#' @details aaa
 #' @return the value of the point-biserial correlation.
+
 
 
 biserial.cor <- function (x, y, use = c("all.obs", "complete.obs"), level = 1) 
@@ -70,6 +67,7 @@ biserial.cor <- function (x, y, use = c("all.obs", "complete.obs"), level = 1)
   diff.mu * sqrt(prob * (1 - prob))/sd(x)
 }
 
+#######################################################################
 #### Curva de Cronbach-Mesbah
 ## Package:	 CMC
 ## Version:	 1.0
@@ -83,7 +81,7 @@ biserial.cor <- function (x, y, use = c("all.obs", "complete.obs"), level = 1)
 #' used when one variable is continuous and the other variable is dichotomous.
 #' License :GPL (>= 2) Extracted from CMC_1.0 package
 #' @param x a Dataframe that holds the test response data
-#' @details 
+#' @details aaa
 #' @return The number of items used to calculate the coefficient. 
 #' @return The maximum value of the alpha coefficient calculated at each step. 
 #' @return The item removed at each step. 
@@ -148,13 +146,10 @@ alpha.curve <- function (x)
 #######################################################################
 #' @name Test or Item information 
 #' @title Test or Item information
-#' @description 
-#' 
 #' License :GPL (>= 2) Extracted from CMC_1.0 package
 #' @param object an object from either class ltm, rasch or tpm.
 #' @param range a interval for which the test information should be computed.
 #' @param items the items for which the information shoulb be computed.
-#' @details 
 #' @return TotalInfo the total amount of information.
 #' @return RangeInfo the amount of information in the specified interval.
 #' @return RangeProp the proportion of information in the specified interval.
@@ -223,7 +218,6 @@ information <- function (object, range, items = NULL, ...)
 #######################################################################
 #' @name Parallel Analysis 
 #' @title Parallel Analysis of a Correlation Matrix
-#' @description 
 #' License :GPL Extracted from nFactors_2.3.2 package
 #' @param subject a number of subjects (default is 100)
 #' @param var a number of variables (default is 10)
@@ -232,7 +226,6 @@ information <- function (object, range, items = NULL, ...)
 #' @param model a character "components" or "factors"
 #' @param sd a vector of standard deviations of the simulated variables
 #' @param ... other parameters for the "mvtnorm" or "corr" functions
-#' @details 
 #' @return eigen a Data frame containing the information on the distribution of the eigenvalues 
 #' @return eigen$mevpea Mean of the eigenvalues distribution
 #' @return eigen$sevpea Standard deviation of the eigenvalues distribution
@@ -288,14 +281,12 @@ parallel <- function (subject = 100, var = 10, rep = 100, cent = 0.05, quantile 
 #######################################################################
 #' @name Plot Parallel  
 #' @title Plot a Parallel Analysis 
-#' @description 
 #' License: GPL Extracted from nFactors_2.3.2 package
 #' @param parallel a vector of the results of parallel analysis 
 #' @param eig eigenvalues to analyse
 #' @param x a vector of eigenvalues, a matrix of correlations or a data.frame
 #' @param model a character "components" or "factors"
 #' @param ... other graphics parameters 
-#' @details 
 
 plotParallel <- function (parallel, eig = NA, x = eig, model = "components", 
                           legend = TRUE, ylab = "Eigenvalues", xlab = "Components", 
@@ -350,7 +341,6 @@ plotParallel <- function (parallel, eig = NA, x = eig, model = "components",
 #######################################################################
 #' @name Unidimensional test  
 #' @title Test of Unidimensionality using Modified Parallel Analysis 
-#' @description 
 #' License: GPL Extracted from ltm_1.0. package
 #' @param object an object from either class ltm, rasch or tpm.
 #' @param data a matrix or a data.frame; used if object is missing.
@@ -358,7 +348,6 @@ plotParallel <- function (parallel, eig = NA, x = eig, model = "components",
 #' @param IRT
 #' @param z.vals
 #' @param B a number of samples for the Monte Carlo procedure
-#' @details 
 
 
 unidimTest <- function (object, data, thetas, IRT = TRUE, z.vals = NULL, B = 100, 
@@ -442,4 +431,5 @@ unidimTest <- function (object, data, thetas, IRT = TRUE, z.vals = NULL, B = 100
   class(out) <- "unidimTest"
   out
 }
+
 
