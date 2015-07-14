@@ -149,3 +149,121 @@ Rcpp::List irtppinterface(Rcpp::NumericMatrix dat, int e_model, Rcpp::NumericMat
 
   return z;
 }
+
+Rcpp::List abilityinterface(Rcpp::NumericMatrix zita_par, Rcpp::NumericMatrix dat, int e_model, Rcpp::NumericMatrix quads, int method)
+{
+  //Load the model
+  Model *model;
+  ModelFactory *modelFactory;
+  PatternMatrix *datSet;
+  Matrix<double> *theta;
+  Matrix<double> *weight;
+  double *** zita_set;
+  double ** result;
+  int items;
+
+  model = new Model();
+  modelFactory = new SICSGeneralModel();
+  model->setModel(modelFactory, e_model);
+
+  delete modelFactory;
+
+  //Cast the datset
+  datSet = new PatternMatrix(0);
+
+  for (int i = 0; i < dat.nrow(); i++)
+  {
+    vector <char> dset(dat.ncol());
+    for (int j = 0; j < dat.ncol(); j++)
+      dset[j] = dat[j*dat.nrow()+i];
+    datSet->size = dat.ncol();
+    datSet->push(dset);
+  }
+
+  datSet->size = dat.ncol();
+
+  //Matrices for thetas and weights
+  theta = new Matrix<double>(1,41);
+  weight = new Matrix<double>(1,41);
+
+  //Cast the quadrature matrices
+  for (int k = 0; k < quads.nrow(); k++)
+    (*theta)(0,k)=quads[k];
+
+  for (int k = 0; k < quads.nrow(); k++)
+    (*weight)(0,k)=quads[k+quads.nrow()];
+
+  QuadratureNodes nodes(theta,weight);
+  //Set datset to model
+  model->getItemModel()->setDataset(datSet);
+
+  //Build parameter set
+  model->getParameterModel()->buildParameterSet(model->getItemModel(),model->getDimensionModel());
+
+  /*
+   * Now we will run the estimation of individual parameter
+   */
+
+  //Cast the zita set
+  zita_set = new double**[3];
+
+  for(int i = 0; i < 3; i++)
+    zita_set[i] = new double *[1];
+
+  items = model->getItemModel()->countItems();
+
+  for(int i = 0; i < 3; i++)
+    zita_set[i][0] = new double[items + 1];
+
+  for (int i = 0; i < zita_par.ncol(); i++)
+    for (int j = 0; j < zita_par.nrow(); j++)
+      zita_set[i][0][j] = zita_par[i * dat.nrow() + j];
+
+  //Now create the estimation
+  LatentTraitEstimation lte(datSet);
+  //Pass the model
+  lte.setModel(model);
+  //Pass the quadrature nodes
+  lte.setQuadratureNodes(&nodes);
+
+  //Ready to estimate
+  if(method == 0)
+    lte.estimateLatentTraitsEAP(zita_set);
+  else
+    lte.estimateLatentTraitsMAP(zita_set);
+
+  result = lte.lt->getListPatternTheta();
+
+  //Return in list
+  Rcpp::NumericVector pars1(lte.lt->pm->countItems() * lte.lt->pm->matrix.size());
+  Rcpp::NumericVector pars2(lte.lt->pm->matrix.size());
+
+  for(unsigned int i = 0; i < lte.lt->pm->matrix.size(); i++)
+  {
+      for(int j = 0; j < items; j++)
+        pars1[i * items + j] = result[i][j];
+      
+      pars2[i] = result[i][items];
+  }
+
+  Rcpp::List z = Rcpp::List::create(pars1, pars2);
+
+  delete model;
+  delete datSet;
+  delete theta;
+  delete weight;
+
+  return z;
+}
+
+//[[Rcpp::export]]
+Rcpp::List eapinterface(Rcpp::NumericMatrix zita_par, Rcpp::NumericMatrix dat, int e_model, Rcpp::NumericMatrix quads)
+{
+  return abilityinterface(zita_par, dat, e_model, quads, 0);
+}
+
+//[[Rcpp::export]]
+Rcpp::List mapinterface(Rcpp::NumericMatrix zita_par, Rcpp::NumericMatrix dat, int e_model, Rcpp::NumericMatrix quads)
+{
+  return abilityinterface(zita_par, dat, e_model, quads, 1);
+}
