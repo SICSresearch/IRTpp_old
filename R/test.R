@@ -112,11 +112,3 @@ simulateItemParameters<- function(items, model, dims=1, boundaries=NULL){
   ret = list(a=a,b=b,c=c);
   ret
 }
-#######################################################################
-# Esquema de pruebas
-#
-# Tiempo
-# Convergencia vs Mirt
-# COnvergencia Z
-# Convergencia theta
-# Loglikelihood

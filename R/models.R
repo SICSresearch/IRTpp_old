@@ -27,8 +27,14 @@ loglik<- function(test,traits,z){
   #flatten it and flatten the test, then do the if and Sumall with the reduce
   Reduce("+",mapply(function(x,y){
     ifelse(y,log(x),log(1-x))
-  },unlist(pm),c(test)))
+  },unlist(pm),c(test),SIMPLIFY=F))
 }
 
-##Loglik need
-# 
+loglik2<- function(test,traits,z){
+  #prob matrix
+  pm = lapply(traits,function(x)probability.3pl(z=z,theta=x))
+  #flatten it and flatten the test, then do the if and Sumall with the reduce
+  Reduce("+",mapply(function(x,y){
+    ifelse(y,log(x),log(1-x))
+  },unlist(pm),c(test)))
+}

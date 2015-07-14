@@ -1,0 +1,19 @@
+---
+title: "Estimating Parameters with IRTpp"
+author: "Juan Liberato"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Estimating Parameters with IRTpp}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+Estimating Item Parameters according to a IRT model with the IRTpp package
+========================================================
+
+The main purpose of the irtpp package is to estimate item parameters according to a 
+
+##
+
+##
