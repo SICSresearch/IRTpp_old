@@ -25,6 +25,7 @@
 #include <type/PatternMatrix.cpp>
 #include <type/QuadratureNodes.h>
 #include <type/QuadratureNodes.cpp>
+#include <type/LatentTraits.h>
 
 //output
 #include <output/Output.h>
@@ -43,6 +44,7 @@
 #include <estimation/Estimation.h>
 #include <estimation/classical/ClassicalEstimation.h>
 #include <estimation/classical/EMEstimation.h>
+#include <estimation/bayesian/LatentTraitEstimation.h>
 
 #include <estimation/classical/EMEstimation.cpp>
 #include <estimation/classical/EMEstimators/EM1PL.h>
