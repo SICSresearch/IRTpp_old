@@ -3,11 +3,18 @@
 #' @param model The model used to calibrate the parameters
 #' @return The item parameters in a matrix.
 irtpp <- function(dataset,model){
+  if(is.list(dataset)){
+    print.sentence("irtpp in list mode")
+    ret = autoapply(dataset,irtpp,model)
+  }
+  else{
   model = irtpp.model(model,asnumber=T);
   cuads = as.matrix(read.table(system.file("extdata","Cuads.csv",package="IRTpp"),sep=",",header=T))
   est = irtppinterface(dataset,model,cuads);
   est = unlist(est)
-  matrix(est,ncol=3)
+  ret = matrix(est,ncol=3)
+  }
+  ret
 }
 
 #' Estimate the latent traits of the individuals in a test with some given item parameters
