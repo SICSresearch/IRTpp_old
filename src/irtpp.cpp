@@ -219,7 +219,7 @@ Rcpp::List abilityinterface(Rcpp::NumericMatrix zita_par, Rcpp::NumericMatrix da
 
   for (int i = 0; i < zita_par.ncol(); i++)
     for (int j = 0; j < zita_par.nrow(); j++)
-      zita_set[i][0][j] = zita_par[i * dat.nrow() + j];
+      zita_set[i][0][j] = zita_par[i * zita_par.nrow() + j];
 
   //Now create the estimation
   LatentTraitEstimation lte(datSet);
