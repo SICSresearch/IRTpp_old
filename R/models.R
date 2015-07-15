@@ -1,3 +1,11 @@
+#' Probability function for all models.
+#' @param model The model to calculate the probability to
+irtpp.p<- function(model, ...){
+  if(model=="3PL"){
+    #probability.3pl(...)
+  }
+}
+
 #'3PL probability function
 #'The probability function in the 3PL model.
 #'@param z Optional. A list with the parameters a b and c specified by keys.
@@ -28,13 +36,4 @@ loglik<- function(test,traits,z){
   Reduce("+",mapply(function(x,y){
     ifelse(y,log(x),log(1-x))
   },unlist(pm),c(test),SIMPLIFY=F))
-}
-
-loglik2<- function(test,traits,z){
-  #prob matrix
-  pm = lapply(traits,function(x)probability.3pl(z=z,theta=x))
-  #flatten it and flatten the test, then do the if and Sumall with the reduce
-  Reduce("+",mapply(function(x,y){
-    ifelse(y,log(x),log(1-x))
-  },unlist(pm),c(test)))
 }

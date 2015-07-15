@@ -5,3 +5,11 @@ irtppinterface <- function(dat, e_model, quads) {
     .Call('IRTpp_irtppinterface', PACKAGE = 'IRTpp', dat, e_model, quads)
 }
 
+eapinterface <- function(zita_par, dat, e_model, quads) {
+    .Call('IRTpp_eapinterface', PACKAGE = 'IRTpp', zita_par, dat, e_model, quads)
+}
+
+mapinterface <- function(zita_par, dat, e_model, quads) {
+    .Call('IRTpp_mapinterface', PACKAGE = 'IRTpp', zita_par, dat, e_model, quads)
+}
+

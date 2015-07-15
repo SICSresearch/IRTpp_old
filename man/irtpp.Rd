@@ -7,7 +7,12 @@
 irtpp(dataset, model)
 }
 \arguments{
-\item{dataset}{The dataset to estimate}
+\item{dataset}{The matrix with the responses from the individuals}
+
+\item{model}{The model used to calibrate the parameters}
+}
+\value{
+The item parameters in a matrix.
 }
 \description{
 Estimate a test item parameters according to Item Response Theory.

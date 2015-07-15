@@ -14,12 +14,78 @@ print.sentence<-function(...,sep=" ",verbose=T){
   if(verbose){print(paste(sep=sep,...))}
 }
 
+#' Returns a parameter matrix from a parameter list.
+#' @param pars The parameter list
+#' @param model The model whose the list refers to.
+parameter.matrix<-function(pars, model="3PL"){
+  cols=0;
+  if(model=="1PL"){cols=3}
+  if(model=="2PL"){cols=3}
+  if(model=="3PL"){cols=3}
+  if(cols==0){stop("No valid model provided")}
+  matrix(unlist(pars,use.names=F,recursive=T),ncol=cols)
+}
+
+#' Returns a parameter list from a parameter matrix.
+#' @param pars The parameter matrix
+#' @param model The model whose the matrix refers to.
+parameter.list<-function(pars,model="3PL"){
+  names=NULL
+  if(model=="1PL"){names=c("a","b","c")}
+  if(model=="2PL"){names=c("a","b","c")}
+  if(model=="3PL"){names=c("a","b","c")}
+  if(model=="1PLAD"){names=c("a","b","c")}
+  if(is.null(names)){stop("No Valid model provided")}
+  pars=list(pars[,1],pars[,2],pars[,3])
+  names(pars)<-names
+  pars
+}
+
+
+
+
+#' Return a valid model string for a representation of a model.
+#' @param model Model representation in a integer, string, character, or list with a model element
+#' @param asnumber Boolean. Set to true if you need the model as a integer (i.e. To interface with cpp)
+#' @return model The valid string model for this model.
+#' 
+irtpp.model<-function(model,asnumber=F){
+  if(typeof(model)=="list"){
+    model = model$model;
+  }
+  if(typeof(model)=="double"){
+    if(model==1){model="1PL"}
+    if(model==2){model="2PL"}
+    if(model==3){model="3PL"}
+  }
+  if(typeof(model)=="character"){
+    if(model=="1"){model="1PL"}
+    if(model=="2"){model="2PL"}
+    if(model=="3"){model="3PL"}
+  }
+  model = toupper(model)
+  checkModel(model);
+  
+  #If model return needs to be an integer.
+  
+  if(asnumber){
+    if(model=="1PL"){model=1}
+    if(model=="2PL"){model=2}
+    if(model=="3PL"){model=3}
+    if(model=="Rasch"){model=4}
+  }
+  model
+}
+
 #' Check Model
 #' Checks a test according to the model library to validate if it can be estimated or abort the current procedure
 #' @param model The model to check
 #' @param msg Additional error message
 #' @param stop Optional, If false, this function wont throw a stop. 
 #' @return No return, in case that the model is not valid throws a stop, if error is false, Only prints a message
+check.model<-function(model,msg="",error=T){
+  checkModel(model,msg,error)
+}
 checkModel<-function(model,msg="",error=T){
   #check if a model is valid according to the model list.
   if(!(model=="1PL"||model=="2PL"||model=="3PL"||model=="1PLAD"))
@@ -30,46 +96,9 @@ checkModel<-function(model,msg="",error=T){
     print.sentence(model,"Is not a valid model",msg,sep=" ");
   }
 }
-
-
-#' Apply a function to the indices of a list
-#' @param X a vector
-#' @param FUN a function
-#' @param idx a vector with the indices to consider from the list
-#' @examples
-#' k=list(3,4,5,6)
-#' idx=list(2,4)
-#' iapply(function(x) x*x,k,idx)
-iapply <- function(FUN,X,idx,...){
-  #extract a list with the values to treat and compute the function for each value of the list
-  ia.values = lapply(lapply(idx,function(x) X[[x]]),FUN,...)
-  #copy the new value to the X list value that is the correspondent
-  mapply(function(x,y) {X[[x]]<<-ia.values[[y]]},idx,seq(length(idx)))
-  #return the list modified
-  X
-}
-#' Apply a function over indices of multiple lists and store in the original array
-#' Warning, some functions need dots to be added to pass the additional arguments
-#' @examples
-#' k=list(3,4,5,6)
-#' y=list(1,0,1,0)
-#' idx=list(2,4)
-#' p=mapply(function(x,y) x*y,k,y)
-#' p
-#' y=list(1,1,1,1)
-#' imapply(p,function(x,y,...){x*y},idx,k,y)
-imapply<- function(X,FUN,idx,...){
-  ima.values = mapply(FUN,idx,...)
-  mapply(function(x,y) {X[[x]]<<-ima.values[[y]]},idx,seq(length(idx)))
-  X
-}
-
-#' Return the elements of a list on some indices
-#'@examples
-#'k=list(3,4,5,6)
-#'search.index(k,c(2,3))
-search.index<-function(x,idx){
-  lapply(idx,function(y) x[[y]])
+#' Lists all available models
+irtpp.models<-function(){
+  c("1PL","2PL","3PL","1PLAD")
 }
 
 
