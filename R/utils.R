@@ -1,3 +1,14 @@
+
+#' Autoapply a lapply to a function if the parameter is a list instead of a parameter.
+#' @param clist Argument that is possibly a list
+#' @param fun The function
+autoapply<-function(clist,fun,...){
+  if(!is.list(clist)) r=fun(clist,...) else {
+    if(length(clist)==1) r=fun(clist[[1]],...) else r=lapply(clist,fun,...)
+  }
+  r
+}
+
 #' Undefined assignment, Helper function
 #' @param var , The variable to test
 #' @param val , The value to return if the tested variables is NULL
@@ -22,6 +33,7 @@ parameter.matrix<-function(pars, model="3PL"){
   if(model=="1PL"){cols=3}
   if(model=="2PL"){cols=3}
   if(model=="3PL"){cols=3}
+  if(model=="Rasch"){cols=3}
   if(cols==0){stop("No valid model provided")}
   matrix(unlist(pars,use.names=F,recursive=T),ncol=cols)
 }
@@ -34,7 +46,7 @@ parameter.list<-function(pars,model="3PL"){
   if(model=="1PL"){names=c("a","b","c")}
   if(model=="2PL"){names=c("a","b","c")}
   if(model=="3PL"){names=c("a","b","c")}
-  if(model=="1PLAD"){names=c("a","b","c")}
+  if(model=="Rasch"){names=c("a","b","c")}
   if(is.null(names)){stop("No Valid model provided")}
   pars=list(pars[,1],pars[,2],pars[,3])
   names(pars)<-names
@@ -72,8 +84,10 @@ irtpp.model<-function(model,asnumber=F){
     if(model=="1PL"){model=1}
     if(model=="2PL"){model=2}
     if(model=="3PL"){model=3}
-    if(model=="Rasch"){model=4}
+    if(model=="RASCH"){model=4}
   }
+  
+  if(model=="RASCH"){model="Rasch"}
   model
 }
 
@@ -88,7 +102,7 @@ check.model<-function(model,msg="",error=T){
 }
 checkModel<-function(model,msg="",error=T){
   #check if a model is valid according to the model list.
-  if(!(model=="1PL"||model=="2PL"||model=="3PL"||model=="1PLAD"))
+  if(!(model=="1PL"||model=="2PL"||model=="3PL"||model=="Rasch"))
     if(error){
       stop(model," Is not a valid model",call.=F,msg)
     }
@@ -98,7 +112,7 @@ checkModel<-function(model,msg="",error=T){
 }
 #' Lists all available models
 irtpp.models<-function(){
-  c("1PL","2PL","3PL","1PLAD")
+  c("1PL","2PL","3PL","Rasch")
 }
 
 

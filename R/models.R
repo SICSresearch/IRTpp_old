@@ -1,9 +1,11 @@
 #' Probability function for all models.
 #' @param model The model to calculate the probability to
-irtpp.p<- function(model, ...){
-  if(model=="3PL"){
-    #probability.3pl(...)
-  }
+irtpp.p<- function(model){
+  model = irtpp.model(model)
+  if(model=="3PL") probability.3pl
+  if(model=="2PL") probability.2pl
+  if(model=="1PL") probability.1pl
+  if(model=="Rasch") probability.2pl
 }
 
 #'3PL probability function
@@ -23,6 +25,22 @@ probability.3pl = function(z,a=z$a,b=z$b,c=z$c, theta, d=-a*b,cp=NULL){
     exp(cp)/(1+exp(cp))+ (1-(exp(cp)/(1+exp(cp))))*(1 + exp(-(a*theta+d)))^(-1)
   }
 }
+
+#'2PL probability function
+#'The probability function in the 3PL model.
+#'@param z Optional. A list with the parameters a and b specified by keys.
+#'@param a The discrimination parameter
+#'@param b The difficulty parameter. (Optional if d is specified)
+#'@param theta The subject's latent trait.
+#'@param d Optional. Overrides the b parameter, it is equal to -a*b. Used in some functions.
+probability.2pl = function(z,a=z$a,b=z$b,theta, d=-a*b)((1)/(1+exp(-a*(theta-b))))
+
+#'2PL probability function
+#'The probability function in the 3PL model.
+#'@param z Optional. A list with the parameter b specified by keys.
+#'@param b The difficulty parameter. (Optional if d is specified)
+#'@param theta The subject's latent trait.
+probability.1pl = function(z,b=z$b,theta)((1)/(1+exp(-(theta-b))))
 
 #'LogLikelihood of a IRT model
 #'@param test A matrix of 0's and 1's

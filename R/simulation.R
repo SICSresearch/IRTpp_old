@@ -1,7 +1,6 @@
 #' SimulateTest.
 #' Simulates a test according to a model
 #' 
-#' To add : item threshold
 #' @description This function simulates tests according to a IRT model.
 #' @author Juan Liberato
 #' @return A List with the model, the seed , itempars the item parameters
@@ -18,8 +17,10 @@
 #' @param verbose Optional. If true, output is made to know the status of the algorithm
 #' @examples
 #' k=simulateTest(items=20,individuals=2000,threshold=0.01,dims=1,reps=3,model="3PL")
-simulateTest<-function(model,items,individuals,reps=1,dims=1,boundaries=NULL,generated=TRUE,itempars=NULL,latentTraits=NULL,seed=NULL,verbose=F,threshold=0)
+simulateTest<-function(model="2PL",items=10,individuals=1000,reps=1,dims=1,boundaries=NULL,generated=TRUE,itempars=NULL,latentTraits=NULL,seed=NULL,verbose=F,threshold=0)
 { 
+  model=irtpp.model(model)
+  #TODO Implement multidimensional test simulation
   dims=1
   ret = NULL;
   ret$model = model;
@@ -27,7 +28,7 @@ simulateTest<-function(model,items,individuals,reps=1,dims=1,boundaries=NULL,gen
   seed = ua(seed,floor(runif(1)*10000000))
   set.seed(seed);
   ret$seed = seed;
-  checkModel(model);
+  check.model(model);
   #Generate the persons parameters (or read)
   z = ua(itempars,simulateItemParameters(items,model,dims,boundaries));
   ret$itempars = z;
@@ -52,10 +53,10 @@ simulateTest<-function(model,items,individuals,reps=1,dims=1,boundaries=NULL,gen
     outliers.indices = lapply(outliers.flags,function(x) as.list(which(x)))
     outliers.missing = lapply(outliers.indices,length)
     outliers.total = Reduce(sum,outliers.missing)
-     if(outliers.total<2){
-       print.sentence("No outliers left",verbose=verbose)
-        break
-      }
+    if(outliers.total<2){
+      print.sentence("No outliers left",verbose=verbose)
+      break
+    }
     else{
       print.sentence("Outliers left",outliers.total,verbose=verbose)
     }
@@ -69,9 +70,9 @@ simulateTest<-function(model,items,individuals,reps=1,dims=1,boundaries=NULL,gen
     if(verbose){print("Re-assigning new scores ...")}
     mapply(function(x,y,z){
       if(outliers.missing[[z]]>0){
-      mapply(function(a,b){
-        ret$test[[z]][a,]<<-y[b,]
-      },x,seq(length(x)),SIMPLIFY=F);
+        mapply(function(a,b){
+          ret$test[[z]][a,]<<-y[b,]
+        },x,seq(length(x)),SIMPLIFY=F);
       }
     },outliers.indices,newscores,seq(length(outliers.indices)),SIMPLIFY=F);
   }
@@ -84,6 +85,7 @@ simulateTest<-function(model,items,individuals,reps=1,dims=1,boundaries=NULL,gen
 #' @param dims Optional. The number of dimensions to simulate in the test if the model is multidimensional
 #' @param boundaries Optional. The kind of boundaries that are specified for the parameters.
 simulateItemParameters<- function(items, model, dims=1, boundaries=NULL){
+  model = irtpp.model(model);
   bd = boundaries;
   bd$b_lower = ua(bd$b_lower,-4); 
   bd$b_upper = ua(bd$b_upper,4); 
@@ -100,7 +102,7 @@ simulateItemParameters<- function(items, model, dims=1, boundaries=NULL){
     a = rlnorm(items,meanlog=0,sdlog=1/4)
     c = rep(0,items)
   }
-  if(model == "1PLAD"){
+  if(model == "Rasch"){
     temp = rlnorm(1,meanlog=0,sdlog=1/4)
     a = rep(temp,items)
     c = rep(0,items) 
