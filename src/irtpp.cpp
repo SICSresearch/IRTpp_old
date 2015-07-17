@@ -141,7 +141,7 @@ Rcpp::List irtppinterface(Rcpp::NumericMatrix dat, int e_model, Rcpp::NumericMat
     }
   }
 
-  */
+  
   //Return in list
   Rcpp::NumericVector pars(3*dat.ncol());
   for (int i = 0;i < 3*dat.ncol();i++) {
