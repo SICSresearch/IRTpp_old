@@ -5,6 +5,20 @@
 
 using namespace Rcpp;
 
+// irtppinterfacevalues
+Rcpp::List irtppinterfacevalues(Rcpp::NumericMatrix dat, int e_model, Rcpp::NumericMatrix quads, Rcpp::NumericMatrix init_val);
+RcppExport SEXP IRTpp_irtppinterfacevalues(SEXP datSEXP, SEXP e_modelSEXP, SEXP quadsSEXP, SEXP init_valSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type dat(datSEXP);
+    Rcpp::traits::input_parameter< int >::type e_model(e_modelSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type quads(quadsSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type init_val(init_valSEXP);
+    __result = Rcpp::wrap(irtppinterfacevalues(dat, e_model, quads, init_val));
+    return __result;
+END_RCPP
+}
 // irtppinterface
 Rcpp::List irtppinterface(Rcpp::NumericMatrix dat, int e_model, Rcpp::NumericMatrix quads);
 RcppExport SEXP IRTpp_irtppinterface(SEXP datSEXP, SEXP e_modelSEXP, SEXP quadsSEXP) {

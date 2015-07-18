@@ -75,42 +75,54 @@
 #include <model/item/PolytomousModel.h>
 #include <model/item/PolytomousModel.cpp>
 
-
-//[[Rcpp::export]]
-Rcpp::List irtppinterface(Rcpp::NumericMatrix dat, int e_model, Rcpp::NumericMatrix quads){
-  //Load the model
-
-  Model *model = new Model();
+Rcpp::List irtppaux(Rcpp::NumericMatrix dat,
+                    int e_model,
+                    Rcpp::NumericMatrix quads,
+                    Rcpp::NumericMatrix init_val,
+                    bool init_val_flag)
+{
+  EMEstimation em;
+  Model *model;
   ModelFactory *modelFactory;
+  PatternMatrix *datSet;
+  Matrix<double> *theta;
+  Matrix<double> *weight;
+  double *** zita_set;
+  int items;
+
+  model = new Model();
   modelFactory = new SICSGeneralModel();
+  datSet = new PatternMatrix(0);
+
   model->setModel(modelFactory, e_model);
+
   delete modelFactory;
 
   //Cast the datset
-  PatternMatrix *datSet = new PatternMatrix(0);
-  for (int i = 0;  i<dat.nrow(); i++) {
+  for (int i = 0;  i<dat.nrow(); i++)
+  {
     vector <char> dset(dat.ncol());
-    for (int j = 0; j < dat.ncol(); j++) {
+
+    for (int j = 0; j < dat.ncol(); j++)
       dset[j] = dat[j*dat.nrow()+i];
-    }
+    
     datSet->size = dat.ncol();
     datSet->push(dset);
   }
+
   datSet->size = dat.ncol();
 
   //Matrices for thetas and weights
-  Matrix<double> *theta;
-  Matrix<double> *weight;
   theta = new Matrix<double>(1,41);
   weight = new Matrix<double>(1,41);
 
   //Cast the quadrature matrices
-  for (int k = 0; k < quads.nrow(); k++) {
+  for (int k = 0; k < quads.nrow(); k++)
     (*theta)(0,k)=quads[k];
-  }
-  for (int k = 0; k < quads.nrow(); k++) {
+  
+  for (int k = 0; k < quads.nrow(); k++)
     (*weight)(0,k)=quads[k+quads.nrow()];
-  }
+  
   QuadratureNodes nodes(theta,weight);
   //Set datset to model
   model->getItemModel()->setDataset(datSet);
@@ -119,41 +131,71 @@ Rcpp::List irtppinterface(Rcpp::NumericMatrix dat, int e_model, Rcpp::NumericMat
   model->getParameterModel()->buildParameterSet(model->getItemModel(),model->getDimensionModel());
 
   //create estimation
-  EMEstimation em;
-
   em.setQuadratureNodes(&nodes);
 
   em.setModel(model);
-  em.setInitialValues(Constant::ANDRADE);
+  
+  if(!init_val_flag)
+    em.setInitialValues(Constant::ANDRADE);
+  else
+  {
+    // Cast the initial values;
+    zita_set = new double**[3];
+
+    for(int i = 0; i < 3; i++)
+      zita_set[i] = new double *[1];
+
+    items = model->getItemModel()->countItems();
+
+    for(int i = 0; i < 3; i++)
+      zita_set[i][0] = new double[items + 1];
+
+    for (int i = 0; i < init_val.ncol(); i++)
+      for (int j = 0; j < init_val.nrow(); j++)
+        zita_set[i][0][j] = init_val[i * init_val.nrow() + j];
+
+    em.setInitialValues(zita_set);
+  }
+
 
   //We estimate here
   em.estimate();
   double* returnpars;
-
   //TODO size of model.
   returnpars = new double[3*dat.ncol()];
   model->parameterModel->getParameters(returnpars);
-
   //For 2pl & 1pl
-  if(e_model < 3){
-    for (int i = 2*dat.ncol();i < 3*dat.ncol();i++) {
+  if(e_model < 3)
+    for (int i = 2*dat.ncol();i < 3*dat.ncol();i++)
       returnpars[i]=0;
-    }
-  }
 
-  
   //Return in list
   Rcpp::NumericVector pars(3*dat.ncol());
-  for (int i = 0;i < 3*dat.ncol();i++) {
+
+  for (int i = 0;i < 3*dat.ncol();i++)
     pars[i] = returnpars[i];
-  }
+
   Rcpp::List z = Rcpp::List::create(pars);
+
   delete model;
   delete datSet;
   delete theta;
   delete weight;
 
   return z;
+}
+
+//[[Rcpp::export]]
+Rcpp::List irtppinterfacevalues(Rcpp::NumericMatrix dat, int e_model, Rcpp::NumericMatrix quads, Rcpp::NumericMatrix init_val)
+{
+  return irtppaux(dat, e_model, quads, init_val, true);
+}
+
+//[[Rcpp::export]]
+Rcpp::List irtppinterface(Rcpp::NumericMatrix dat, int e_model, Rcpp::NumericMatrix quads)
+{
+  Rcpp::NumericMatrix init_val(1,1);
+  return irtppaux(dat, e_model, quads, init_val, false);
 }
 
 Rcpp::List abilityinterface(Rcpp::NumericMatrix zita_par, Rcpp::NumericMatrix dat, int e_model, Rcpp::NumericMatrix quads, int method)
