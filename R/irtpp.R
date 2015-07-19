@@ -1,6 +1,7 @@
 #' Estimate a test item parameters according to Item Response Theory.
 #' @param dataset The matrix with the responses from the individuals
 #' @param model The model used to calibrate the parameters
+#' @param initialvalues The matrix with the initial values for the optimization process
 #' @return The item parameters in a matrix.
 irtpp <- function(dataset,model, initialvalues = NULL){
   if(is.list(dataset)){
