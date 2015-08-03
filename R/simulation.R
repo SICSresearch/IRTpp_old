@@ -22,6 +22,11 @@
 #' k=simulateTest(items=20,individuals=2000,threshold=0.01,dims=1,reps=3,model="3PL")
 simulateTest<-function(model="2PL",items=10,individuals=1000,reps=1,dims=1,directory=NULL,boundaries=NULL,generated=TRUE,itempars=NULL,latentTraits=NULL,seed=NULL,verbose=F,threshold=0)
 { 
+  model="3pl";items=1000;individuals=100000;reps=1;verbose=T;directory="/home//liberato/irtpptest/"
+  seed = NULL
+  itempars = NULL; boundaries=NULL;
+  
+  
   dirflag=F;
   if(!is.null(directory)){
     print.sentence("Outputting to directory",directory,verbose=verbose)
@@ -33,16 +38,10 @@ simulateTest<-function(model="2PL",items=10,individuals=1000,reps=1,dims=1,direc
   groups=ceiling(cells/10000000)
   gsize = floor(individuals/groups)
   lsize = individuals - (groups*gsize);
+  if(lsize==0) lsize=gsize;
+  oind = individuals;
   if(groups == 1) lsize=individuals;
   print.sentence("Groups in simulation : ",groups, "size : ", gsize, verbose=verbose , " last group size : ", lsize)
-  
-  
-  
-  ##If cells are 1 or less, proceed as normal, if not create the files and break the process.
-  
-  ##Breaking flag
-  #If the breaking flag is activated , 
-  ##Dir flag
   
   model=irtpp.model(model)
   #TODO Implement multidimensional test simulation
@@ -73,17 +72,21 @@ simulateTest<-function(model="2PL",items=10,individuals=1000,reps=1,dims=1,direc
     print.sentence("Deleting file",fname);
     file.remove(fname)}
   }
+  
+  
   for (i in 1:groups){
     
     if(i == groups){
       individuals = lsize
     }
     ##Select only the thetas in this file reduction.
-    print.sentence(((i-1)*gsize)+1,(((i-1)*gsize))+individuals)
     print.sentence("Length of traits",length(ret$latentTraits))
     b1 = ((i-1)*gsize)+1
     b2 = (((i-1)*gsize))+individuals
+    if(i == groups) b2 = oind;
     th = ret$latentTraits[b1:b2];
+    print.sentence(b1," : ",b2)
+    
     
     if(verbose){print("Starting simulation")}
     ##Here th must be exactly the latent traits of these individuals in this test.
@@ -96,10 +99,12 @@ simulateTest<-function(model="2PL",items=10,individuals=1000,reps=1,dims=1,direc
     gc()
     if(verbose){print("Simulation finished ... ")}
     #Impute the test to exclude individuals in the threshold
+    
     repeat{
       #scores of individuals and items
       if(verbose){print("")}
-      individual.scores = lapply(ret$test,function(x) rowSums(x)/items);
+      individual.scores = lapply(ret$test,function(x) {
+        rowSums(x)/items});
       #outlier scores
       outliers.flags = lapply(individual.scores,function(x) ifelse(x<threshold | x>(1-threshold),T,F))
       outliers.indices = lapply(outliers.flags,function(x) as.list(which(x)))
