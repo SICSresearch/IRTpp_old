@@ -9,6 +9,14 @@ irtppinterface <- function(dat, e_model, quads) {
     .Call('IRTpp_irtppinterface', PACKAGE = 'IRTpp', dat, e_model, quads)
 }
 
+irtppinterfacefile <- function(dat, e_model, quads) {
+    .Call('IRTpp_irtppinterfacefile', PACKAGE = 'IRTpp', dat, e_model, quads)
+}
+
+irtppinterfacefilevalues <- function(dat, e_model, quads, init_val) {
+    .Call('IRTpp_irtppinterfacefilevalues', PACKAGE = 'IRTpp', dat, e_model, quads, init_val)
+}
+
 eapinterface <- function(zita_par, dat, e_model, quads) {
     .Call('IRTpp_eapinterface', PACKAGE = 'IRTpp', zita_par, dat, e_model, quads)
 }

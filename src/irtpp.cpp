@@ -75,16 +75,12 @@
 #include <model/item/PolytomousModel.h>
 #include <model/item/PolytomousModel.cpp>
 
-Rcpp::List irtppaux(Rcpp::NumericMatrix dat,
-                    int e_model,
-                    Rcpp::NumericMatrix quads,
-                    Rcpp::NumericMatrix init_val,
-                    bool init_val_flag)
+Rcpp::List irtpp_aux(PatternMatrix *datSet, int e_model, Rcpp::NumericMatrix quads,
+                     Rcpp::NumericMatrix init_val, bool init_val_flag)
 {
   EMEstimation em;
   Model *model;
   ModelFactory *modelFactory;
-  PatternMatrix *datSet;
   Matrix<double> *theta;
   Matrix<double> *weight;
   double *** zita_set;
@@ -92,25 +88,6 @@ Rcpp::List irtppaux(Rcpp::NumericMatrix dat,
 
   model = new Model();
   modelFactory = new SICSGeneralModel();
-  datSet = new PatternMatrix(0);
-
-  model->setModel(modelFactory, e_model);
-
-  delete modelFactory;
-
-  //Cast the datset
-  for (int i = 0;  i<dat.nrow(); i++)
-  {
-    vector <char> dset(dat.ncol());
-
-    for (int j = 0; j < dat.ncol(); j++)
-      dset[j] = dat[j*dat.nrow()+i];
-    
-    datSet->size = dat.ncol();
-    datSet->push(dset);
-  }
-
-  datSet->size = dat.ncol();
 
   //Matrices for thetas and weights
   theta = new Matrix<double>(1,41);
@@ -122,6 +99,10 @@ Rcpp::List irtppaux(Rcpp::NumericMatrix dat,
   
   for (int k = 0; k < quads.nrow(); k++)
     (*weight)(0,k)=quads[k+quads.nrow()];
+
+  model->setModel(modelFactory, e_model);
+
+  delete modelFactory;
   
   QuadratureNodes nodes(theta,weight);
   //Set datset to model
@@ -162,40 +143,99 @@ Rcpp::List irtppaux(Rcpp::NumericMatrix dat,
   em.estimate();
   double* returnpars;
   //TODO size of model.
-  returnpars = new double[3*dat.ncol()];
+  returnpars = new double[3*datSet->size];
   model->parameterModel->getParameters(returnpars);
   //For 2pl & 1pl
   if(e_model < 3)
-    for (int i = 2*dat.ncol();i < 3*dat.ncol();i++)
+    for (int i = 2*datSet->size;i < 3*datSet->size;i++)
       returnpars[i]=0;
 
   //Return in list
-  Rcpp::NumericVector pars(3*dat.ncol());
+  Rcpp::NumericVector pars(3*datSet->size);
 
-  for (int i = 0;i < 3*dat.ncol();i++)
+  for (int i = 0;i < 3*datSet->size;i++)
     pars[i] = returnpars[i];
 
   Rcpp::List z = Rcpp::List::create(pars);
 
   delete model;
-  delete datSet;
   delete theta;
   delete weight;
 
   return z;
 }
 
+Rcpp::List irtpp_from_file(std::string dat, int e_model, Rcpp::NumericMatrix quads,
+                           Rcpp::NumericMatrix init_val, bool init_val_flag)
+{
+  char * path = new char[dat.size() + 1];
+  std::copy(dat.begin(), dat.end(), path);
+  path[dat.size()] = '\0';
+  Input input;
+  PatternMatrix *datSet;
+  datSet = new PatternMatrix(0);
+  input.importCSV(path, *datSet, 1, 0);
+
+  Rcpp::List result = irtpp_aux(datSet, e_model, quads, init_val, init_val_flag);
+
+  delete datSet;
+
+  return result;
+}
+
+Rcpp::List irtpp_from_r(Rcpp::NumericMatrix dat, int e_model, Rcpp::NumericMatrix quads,
+                         Rcpp::NumericMatrix init_val, bool init_val_flag)
+{
+  PatternMatrix *datSet;
+  datSet = new PatternMatrix(0);
+
+  //Cast the datset
+  for (int i = 0;  i<dat.nrow(); i++)
+  {
+    vector <char> dset(dat.ncol());
+
+    for (int j = 0; j < dat.ncol(); j++)
+      dset[j] = dat[j*dat.nrow()+i];
+    
+    datSet->size = dat.ncol();
+    datSet->push(dset);
+  }
+
+  datSet->size = dat.ncol();
+
+  Rcpp::List result = irtpp_aux(datSet, e_model, quads, init_val, init_val_flag);
+
+  delete datSet;
+
+  return result;
+}
+
 //[[Rcpp::export]]
 Rcpp::List irtppinterfacevalues(Rcpp::NumericMatrix dat, int e_model, Rcpp::NumericMatrix quads, Rcpp::NumericMatrix init_val)
 {
-  return irtppaux(dat, e_model, quads, init_val, true);
+  // .-.
+  return irtpp_from_r(dat, e_model, quads, init_val, true);
 }
 
 //[[Rcpp::export]]
 Rcpp::List irtppinterface(Rcpp::NumericMatrix dat, int e_model, Rcpp::NumericMatrix quads)
 {
   Rcpp::NumericMatrix init_val(1,1);
-  return irtppaux(dat, e_model, quads, init_val, false);
+  return irtpp_from_r(dat, e_model, quads, init_val, false);
+}
+
+//[[Rcpp::export]]
+Rcpp::List irtppinterfacefile(std::string dat, int e_model, Rcpp::NumericMatrix quads)
+{
+  Rcpp::NumericMatrix init_val(1,1);
+  return irtpp_from_file(dat, e_model, quads, init_val, false);
+}
+
+//[[Rcpp::export]]
+Rcpp::List irtppinterfacefilevalues(std::string dat, int e_model, Rcpp::NumericMatrix quads, Rcpp::NumericMatrix init_val)
+{
+  // .-.
+  return irtpp_from_file(dat, e_model, quads, init_val, true);
 }
 
 Rcpp::List abilityinterface(Rcpp::NumericMatrix zita_par, Rcpp::NumericMatrix dat, int e_model, Rcpp::NumericMatrix quads, int method)
