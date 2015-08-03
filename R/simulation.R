@@ -22,9 +22,9 @@
 #' k=simulateTest(items=20,individuals=2000,threshold=0.01,dims=1,reps=3,model="3PL")
 simulateTest<-function(model="2PL",items=10,individuals=1000,reps=1,dims=1,directory=NULL,boundaries=NULL,generated=TRUE,itempars=NULL,latentTraits=NULL,seed=NULL,verbose=F,threshold=0)
 { 
-  model="3pl";items=1000;individuals=100000;reps=1;verbose=T;directory="/home//liberato/irtpptest/"
-  seed = NULL
-  itempars = NULL; boundaries=NULL;
+  #model="3pl";items=1000;individuals=100000;reps=1;verbose=T;directory="/home//liberato/irtpptest/"
+  #seed = NULL
+  #itempars = NULL; boundaries=NULL;
   
   
   dirflag=F;
