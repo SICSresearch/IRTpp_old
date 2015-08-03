@@ -12,6 +12,7 @@ irtpp <- function(dataset,model, initialvalues = NULL, filename=NULL){
     model = irtpp.model(model,asnumber=T)
     cuads = as.matrix(read.table(system.file("extdata","Cuads.csv",package="IRTpp"),sep=",",header=T))
     if(is.null(filename)){
+      
       if(is.null(initialvalues))
         est = irtppinterface(dataset,model,cuads)
       if(!is.null(initialvalues))
@@ -20,6 +21,7 @@ irtpp <- function(dataset,model, initialvalues = NULL, filename=NULL){
       ret = matrix(est,ncol=3)
     }
     else{
+      dataset = filename;
       if(is.null(initialvalues))
         est = irtppinterfacefile(dataset,model,cuads)
       if(!is.null(initialvalues))

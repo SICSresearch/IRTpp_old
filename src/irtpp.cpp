@@ -96,14 +96,14 @@ Rcpp::List irtpp_aux(PatternMatrix *datSet, int e_model, Rcpp::NumericMatrix qua
   //Cast the quadrature matrices
   for (int k = 0; k < quads.nrow(); k++)
     (*theta)(0,k)=quads[k];
-  
+
   for (int k = 0; k < quads.nrow(); k++)
     (*weight)(0,k)=quads[k+quads.nrow()];
 
   model->setModel(modelFactory, e_model);
 
   delete modelFactory;
-  
+
   QuadratureNodes nodes(theta,weight);
   //Set datset to model
   model->getItemModel()->setDataset(datSet);
@@ -115,7 +115,7 @@ Rcpp::List irtpp_aux(PatternMatrix *datSet, int e_model, Rcpp::NumericMatrix qua
   em.setQuadratureNodes(&nodes);
 
   em.setModel(model);
-  
+
   if(!init_val_flag)
     em.setInitialValues(Constant::ANDRADE);
   else
@@ -171,6 +171,8 @@ Rcpp::List irtpp_from_file(std::string dat, int e_model, Rcpp::NumericMatrix qua
   char * path = new char[dat.size() + 1];
   std::copy(dat.begin(), dat.end(), path);
   path[dat.size()] = '\0';
+  cout<<"IRTpp"<<endl;
+  cout << path << endl;
   Input input;
   PatternMatrix *datSet;
   datSet = new PatternMatrix(0);
@@ -196,7 +198,7 @@ Rcpp::List irtpp_from_r(Rcpp::NumericMatrix dat, int e_model, Rcpp::NumericMatri
 
     for (int j = 0; j < dat.ncol(); j++)
       dset[j] = dat[j*dat.nrow()+i];
-    
+
     datSet->size = dat.ncol();
     datSet->push(dset);
   }
