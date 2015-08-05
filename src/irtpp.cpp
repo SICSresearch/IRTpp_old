@@ -354,7 +354,7 @@ Rcpp::List mapinterfacefile(Rcpp::NumericMatrix zita_par, std::string dat,
 
   Rcpp::List result = abilityinterface(zita_par, datSet, e_model, quads, 1);
 
-  delete datSet;
+  //delete datSet;
 
   return result;
 }
@@ -382,7 +382,7 @@ Rcpp::List mapinterface(Rcpp::NumericMatrix zita_par, Rcpp::NumericMatrix dat,
 
   Rcpp::List result = abilityinterface(zita_par, datSet, e_model, quads, 1);
 
-  delete datSet;
+  //delete datSet;
 
   return result;
 }
@@ -402,7 +402,7 @@ Rcpp::List eapinterfacefile(Rcpp::NumericMatrix zita_par, std::string dat,
 
   Rcpp::List result = abilityinterface(zita_par, datSet, e_model, quads, 0);
 
-  delete datSet;
+  //delete datSet;
 
   return result;
 }
@@ -428,11 +428,7 @@ Rcpp::List eapinterface(Rcpp::NumericMatrix zita_par, Rcpp::NumericMatrix dat,
 
   datSet->size = dat.ncol();
 
-  cout << "FFFFFFFFFFFFFFFFFFFFFFFFff" << endl;
-
   Rcpp::List result = abilityinterface(zita_par, datSet, e_model, quads, 0);
-
-  cout << "GGGGGGGGGGGGGGGGGGGGGGGGGGGGG" << endl;
 
   //delete datSet;
 
