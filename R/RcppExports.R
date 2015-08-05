@@ -17,11 +17,19 @@ irtppinterfacefilevalues <- function(dat, e_model, quads, init_val) {
     .Call('IRTpp_irtppinterfacefilevalues', PACKAGE = 'IRTpp', dat, e_model, quads, init_val)
 }
 
-eapinterface <- function(zita_par, dat, e_model, quads) {
-    .Call('IRTpp_eapinterface', PACKAGE = 'IRTpp', zita_par, dat, e_model, quads)
+mapinterfacefile <- function(zita_par, dat, e_model, quads) {
+    .Call('IRTpp_mapinterfacefile', PACKAGE = 'IRTpp', zita_par, dat, e_model, quads)
 }
 
 mapinterface <- function(zita_par, dat, e_model, quads) {
     .Call('IRTpp_mapinterface', PACKAGE = 'IRTpp', zita_par, dat, e_model, quads)
+}
+
+eapinterfacefile <- function(zita_par, dat, e_model, quads) {
+    .Call('IRTpp_eapinterfacefile', PACKAGE = 'IRTpp', zita_par, dat, e_model, quads)
+}
+
+eapinterface <- function(zita_par, dat, e_model, quads) {
+    .Call('IRTpp_eapinterface', PACKAGE = 'IRTpp', zita_par, dat, e_model, quads)
 }
 

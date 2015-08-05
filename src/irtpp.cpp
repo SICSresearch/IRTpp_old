@@ -85,6 +85,7 @@ Rcpp::List irtpp_aux(PatternMatrix *datSet, int e_model, Rcpp::NumericMatrix qua
   Matrix<double> *weight;
   double *** zita_set;
   int items;
+  void ** status_list;
 
   model = new Model();
   modelFactory = new SICSGeneralModel();
@@ -140,7 +141,7 @@ Rcpp::List irtpp_aux(PatternMatrix *datSet, int e_model, Rcpp::NumericMatrix qua
 
 
   //We estimate here
-  em.estimate();
+  status_list = em.estimate();
   double* returnpars;
   //TODO size of model.
   returnpars = new double[3*datSet->size];
@@ -156,16 +157,20 @@ Rcpp::List irtpp_aux(PatternMatrix *datSet, int e_model, Rcpp::NumericMatrix qua
   for (int i = 0;i < 3*datSet->size;i++)
     pars[i] = returnpars[i];
 
-  Rcpp::List z = Rcpp::List::create(pars);
+  Rcpp::List z = Rcpp::List::create(Rcpp::_["zita"] = pars,
+                                    Rcpp::_["iterations"] = (*(int*)status_list[0]),
+                                    Rcpp::_["convergence"] = (*(bool*)status_list[1]));
 
   delete model;
   delete theta;
   delete weight;
+  delete (int*)status_list[0];
+  delete (bool*)status_list[1];
 
   return z;
 }
 
-Rcpp::List irtpp_from_file(std::string dat, int e_model, Rcpp::NumericMatrix quads,
+Rcpp::List irtpp_file(std::string dat, int e_model, Rcpp::NumericMatrix quads,
                            Rcpp::NumericMatrix init_val, bool init_val_flag)
 {
   char * path = new char[dat.size() + 1];
@@ -185,8 +190,8 @@ Rcpp::List irtpp_from_file(std::string dat, int e_model, Rcpp::NumericMatrix qua
   return result;
 }
 
-Rcpp::List irtpp_from_r(Rcpp::NumericMatrix dat, int e_model, Rcpp::NumericMatrix quads,
-                         Rcpp::NumericMatrix init_val, bool init_val_flag)
+Rcpp::List irtpp_r(Rcpp::NumericMatrix dat, int e_model, Rcpp::NumericMatrix quads,
+                        Rcpp::NumericMatrix init_val, bool init_val_flag)
 {
   PatternMatrix *datSet;
   datSet = new PatternMatrix(0);
@@ -213,39 +218,41 @@ Rcpp::List irtpp_from_r(Rcpp::NumericMatrix dat, int e_model, Rcpp::NumericMatri
 }
 
 //[[Rcpp::export]]
-Rcpp::List irtppinterfacevalues(Rcpp::NumericMatrix dat, int e_model, Rcpp::NumericMatrix quads, Rcpp::NumericMatrix init_val)
+Rcpp::List irtppinterfacevalues(Rcpp::NumericMatrix dat, int e_model, Rcpp::NumericMatrix quads,
+                                Rcpp::NumericMatrix init_val)
 {
   // .-.
-  return irtpp_from_r(dat, e_model, quads, init_val, true);
+  return irtpp_r(dat, e_model, quads, init_val, true);
 }
 
 //[[Rcpp::export]]
 Rcpp::List irtppinterface(Rcpp::NumericMatrix dat, int e_model, Rcpp::NumericMatrix quads)
 {
   Rcpp::NumericMatrix init_val(1,1);
-  return irtpp_from_r(dat, e_model, quads, init_val, false);
+  return irtpp_r(dat, e_model, quads, init_val, false);
 }
 
 //[[Rcpp::export]]
 Rcpp::List irtppinterfacefile(std::string dat, int e_model, Rcpp::NumericMatrix quads)
 {
   Rcpp::NumericMatrix init_val(1,1);
-  return irtpp_from_file(dat, e_model, quads, init_val, false);
+  return irtpp_file(dat, e_model, quads, init_val, false);
 }
 
 //[[Rcpp::export]]
-Rcpp::List irtppinterfacefilevalues(std::string dat, int e_model, Rcpp::NumericMatrix quads, Rcpp::NumericMatrix init_val)
+Rcpp::List irtppinterfacefilevalues(std::string dat, int e_model, Rcpp::NumericMatrix quads,
+                                    Rcpp::NumericMatrix init_val)
 {
   // .-.
-  return irtpp_from_file(dat, e_model, quads, init_val, true);
+  return irtpp_file(dat, e_model, quads, init_val, true);
 }
 
-Rcpp::List abilityinterface(Rcpp::NumericMatrix zita_par, Rcpp::NumericMatrix dat, int e_model, Rcpp::NumericMatrix quads, int method)
+Rcpp::List abilityinterface(Rcpp::NumericMatrix zita_par, PatternMatrix * datSet,
+                            int e_model, Rcpp::NumericMatrix quads, int method)
 {
   //Load the model
   Model *model;
   ModelFactory *modelFactory;
-  PatternMatrix *datSet;
   Matrix<double> *theta;
   Matrix<double> *weight;
   double *** zita_set;
@@ -257,20 +264,6 @@ Rcpp::List abilityinterface(Rcpp::NumericMatrix zita_par, Rcpp::NumericMatrix da
   model->setModel(modelFactory, e_model);
 
   delete modelFactory;
-
-  //Cast the datset
-  datSet = new PatternMatrix(0);
-
-  for (int i = 0; i < dat.nrow(); i++)
-  {
-    vector <char> dset(dat.ncol());
-    for (int j = 0; j < dat.ncol(); j++)
-      dset[j] = dat[j*dat.nrow()+i];
-    datSet->size = dat.ncol();
-    datSet->push(dset);
-  }
-
-  datSet->size = dat.ncol();
 
   //Matrices for thetas and weights
   theta = new Matrix<double>(1,41);
@@ -347,13 +340,101 @@ Rcpp::List abilityinterface(Rcpp::NumericMatrix zita_par, Rcpp::NumericMatrix da
 }
 
 //[[Rcpp::export]]
-Rcpp::List eapinterface(Rcpp::NumericMatrix zita_par, Rcpp::NumericMatrix dat, int e_model, Rcpp::NumericMatrix quads)
+Rcpp::List mapinterfacefile(Rcpp::NumericMatrix zita_par, std::string dat,
+                                int e_model, Rcpp::NumericMatrix quads)
 {
-  return abilityinterface(zita_par, dat, e_model, quads, 0);
+  char * path = new char[dat.size() + 1];
+  std::copy(dat.begin(), dat.end(), path);
+  path[dat.size()] = '\0';
+  
+  Input input;
+  PatternMatrix *datSet;
+  datSet = new PatternMatrix(0);
+  input.importCSV(path, *datSet, 1, 0);
+
+  Rcpp::List result = abilityinterface(zita_par, datSet, e_model, quads, 1);
+
+  delete datSet;
+
+  return result;
 }
 
 //[[Rcpp::export]]
-Rcpp::List mapinterface(Rcpp::NumericMatrix zita_par, Rcpp::NumericMatrix dat, int e_model, Rcpp::NumericMatrix quads)
+Rcpp::List mapinterface(Rcpp::NumericMatrix zita_par, Rcpp::NumericMatrix dat,
+                        int e_model, Rcpp::NumericMatrix quads)
 {
-  return abilityinterface(zita_par, dat, e_model, quads, 1);
+  PatternMatrix *datSet;
+  datSet = new PatternMatrix(0);
+
+  //Cast the datset
+  for (int i = 0;  i<dat.nrow(); i++)
+  {
+    vector <char> dset(dat.ncol());
+
+    for (int j = 0; j < dat.ncol(); j++)
+      dset[j] = dat[j*dat.nrow()+i];
+
+    datSet->size = dat.ncol();
+    datSet->push(dset);
+  }
+
+  datSet->size = dat.ncol();
+
+  Rcpp::List result = abilityinterface(zita_par, datSet, e_model, quads, 1);
+
+  delete datSet;
+
+  return result;
+}
+
+//[[Rcpp::export]]
+Rcpp::List eapinterfacefile(Rcpp::NumericMatrix zita_par, std::string dat,
+                            int e_model, Rcpp::NumericMatrix quads)
+{
+  char * path = new char[dat.size() + 1];
+  std::copy(dat.begin(), dat.end(), path);
+  path[dat.size()] = '\0';
+  
+  Input input;
+  PatternMatrix *datSet;
+  datSet = new PatternMatrix(0);
+  input.importCSV(path, *datSet, 1, 0);
+
+  Rcpp::List result = abilityinterface(zita_par, datSet, e_model, quads, 0);
+
+  delete datSet;
+
+  return result;
+}
+
+//[[Rcpp::export]]
+Rcpp::List eapinterface(Rcpp::NumericMatrix zita_par, Rcpp::NumericMatrix dat,
+                        int e_model, Rcpp::NumericMatrix quads)
+{
+  PatternMatrix *datSet;
+  datSet = new PatternMatrix(0);
+
+  //Cast the datset
+  for (int i = 0;  i<dat.nrow(); i++)
+  {
+    vector <char> dset(dat.ncol());
+
+    for (int j = 0; j < dat.ncol(); j++)
+      dset[j] = dat[j*dat.nrow()+i];
+
+    datSet->size = dat.ncol();
+    datSet->push(dset);
+  }
+
+  datSet->size = dat.ncol();
+
+  cout << "FFFFFFFFFFFFFFFFFFFFFFFFff" << endl;
+
+  Rcpp::List result = abilityinterface(zita_par, datSet, e_model, quads, 0);
+
+  cout << "GGGGGGGGGGGGGGGGGGGGGGGGGGGGG" << endl;
+
+  //delete datSet;
+
+  return result;
 }

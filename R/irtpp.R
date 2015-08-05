@@ -14,20 +14,16 @@ irtpp <- function(dataset,model, initialvalues = NULL, filename=NULL){
     if(is.null(filename)){
       
       if(is.null(initialvalues))
-        est = irtppinterface(dataset,model,cuads)
+        ret = irtppinterface(dataset,model,cuads)
       if(!is.null(initialvalues))
-        est = irtppinterfacevalues(dataset,model,cuads,initialvalues)
-      est = unlist(est)
-      ret = matrix(est,ncol=3)
+        ret = irtppinterfacevalues(dataset,model,cuads,initialvalues)
     }
     else{
       dataset = filename;
       if(is.null(initialvalues))
-        est = irtppinterfacefile(dataset,model,cuads)
+        ret = irtppinterfacefile(dataset,model,cuads)
       if(!is.null(initialvalues))
-        est = irtppinterfacefilevalues(dataset,model,cuads,initialvalues)
-      est = unlist(est)
-      ret = matrix(est,ncol=3)
+        ret = irtppinterfacefilevalues(dataset,model,cuads,initialvalues)
     }
   }
   ret
@@ -39,12 +35,22 @@ irtpp <- function(dataset,model, initialvalues = NULL, filename=NULL){
 #' @param itempars The item parameters for the model.
 #' @param method The method to estimate traits
 #' @return A list with the patterns and the estimated latent traits
-individual.traits<-function(dataset,model,itempars,method){
-  model = irtpp.model(model,asnumber=T)
-  cuads = as.matrix(read.table(system.file("extdata","Cuads.csv",package="IRTpp"),sep=",",header=T))
-  est.method = ifelse(method == "EAP", eapinterface, mapinterface)
-  est = est.method(zita_par=itempars,dat=dataset,e_model=model,quads=cuads)
-  est = list(matrix(est[[1]],ncol=dim(dataset)[[2]],byrow=T),est[[2]])
-  names(est) <- c("patterns","trait")
+individual.traits<-function(dataset,model,itempars,method, filename=NULL){
+  if(is.null(filename)){
+    model = irtpp.model(model,asnumber=T)
+    cuads = as.matrix(read.table(system.file("extdata","Cuads.csv",package="IRTpp"),sep=",",header=T))
+    est.method = ifelse(method == "EAP", eapinterface, mapinterface)
+    est = est.method(zita_par=itempars,dat=dataset,e_model=model,quads=cuads)
+    est = list(matrix(est[[1]],ncol=dim(dataset)[[2]],byrow=T),est[[2]])
+    names(est) <- c("patterns","trait")
+  }
+  else{
+    model = irtpp.model(model,asnumber=T)
+    cuads = as.matrix(read.table(system.file("extdata","Cuads.csv",package="IRTpp"),sep=",",header=T))
+    est.method = ifelse(method == "EAP", eapinterfacefile, mapinterfacefile)
+    est = est.method(zita_par=itempars,dat=filename,e_model=model,quads=cuads)
+    est = list(matrix(est[[1]],ncol=dim(dataset)[[2]],byrow=T),est[[2]])
+    names(est) <- c("patterns","trait")
+  }
   est
 }
