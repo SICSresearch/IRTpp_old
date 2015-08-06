@@ -20,12 +20,8 @@
 #' @param verbose Optional. If true, output is made to know the status of the algorithm
 #' @examples
 #' k=simulateTest(items=20,individuals=2000,threshold=0.01,dims=1,reps=3,model="3PL")
-simulateTest<-function(model="2PL",items=10,individuals=1000,reps=1,dims=1,directory=NULL,boundaries=NULL,generated=TRUE,itempars=NULL,latentTraits=NULL,seed=NULL,verbose=F,threshold=0)
+simulateTest<-function(model="2PL",items=10,individuals=1000,reps=1,dims=1,filename="test",directory=NULL,boundaries=NULL,generated=TRUE,itempars=NULL,latentTraits=NULL,seed=NULL,verbose=F,threshold=0)
 { 
-  #model="3pl";items=1000;individuals=100000;reps=1;verbose=T;directory="/home//liberato/irtpptest/"
-  #seed = NULL
-  #itempars = NULL; boundaries=NULL;
-  
   
   dirflag=F;
   if(!is.null(directory)){
@@ -67,7 +63,7 @@ simulateTest<-function(model="2PL",items=10,individuals=1000,reps=1,dims=1,direc
   ##Break the simulation here in files.
   if(dirflag){setwd(dir=directory)}
   for (j in 1:reps){
-  fname = paste0("test",j,".csv");
+  fname = paste0(filename,j,".csv");
   if(file.exists(fname)){
     print.sentence("Deleting file",fname);
     file.remove(fname)}
@@ -80,12 +76,12 @@ simulateTest<-function(model="2PL",items=10,individuals=1000,reps=1,dims=1,direc
       individuals = lsize
     }
     ##Select only the thetas in this file reduction.
-    print.sentence("Length of traits",length(ret$latentTraits))
+    #print.sentence("Length of traits",length(ret$latentTraits))
     b1 = ((i-1)*gsize)+1
     b2 = (((i-1)*gsize))+individuals
     if(i == groups) b2 = oind;
     th = ret$latentTraits[b1:b2];
-    print.sentence(b1," : ",b2)
+    #print.sentence(b1," : ",b2)
     
     
     if(verbose){print("Starting simulation")}
@@ -140,7 +136,7 @@ simulateTest<-function(model="2PL",items=10,individuals=1000,reps=1,dims=1,direc
     ##Output to the file.
     print.sentence("Outputting to files ",verbose=verbose)
     for (j in 1:reps){
-      fname = paste0("test",j,".csv");
+      fname = paste0(filename,j,".csv");
       write.table(ret$test[[j]],file=fname,append=T,sep=",",col.names=F,row.names=F)
     }
     print.sentence("... ",verbose=verbose)
@@ -153,7 +149,7 @@ simulateTest<-function(model="2PL",items=10,individuals=1000,reps=1,dims=1,direc
   }
   else {
     for (j in 1:reps){
-        fname = paste0("test",j,".csv");
+        fname = paste0(filename,j,".csv");
         path = paste0(getwd(),"/",fname)
         ts=read.table(file=fname,header=F,sep=",")
         ts = data.matrix(ts,rownames.force=F)

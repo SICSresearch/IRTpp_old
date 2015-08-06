@@ -3,7 +3,12 @@
 #' @param model The model used to calibrate the parameters
 #' @param initialvalues The matrix with the initial values for the optimization process
 #' @return The item parameters in a matrix.
-irtpp <- function(dataset,model, initialvalues = NULL, filename=NULL){
+irtpp <- function(dataset=NULL,model, initialvalues = NULL, filename=NULL){
+  if(is.null(dataset)){
+    if(is.null(filename)){
+      stop("Please provide a dataset to irtpp")
+    }
+  }
   if(is.list(dataset)){
     print.sentence("irtpp in list mode")
     ret = autoapply(dataset,irtpp,model,initialvalues,filename)
@@ -35,8 +40,11 @@ irtpp <- function(dataset,model, initialvalues = NULL, filename=NULL){
 #' @param itempars The item parameters for the model.
 #' @param method The method to estimate traits
 #' @return A list with the patterns and the estimated latent traits
-individual.traits<-function(dataset,model,itempars,method, filename=NULL){
+individual.traits<-function(dataset=NULL,model,itempars,method, filename=NULL){
   if(is.null(filename)){
+    if(is.null(dataset)){
+      stop("Please provide a dataset or filename")
+    }
     model = irtpp.model(model,asnumber=T)
     cuads = as.matrix(read.table(system.file("extdata","Cuads.csv",package="IRTpp"),sep=",",header=T))
     est.method = ifelse(method == "EAP", eapinterface, mapinterface)
@@ -49,7 +57,7 @@ individual.traits<-function(dataset,model,itempars,method, filename=NULL){
     cuads = as.matrix(read.table(system.file("extdata","Cuads.csv",package="IRTpp"),sep=",",header=T))
     est.method = ifelse(method == "EAP", eapinterfacefile, mapinterfacefile)
     est = est.method(zita_par=itempars,dat=filename,e_model=model,quads=cuads)
-    est = list(matrix(est[[1]],ncol=dim(dataset)[[2]],byrow=T),est[[2]])
+    est = list(matrix(est[[1]],ncol=2,byrow=T),est[[2]])
     names(est) <- c("patterns","trait")
   }
   est
