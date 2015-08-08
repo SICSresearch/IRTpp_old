@@ -40,7 +40,8 @@ PatternMatrix * getPatternMatrix(Rcpp::NumericMatrix r_dataSet)
 }
 
 Rcpp::List irtpp_aux(PatternMatrix *datSet, int e_model, Rcpp::NumericMatrix quads,
-                     Rcpp::NumericMatrix init_val, bool init_val_flag)
+                     Rcpp::NumericMatrix init_val, bool init_val_flag,
+                     bool to_file_flag, string output_path)
 {
     EMEstimation em;
     Model *model;
@@ -54,11 +55,11 @@ Rcpp::List irtpp_aux(PatternMatrix *datSet, int e_model, Rcpp::NumericMatrix qua
     model = new Model();
     modelFactory = new SICSGeneralModel();
 
-    //Matrices for thetas and weights
+    // Matrices for thetas and weights
     theta = new Matrix<double>(1,41);
     weight = new Matrix<double>(1,41);
 
-    //Cast the quadrature matrices
+    // Cast the quadrature matrices
     for (int k = 0; k < quads.nrow(); k++)
         (*theta)(0,k)=quads[k];
 
@@ -70,13 +71,13 @@ Rcpp::List irtpp_aux(PatternMatrix *datSet, int e_model, Rcpp::NumericMatrix qua
     delete modelFactory;
 
     QuadratureNodes nodes(theta,weight);
-    //Set datset to model
+    // Set datset to model
     model->getItemModel()->setDataset(datSet);
 
-    //Build parameter set
+    // Build parameter set
     model->getParameterModel()->buildParameterSet(model->getItemModel(),model->getDimensionModel());
 
-    //create estimation
+    // Create estimation
     em.setQuadratureNodes(&nodes);
 
     em.setModel(model);
@@ -85,42 +86,61 @@ Rcpp::List irtpp_aux(PatternMatrix *datSet, int e_model, Rcpp::NumericMatrix qua
         em.setInitialValues(Constant::ANDRADE);
     else
     {
-    // Cast the initial values;
+        // Cast the initial values;
         zita_set = new double**[3];
 
         for(int i = 0; i < 3; i++)
-        zita_set[i] = new double *[1];
+            zita_set[i] = new double *[1];
 
         items = model->getItemModel()->countItems();
 
         for(int i = 0; i < 3; i++)
-        zita_set[i][0] = new double[items + 1];
+            zita_set[i][0] = new double[items + 1];
 
         for (int i = 0; i < init_val.ncol(); i++)
-        for (int j = 0; j < init_val.nrow(); j++)
-        zita_set[i][0][j] = init_val[i * init_val.nrow() + j];
+            for (int j = 0; j < init_val.nrow(); j++)
+                zita_set[i][0][j] = init_val[i * init_val.nrow() + j];
 
         em.setInitialValues(zita_set);
     }
 
-    //We estimate here
+    // We estimate here
     status_list = em.estimate();
     double* returnpars;
-    //TODO size of model.
+
     returnpars = new double[3*datSet->size];
     model->parameterModel->getParameters(returnpars);
-    //For 2pl & 1pl
+    // For 2pl & 1pl
     if(e_model < 3)
         for (int i = 2*datSet->size;i < 3*datSet->size;i++)
             returnpars[i]=0;
 
-    //Return in list
     Rcpp::NumericVector pars(3*datSet->size);
+    Rcpp::NumericVector pars_aux(1);
 
-    for (int i = 0;i < 3*datSet->size;i++)
-        pars[i] = returnpars[i];
+    if(to_file_flag)
+    {
+        // Return in file
+        std::ofstream output;
 
-    Rcpp::List z = Rcpp::List::create(Rcpp::_["zita"] = pars,
+        output.open(output_path.c_str(), std::ios::app);
+
+        for (int i = 0; i < 3 * datSet->size - 1; i++)
+            output << returnpars[i] << " ";
+
+        output << returnpars[3 * datSet->size - 1] << endl;
+
+        output.close();
+    }
+    else
+    {
+        // Return in list
+        for (int i = 0; i < 3*datSet->size; i++)
+            pars[i] = returnpars[i];
+    }
+
+    Rcpp::List z = Rcpp::List::create(Rcpp::_["zita"] = to_file_flag ? pars_aux : pars,
+                                      Rcpp::_["path"] = to_file_flag ? output_path : "No path",
                                       Rcpp::_["iterations"] = (*(int*)status_list[0]),
                                       Rcpp::_["convergence"] = (*(bool*)status_list[1]));
 
@@ -135,93 +155,117 @@ Rcpp::List irtpp_aux(PatternMatrix *datSet, int e_model, Rcpp::NumericMatrix qua
 }
 
 Rcpp::List abilityinterface(Rcpp::NumericMatrix zita_par, PatternMatrix * datSet,
-                            int e_model, Rcpp::NumericMatrix quads, int method)
+                            int e_model, Rcpp::NumericMatrix quads, int method,
+                            bool to_file_flag, string output_path)
 {
-  //Load the model
-  Model *model;
-  ModelFactory *modelFactory;
-  Matrix<double> *theta;
-  Matrix<double> *weight;
-  double *** zita_set;
-  double ** result;
-  int items;
+    // Load the model
+    Model *model;
+    ModelFactory *modelFactory;
+    Matrix<double> *theta;
+    Matrix<double> *weight;
+    double *** zita_set;
+    double ** result;
+    int items;
 
-  model = new Model();
-  modelFactory = new SICSGeneralModel();
-  model->setModel(modelFactory, e_model);
+    model = new Model();
+    modelFactory = new SICSGeneralModel();
+    model->setModel(modelFactory, e_model);
 
-  delete modelFactory;
+    delete modelFactory;
 
-  //Matrices for thetas and weights
-  theta = new Matrix<double>(1,41);
-  weight = new Matrix<double>(1,41);
+    // Matrices for thetas and weights
+    theta = new Matrix<double>(1,41);
+    weight = new Matrix<double>(1,41);
 
-  //Cast the quadrature matrices
-  for (int k = 0; k < quads.nrow(); k++)
-    (*theta)(0,k)=quads[k];
+    // Cast the quadrature matrices
+    for (int k = 0; k < quads.nrow(); k++)
+        (*theta)(0,k)=quads[k];
 
-  for (int k = 0; k < quads.nrow(); k++)
-    (*weight)(0,k)=quads[k+quads.nrow()];
+    for (int k = 0; k < quads.nrow(); k++)
+        (*weight)(0,k)=quads[k+quads.nrow()];
 
-  QuadratureNodes nodes(theta,weight);
-  //Set datset to model
-  model->getItemModel()->setDataset(datSet);
+    QuadratureNodes nodes(theta,weight);
+    // Set datset to model
+    model->getItemModel()->setDataset(datSet);
 
-  //Build parameter set
-  model->getParameterModel()->buildParameterSet(model->getItemModel(),model->getDimensionModel());
+    // Build parameter set
+    model->getParameterModel()->buildParameterSet(model->getItemModel(),model->getDimensionModel());
 
-  /*
-   * Now we will run the estimation of individual parameter
-   */
+    // Cast the zita set
+    zita_set = new double**[3];
 
-  //Cast the zita set
-  zita_set = new double**[3];
+    for(int i = 0; i < 3; i++)
+        zita_set[i] = new double *[1];
 
-  for(int i = 0; i < 3; i++)
-    zita_set[i] = new double *[1];
+    items = model->getItemModel()->countItems();
 
-  items = model->getItemModel()->countItems();
+    for(int i = 0; i < 3; i++)
+        zita_set[i][0] = new double[items + 1];
 
-  for(int i = 0; i < 3; i++)
-    zita_set[i][0] = new double[items + 1];
+    for (int i = 0; i < zita_par.ncol(); i++)
+        for (int j = 0; j < zita_par.nrow(); j++)
+            zita_set[i][0][j] = zita_par[i * zita_par.nrow() + j];
 
-  for (int i = 0; i < zita_par.ncol(); i++)
-    for (int j = 0; j < zita_par.nrow(); j++)
-      zita_set[i][0][j] = zita_par[i * zita_par.nrow() + j];
+    // Now create the estimation
+    LatentTraitEstimation lte(datSet);
+    // Pass the model
+    lte.setModel(model);
+    // Pass the quadrature nodes
+    lte.setQuadratureNodes(&nodes);
 
-  //Now create the estimation
-  LatentTraitEstimation lte(datSet);
-  //Pass the model
-  lte.setModel(model);
-  //Pass the quadrature nodes
-  lte.setQuadratureNodes(&nodes);
+    // Ready to estimate
+    if(method == 0)
+        lte.estimateLatentTraitsEAP(zita_set);
+    else
+        lte.estimateLatentTraitsMAP(zita_set);
 
-  //Ready to estimate
-  if(method == 0)
-    lte.estimateLatentTraitsEAP(zita_set);
-  else
-    lte.estimateLatentTraitsMAP(zita_set);
+    result = lte.lt->getListPatternTheta();
 
-  result = lte.lt->getListPatternTheta();
+    // Return in list
+    Rcpp::NumericVector pars1(lte.lt->pm->countItems() * lte.lt->pm->matrix.size());
+    Rcpp::NumericVector pars_aux(1);
+    Rcpp::NumericVector pars2(lte.lt->pm->matrix.size());
 
-  //Return in list
-  Rcpp::NumericVector pars1(lte.lt->pm->countItems() * lte.lt->pm->matrix.size());
-  Rcpp::NumericVector pars2(lte.lt->pm->matrix.size());
+    if(to_file_flag)
+    {
+        // Return in file
+        std::ofstream output;
 
-  for(unsigned int i = 0; i < lte.lt->pm->matrix.size(); i++)
-  {
-      for(int j = 0; j < items; j++)
-        pars1[i * items + j] = result[i][j];
+        output.open(output_path.c_str(), std::ios::app);
 
-      pars2[i] = result[i][items];
-  }
+        for(int j = 0; j < items - 1; j++)
+            output << "V" << j << " ";
+        output << "V" << items - 1 << endl;
 
-  Rcpp::List z = Rcpp::List::create(pars1, pars2);
+        for(unsigned int i = 0; i < lte.lt->pm->matrix.size(); i++)
+        {
+            for(int j = 0; j < items; j++)
+                output << result[i][j] << " ";
 
-  delete model;
-  delete datSet;
-  delete theta;
-  delete weight;
+            output << result[i][items] << endl;
+        }
 
-  return z;
+        output.close();
+    }
+    else
+    {
+        for(unsigned int i = 0; i < lte.lt->pm->matrix.size(); i++)
+        {
+            for(int j = 0; j < items; j++)
+                pars1[i * items + j] = result[i][j];
+
+            pars2[i] = result[i][items];
+        }
+    }
+
+    Rcpp::List z = Rcpp::List::create(Rcpp::_["patterns"] = to_file_flag ? pars_aux : pars1,
+                                      Rcpp::_["ability"] = to_file_flag ? pars_aux : pars2,
+                                      Rcpp::_["path"] = to_file_flag ? output_path : "No path");
+
+    delete model;
+    delete datSet;
+    delete theta;
+    delete weight;
+
+    return z;
 }

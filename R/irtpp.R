@@ -3,7 +3,7 @@
 #' @param model The model used to calibrate the parameters
 #' @param initialvalues The matrix with the initial values for the optimization process
 #' @return The item parameters in a matrix.
-irtpp <- function(dataset=NULL,model, initialvalues = NULL, filename=NULL){
+irtpp <- function(dataset=NULL,model, initialvalues = NULL, filename=NULL, output=NULL){
   if(is.null(dataset)){
     if(is.null(filename)){
       stop("Please provide a dataset to irtpp")
@@ -11,7 +11,7 @@ irtpp <- function(dataset=NULL,model, initialvalues = NULL, filename=NULL){
   }
   if(is.list(dataset)){
     print.sentence("irtpp in list mode")
-    ret = autoapply(dataset,irtpp,model,initialvalues,filename)
+    ret = autoapply(dataset,irtpp,model,initialvalues,filename,output)
   }
   else{
     model = irtpp.model(model,asnumber=T)
@@ -19,16 +19,16 @@ irtpp <- function(dataset=NULL,model, initialvalues = NULL, filename=NULL){
     if(is.null(filename)){
       
       if(is.null(initialvalues))
-        ret = irtppinterface(dataset,model,cuads)
+        ret = irtppinterface(dataset,model,cuads,!is.null(output),ifelse(is.null(output), "", output))
       if(!is.null(initialvalues))
-        ret = irtppinterfacevalues(dataset,model,cuads,initialvalues)
+        ret = irtppinterfacevalues(dataset,model,cuads,initialvalues,!is.null(output),ifelse(is.null(output), "", output))
     }
     else{
       dataset = filename;
       if(is.null(initialvalues))
-        ret = irtppinterfacefile(dataset,model,cuads)
+        ret = irtppinterfacefile(dataset,model,cuads,!is.null(output),ifelse(is.null(output), "", output))
       if(!is.null(initialvalues))
-        ret = irtppinterfacefilevalues(dataset,model,cuads,initialvalues)
+        ret = irtppinterfacefilevalues(dataset,model,cuads,initialvalues,!is.null(output),ifelse(is.null(output), "", output))
     }
   }
   ret
@@ -40,7 +40,7 @@ irtpp <- function(dataset=NULL,model, initialvalues = NULL, filename=NULL){
 #' @param itempars The item parameters for the model.
 #' @param method The method to estimate traits
 #' @return A list with the patterns and the estimated latent traits
-individual.traits<-function(dataset=NULL,model,itempars,method, filename=NULL){
+individual.traits<-function(dataset=NULL,model,itempars,method, filename=NULL, output=NULL){
   if(is.null(filename)){
     if(is.null(dataset)){
       stop("Please provide a dataset or filename")
@@ -48,17 +48,15 @@ individual.traits<-function(dataset=NULL,model,itempars,method, filename=NULL){
     model = irtpp.model(model,asnumber=T)
     cuads = as.matrix(read.table(system.file("extdata","Cuads.csv",package="IRTpp"),sep=",",header=T))
     est.method = ifelse(method == "EAP", eapinterface, mapinterface)
-    est = est.method(zita_par=itempars,dat=dataset,e_model=model,quads=cuads)
-    est = list(matrix(est[[1]],ncol=dim(dataset)[[2]],byrow=T),est[[2]])
-    names(est) <- c("patterns","trait")
+    est = est.method(zita_par=itempars,dat=dataset,e_model=model,quads=cuads,!is.null(output),ifelse(is.null(output), "", output))
+    #est = list(matrix(est[[1]],ncol=dim(dataset)[[2]],byrow=T),est[[2]])
   }
   else{
     model = irtpp.model(model,asnumber=T)
     cuads = as.matrix(read.table(system.file("extdata","Cuads.csv",package="IRTpp"),sep=",",header=T))
     est.method = ifelse(method == "EAP", eapinterfacefile, mapinterfacefile)
-    est = est.method(zita_par=itempars,dat=filename,e_model=model,quads=cuads)
-    est = list(matrix(est[[1]],ncol=2,byrow=T),est[[2]])
-    names(est) <- c("patterns","trait")
+    est = est.method(zita_par=itempars,dat=filename,e_model=model,quads=cuads,!is.null(output),ifelse(is.null(output), "", output))
+    #est = list(matrix(est[[1]],ncol=2,byrow=T),est[[2]])
   }
   est
 }
