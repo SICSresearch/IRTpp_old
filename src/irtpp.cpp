@@ -1,79 +1,17 @@
 #include <Rcpp.h>
 #include <string.h>
 
-#include <model/parameter/OnePLACModel.h>
-#include <model/parameter/OnePLACModel.cpp>
-#include <model/parameter/OnePLModel.h>
-#include <model/parameter/OnePLModel.cpp>
-#include <model/parameter/ParameterModel.h>
-#include <model/parameter/TwoPLModel.h>
-#include <model/parameter/TwoPLModel.cpp>
-#include <model/parameter/ThreePLModel.h>
-#include <model/parameter/ThreePLModel.cpp>
-
-//util
-#include <util/asa111.h>
-#include <util/asa111.cpp>
-#include <util/util.h>
-
-//type
-#include <type/Constant.h>
-#include <type/Constant.cpp>
-#include <type/DataSet.h>
 #include <type/Matrix.h>
+#include <boost/dynamic_bitset.hpp>
 #include <type/PatternMatrix.h>
-#include <type/PatternMatrix.cpp>
-#include <type/QuadratureNodes.h>
-#include <type/QuadratureNodes.cpp>
-#include <type/LatentTraits.h>
-
-//output
-#include <output/Output.h>
-#include <output/Output.cpp>
-
-//optimizer
-#include <optimizer/BFGSOptimizer.h>
-#include <optimizer/Optimizer.h>
-#include <optimizer/Optimizer.cpp>
-
-//input
-#include <input/Input.h>
-#include <input/Input.cpp>
-
-//estimation
-#include <estimation/Estimation.h>
-#include <estimation/classical/ClassicalEstimation.h>
-#include <estimation/classical/EMEstimation.h>
-#include <estimation/bayesian/LatentTraitEstimation.h>
-
-#include <estimation/classical/EMEstimation.cpp>
-#include <estimation/classical/EMEstimators/EM1PL.h>
-#include <estimation/classical/EMEstimators/EM1PLAC.h>
-#include <estimation/classical/EMEstimators/EM2PL.h>
-#include <estimation/classical/EMEstimators/EM3PL.h>
-#include <estimation/classical/EMEstimators/EMEstimator.h>
-
-
-//model
 #include <model/Model.h>
-#include <model/Model.cpp>
 #include <model/ModelFactory.h>
 #include <model/SICSGeneralModel.h>
-#include <model/SICSGeneralModel.cpp>
-#include <model/dimension/DimensionModel.h>
-#include <model/dimension/DimensionModel.cpp>
-#include <model/dimension/MultidimensionalModel.h>
-#include <model/dimension/MultidimensionalModel.cpp>
-#include <model/dimension/MultiUniDimModel.h>
-#include <model/dimension/MultiUniDimModel.cpp>
-#include <model/dimension/UnidimensionalModel.h>
-#include <model/dimension/UnidimensionalModel.cpp>
-#include <model/item/DichotomousModel.h>
-#include <model/item/DichotomousModel.cpp>
-#include <model/item/ItemModel.h>
-#include <model/item/ItemModel.cpp>
-#include <model/item/PolytomousModel.h>
-#include <model/item/PolytomousModel.cpp>
+#include <estimation/classical/EMEstimation.h>
+#include <input/Input.h>
+#include <time.h>
+#include <estimation/bayesian/LatentTraitEstimation.h>
+#include <type/LatentTraits.h>
 
 Rcpp::List irtpp_aux(PatternMatrix *datSet, int e_model, Rcpp::NumericMatrix quads,
                      Rcpp::NumericMatrix init_val, bool init_val_flag)
