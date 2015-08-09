@@ -235,7 +235,7 @@ Rcpp::List abilityinterface(Rcpp::NumericMatrix zita_par, PatternMatrix * datSet
 
         for(int j = 0; j < items; j++)
             output << "V" << j << " ";
-        output << "V" << "ability" << endl;
+        output << "trait" << endl;
 
         for(unsigned int i = 0; i < lte.lt->pm->matrix.size(); i++)
         {
