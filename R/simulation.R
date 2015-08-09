@@ -56,7 +56,7 @@ simulateTest<-function(model="2PL",items=10,individuals=1000,reps=1,dims=1,filen
   th=rnorm(individuals*dims,0,1)
   th=(th-mean(th))/sd(th)
   th = matrix(th,ncol=dims);
-  ret$latentTraits = th
+  ret$latentTraits = ua(latentTraits,th)
   th=NULL;
   gc()
   individuals = gsize;
