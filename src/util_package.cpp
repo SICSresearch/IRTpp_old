@@ -233,9 +233,9 @@ Rcpp::List abilityinterface(Rcpp::NumericMatrix zita_par, PatternMatrix * datSet
 
         output.open(output_path.c_str(), std::ios::app);
 
-        for(int j = 0; j < items - 1; j++)
+        for(int j = 0; j < items; j++)
             output << "V" << j << " ";
-        output << "V" << items - 1 << endl;
+        output << "V" << "ability" << endl;
 
         for(unsigned int i = 0; i < lte.lt->pm->matrix.size(); i++)
         {
@@ -259,11 +259,10 @@ Rcpp::List abilityinterface(Rcpp::NumericMatrix zita_par, PatternMatrix * datSet
     }
 
     Rcpp::List z = Rcpp::List::create(Rcpp::_["patterns"] = to_file_flag ? pars_aux : pars1,
-                                      Rcpp::_["ability"] = to_file_flag ? pars_aux : pars2,
+                                      Rcpp::_["trait"] = to_file_flag ? pars_aux : pars2,
                                       Rcpp::_["path"] = to_file_flag ? output_path : "No path");
 
     delete model;
-    delete datSet;
     delete theta;
     delete weight;
 
