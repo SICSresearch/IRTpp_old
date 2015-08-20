@@ -4,7 +4,7 @@
 \alias{irtpp.p}
 \title{Probability function for all models.}
 \usage{
-irtpp.p(model, ...)
+irtpp.p(model)
 }
 \arguments{
 \item{model}{The model to calculate the probability to}

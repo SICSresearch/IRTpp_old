@@ -1,4 +1,4 @@
-#' @name IRTpp
+#' @name IRTpp-package
 #' @aliases irtpp
 #' @docType package
 #' @title IRTpp : Item Response Theory Implemented in R and Cpp

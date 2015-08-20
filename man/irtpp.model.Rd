@@ -4,10 +4,12 @@
 \alias{irtpp.model}
 \title{Return a valid model string for a representation of a model.}
 \usage{
-irtpp.model(model)
+irtpp.model(model, asnumber = F)
 }
 \arguments{
 \item{model}{Model representation in a integer, string, character, or list with a model element}
+
+\item{asnumber}{Boolean. Set to true if you need the model as a integer (i.e. To interface with cpp)}
 }
 \value{
 model The valid string model for this model.

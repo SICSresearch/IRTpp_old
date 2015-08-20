@@ -5,10 +5,10 @@
 \alias{alpha.curve}
 \title{Cronbach-Mesbah Curve}
 \usage{
-alpha.curve(x)
+alpha.curve(test)
 }
 \arguments{
-\item{x}{a Dataframe that holds the test response data}
+\item{test}{a Dataframe that holds the test response data}
 }
 \value{
 The number of items used to calculate the coefficient.
@@ -22,9 +22,6 @@ Tue Cronbach-Mesbah curve plot.
 \description{
 Point-Biserial correlation coefficient is a correlation coefficient
 used when one variable is continuous and the other variable is dichotomous.
-License :GPL (>= 2) Extracted from CMC_1.0 package
-}
-\details{
-aaa
+License :GPL (>= 2) Adapted from CMC_1.0 package
 }
 

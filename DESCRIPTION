@@ -4,11 +4,18 @@ Title: Estimating IRT parameters using the IRT Methodology
 Version: 1.0
 Date: 2015-02-03
 Author: Developed by SICS Research Group
-Maintainer: Who to complain to <yourfault@somewhere.net>
-Description: More about what it does (maybe more than one line)
-License: What license is it under?
+Maintainer: Juan Liberato <jcliberatol@unal.edu.co>
+Description: An implementation of the IRT paradigm for the scoring of diferent 
+  instruments measuring latent traits (a.k.a Abilities) and estimating item parameters
+  for a variety of models, this package is highly optimized using Cpp and carefully written
+  R for the rest of the package, it aims to expand IRT applications to those aplications that
+  require faster and more robust estimation procedures. See the IRTpp documentation and github site
+  for more information and examples.
+License: GPL-3 
 LinkingTo: Rcpp
 Imports: Rcpp (>= 0.11.0)
 Suggests: testthat,
     knitr
 VignetteBuilder: knitr
+URL: http://github.com/SICSResearch/IRTpp
+BugReports: http://github.com/SICSResearch/IRTpp/issues

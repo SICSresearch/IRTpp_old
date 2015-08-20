@@ -5,10 +5,10 @@
 \alias{cronbach}
 \title{Alpha de Cronbach}
 \usage{
-cronbach(items)
+cronbach(test)
 }
 \arguments{
-\item{items.}{Dataframe that holds the test response data}
+\item{test}{a matrix or a Dataframe that holds the test response data}
 }
 \value{
 Cronbach's alpha for the test.

@@ -4,7 +4,8 @@
 \alias{individual.traits}
 \title{Estimate the latent traits of the individuals in a test with some given item parameters}
 \usage{
-individual.traits(dataset, model, itempars)
+individual.traits(dataset = NULL, model, itempars, method, filename = NULL,
+  output = NULL)
 }
 \arguments{
 \item{dataset}{The matrix with the responses from the individuals}
@@ -12,6 +13,11 @@ individual.traits(dataset, model, itempars)
 \item{model}{The model used to calibrate the parameters}
 
 \item{itempars}{The item parameters for the model.}
+
+\item{method}{The method to estimate traits}
+}
+\value{
+A list with the patterns and the estimated latent traits
 }
 \description{
 Estimate the latent traits of the individuals in a test with some given item parameters

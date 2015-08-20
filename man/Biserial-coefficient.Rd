@@ -20,10 +20,8 @@ biserial.cor(x, y, use = c("all.obs", "complete.obs"), level = 1)
 the value of the point-biserial correlation.
 }
 \description{
-Point-Biserial correlation coefficient is a correlation coefficient used when one variable is continuous and the other variable is dichotomous.
-License :GPL Extracted from ltm_1.0 package
-}
-\details{
-aaa
+Point-Biserial correlation coefficient is a correlation coefficient
+used when one variable is continuous and the other variable is dichotomous.
+License :GPL Adapted from ltm_1.0 package
 }
 

@@ -3,13 +3,12 @@
 \name{Test or Item information}
 \alias{Test or Item information}
 \alias{information}
-\title{Test or Item information
-License :GPL (>= 2) Extracted from CMC_1.0 package}
+\title{Test or Item information}
 \usage{
 information(object, range, items = NULL, ...)
 }
 \arguments{
-\item{object}{an object from either class ltm, rasch or tpm.}
+\item{object}{a matrix that contain the coefficient estimates}
 
 \item{range}{a interval for which the test information should be computed.}
 
@@ -27,7 +26,7 @@ Range the value of range argument
 items the value of items argument
 }
 \description{
-Test or Item information
-License :GPL (>= 2) Extracted from CMC_1.0 package
+Computes the amount of test or item information.
+License :GPL (>= 2) Adapted from CMC_1.0 package
 }
 
