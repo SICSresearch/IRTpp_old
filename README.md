@@ -27,8 +27,8 @@ R CMD build IRTpp
 
 ## Support
 
-This package is currentlu supported in GNU/linux and OSX systems only
+This package is currently supported in GNU/linux and OSX systems only
 
 ## Help
 
-Please Check the documentations using ?IRTpp after loading the package.
+Please check the documentations using ?IRTpp after loading the package.
