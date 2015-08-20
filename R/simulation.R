@@ -9,10 +9,11 @@
 #' @param model A string with the model to simulate, please refer to the model documentation in irtpp documentation.
 #' @param items the number of items to simulate
 #' @param individuals the number of individuals to simulate
+#' @param threshold The threshold that indicates the boundaries on the individual scores (to avoid nearly perfect or nearly )
 #' @param reps The number of tests to generate with this settings
-#' @param filename A directory where tests will be exported to.
-#' @param latentTraits
-#' @param independent Set this to false if all the individuals used to simulate the test must be the same
+#' @param filename A name to give the tests.
+#' @param directory The directory to output the tests
+#' @param latentTraits A set of latent traits to set them for the individuals
 #' @param dims Optional. The number of dimensions to simulate in the test if the model is multidimensional TODO (Untested in multidimensional, please do not use this parameter for now)
 #' @param boundaries Optional. The kind of boundaries that are specified for the parameters. 
 #' @param itempars Optional. Item parameters to be used in the simulation. When the parameters are not generated, the item parameters must be specified.
@@ -20,9 +21,8 @@
 #' @param verbose Optional. If true, output is made to know the status of the algorithm
 #' @examples
 #' k=simulateTest(items=20,individuals=2000,threshold=0.01,dims=1,reps=3,model="3PL")
-simulateTest<-function(model="2PL",items=10,individuals=1000,reps=1,dims=1,filename="test",directory=NULL,boundaries=NULL,generated=TRUE,itempars=NULL,latentTraits=NULL,seed=NULL,verbose=F,threshold=0)
+simulateTest<-function(model="2PL",items=10,individuals=1000,reps=1,dims=1,filename="test",directory=NULL,boundaries=NULL,itempars=NULL,latentTraits=NULL,seed=NULL,verbose=F,threshold=0)
 { 
-  
   dirflag=F;
   if(!is.null(directory)){
     print.sentence("Outputting to directory",directory,verbose=verbose)

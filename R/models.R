@@ -36,7 +36,7 @@ probability.3pl = function(z,a=z$a,b=z$b,c=z$c, theta, d=-a*b,cp=NULL){
 probability.2pl = function(z,a=z$a,b=z$b,theta, d=-a*b)((1)/(1+exp(-a*(theta-b))))
 
 #'2PL probability function
-#'The probability function in the 3PL model.
+#'The probability function in the 2PL model.
 #'@param z Optional. A list with the parameter b specified by keys.
 #'@param b The difficulty parameter. (Optional if d is specified)
 #'@param theta The subject's latent trait.
