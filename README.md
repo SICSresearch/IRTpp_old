@@ -2,6 +2,9 @@
 
 [![Travis-CI Build Status](https://travis-ci.org/SICSResearch/IRTpp.svg?branch=master)](https://travis-ci.org/SICSResearch/IRTpp)
 
+[![License](http://img.shields.io/badge/license-GPL%20%28%3E=%203%29-brightgreen.svg?style=flat)](http://www.gnu.org/licenses/gpl-3.0.html)
+
+
 Item Response Theory Software made in Cpp and R
 
 ## Installation
