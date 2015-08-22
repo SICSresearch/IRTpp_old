@@ -6,8 +6,8 @@
 using namespace Rcpp;
 
 // irtppinterfacevalues
-Rcpp::List irtppinterfacevalues(Rcpp::NumericMatrix dat, int e_model, Rcpp::NumericMatrix quads, Rcpp::NumericMatrix init_val, bool to_flag_file, std::string output_path);
-RcppExport SEXP IRTpp_irtppinterfacevalues(SEXP datSEXP, SEXP e_modelSEXP, SEXP quadsSEXP, SEXP init_valSEXP, SEXP to_flag_fileSEXP, SEXP output_pathSEXP) {
+Rcpp::List irtppinterfacevalues(Rcpp::NumericMatrix dat, int e_model, Rcpp::NumericMatrix quads, Rcpp::NumericMatrix init_val, bool to_file_flag, std::string output_path);
+RcppExport SEXP IRTpp_irtppinterfacevalues(SEXP datSEXP, SEXP e_modelSEXP, SEXP quadsSEXP, SEXP init_valSEXP, SEXP to_file_flagSEXP, SEXP output_pathSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
@@ -15,30 +15,30 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type e_model(e_modelSEXP);
     Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type quads(quadsSEXP);
     Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type init_val(init_valSEXP);
-    Rcpp::traits::input_parameter< bool >::type to_flag_file(to_flag_fileSEXP);
+    Rcpp::traits::input_parameter< bool >::type to_file_flag(to_file_flagSEXP);
     Rcpp::traits::input_parameter< std::string >::type output_path(output_pathSEXP);
-    __result = Rcpp::wrap(irtppinterfacevalues(dat, e_model, quads, init_val, to_flag_file, output_path));
+    __result = Rcpp::wrap(irtppinterfacevalues(dat, e_model, quads, init_val, to_file_flag, output_path));
     return __result;
 END_RCPP
 }
 // irtppinterface
-Rcpp::List irtppinterface(Rcpp::NumericMatrix dat, int e_model, Rcpp::NumericMatrix quads, bool to_flag_file, std::string output_path);
-RcppExport SEXP IRTpp_irtppinterface(SEXP datSEXP, SEXP e_modelSEXP, SEXP quadsSEXP, SEXP to_flag_fileSEXP, SEXP output_pathSEXP) {
+Rcpp::List irtppinterface(Rcpp::NumericMatrix dat, int e_model, Rcpp::NumericMatrix quads, bool to_file_flag, std::string output_path);
+RcppExport SEXP IRTpp_irtppinterface(SEXP datSEXP, SEXP e_modelSEXP, SEXP quadsSEXP, SEXP to_file_flagSEXP, SEXP output_pathSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type dat(datSEXP);
     Rcpp::traits::input_parameter< int >::type e_model(e_modelSEXP);
     Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type quads(quadsSEXP);
-    Rcpp::traits::input_parameter< bool >::type to_flag_file(to_flag_fileSEXP);
+    Rcpp::traits::input_parameter< bool >::type to_file_flag(to_file_flagSEXP);
     Rcpp::traits::input_parameter< std::string >::type output_path(output_pathSEXP);
-    __result = Rcpp::wrap(irtppinterface(dat, e_model, quads, to_flag_file, output_path));
+    __result = Rcpp::wrap(irtppinterface(dat, e_model, quads, to_file_flag, output_path));
     return __result;
 END_RCPP
 }
 // irtppinterfacefilevalues
-Rcpp::List irtppinterfacefilevalues(std::string dat, int e_model, Rcpp::NumericMatrix quads, Rcpp::NumericMatrix init_val, bool to_flag_file, std::string output_path);
-RcppExport SEXP IRTpp_irtppinterfacefilevalues(SEXP datSEXP, SEXP e_modelSEXP, SEXP quadsSEXP, SEXP init_valSEXP, SEXP to_flag_fileSEXP, SEXP output_pathSEXP) {
+Rcpp::List irtppinterfacefilevalues(std::string dat, int e_model, Rcpp::NumericMatrix quads, Rcpp::NumericMatrix init_val, bool to_file_flag, std::string output_path);
+RcppExport SEXP IRTpp_irtppinterfacefilevalues(SEXP datSEXP, SEXP e_modelSEXP, SEXP quadsSEXP, SEXP init_valSEXP, SEXP to_file_flagSEXP, SEXP output_pathSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
@@ -46,30 +46,30 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type e_model(e_modelSEXP);
     Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type quads(quadsSEXP);
     Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type init_val(init_valSEXP);
-    Rcpp::traits::input_parameter< bool >::type to_flag_file(to_flag_fileSEXP);
+    Rcpp::traits::input_parameter< bool >::type to_file_flag(to_file_flagSEXP);
     Rcpp::traits::input_parameter< std::string >::type output_path(output_pathSEXP);
-    __result = Rcpp::wrap(irtppinterfacefilevalues(dat, e_model, quads, init_val, to_flag_file, output_path));
+    __result = Rcpp::wrap(irtppinterfacefilevalues(dat, e_model, quads, init_val, to_file_flag, output_path));
     return __result;
 END_RCPP
 }
 // irtppinterfacefile
-Rcpp::List irtppinterfacefile(std::string dat, int e_model, Rcpp::NumericMatrix quads, bool to_flag_file, std::string output_path);
-RcppExport SEXP IRTpp_irtppinterfacefile(SEXP datSEXP, SEXP e_modelSEXP, SEXP quadsSEXP, SEXP to_flag_fileSEXP, SEXP output_pathSEXP) {
+Rcpp::List irtppinterfacefile(std::string dat, int e_model, Rcpp::NumericMatrix quads, bool to_file_flag, std::string output_path);
+RcppExport SEXP IRTpp_irtppinterfacefile(SEXP datSEXP, SEXP e_modelSEXP, SEXP quadsSEXP, SEXP to_file_flagSEXP, SEXP output_pathSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< std::string >::type dat(datSEXP);
     Rcpp::traits::input_parameter< int >::type e_model(e_modelSEXP);
     Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type quads(quadsSEXP);
-    Rcpp::traits::input_parameter< bool >::type to_flag_file(to_flag_fileSEXP);
+    Rcpp::traits::input_parameter< bool >::type to_file_flag(to_file_flagSEXP);
     Rcpp::traits::input_parameter< std::string >::type output_path(output_pathSEXP);
-    __result = Rcpp::wrap(irtppinterfacefile(dat, e_model, quads, to_flag_file, output_path));
+    __result = Rcpp::wrap(irtppinterfacefile(dat, e_model, quads, to_file_flag, output_path));
     return __result;
 END_RCPP
 }
 // mapinterfacefile
-Rcpp::List mapinterfacefile(Rcpp::NumericMatrix zita_par, std::string dat, int e_model, Rcpp::NumericMatrix quads, bool to_flag_file, std::string output_path);
-RcppExport SEXP IRTpp_mapinterfacefile(SEXP zita_parSEXP, SEXP datSEXP, SEXP e_modelSEXP, SEXP quadsSEXP, SEXP to_flag_fileSEXP, SEXP output_pathSEXP) {
+Rcpp::List mapinterfacefile(Rcpp::NumericMatrix zita_par, std::string dat, int e_model, Rcpp::NumericMatrix quads, bool to_file_flag, std::string output_path, bool matrix_flag, SEXP prob_matrix);
+RcppExport SEXP IRTpp_mapinterfacefile(SEXP zita_parSEXP, SEXP datSEXP, SEXP e_modelSEXP, SEXP quadsSEXP, SEXP to_file_flagSEXP, SEXP output_pathSEXP, SEXP matrix_flagSEXP, SEXP prob_matrixSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
@@ -77,15 +77,17 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< std::string >::type dat(datSEXP);
     Rcpp::traits::input_parameter< int >::type e_model(e_modelSEXP);
     Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type quads(quadsSEXP);
-    Rcpp::traits::input_parameter< bool >::type to_flag_file(to_flag_fileSEXP);
+    Rcpp::traits::input_parameter< bool >::type to_file_flag(to_file_flagSEXP);
     Rcpp::traits::input_parameter< std::string >::type output_path(output_pathSEXP);
-    __result = Rcpp::wrap(mapinterfacefile(zita_par, dat, e_model, quads, to_flag_file, output_path));
+    Rcpp::traits::input_parameter< bool >::type matrix_flag(matrix_flagSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type prob_matrix(prob_matrixSEXP);
+    __result = Rcpp::wrap(mapinterfacefile(zita_par, dat, e_model, quads, to_file_flag, output_path, matrix_flag, prob_matrix));
     return __result;
 END_RCPP
 }
 // mapinterface
-Rcpp::List mapinterface(Rcpp::NumericMatrix zita_par, Rcpp::NumericMatrix dat, int e_model, Rcpp::NumericMatrix quads, bool to_flag_file, std::string output_path);
-RcppExport SEXP IRTpp_mapinterface(SEXP zita_parSEXP, SEXP datSEXP, SEXP e_modelSEXP, SEXP quadsSEXP, SEXP to_flag_fileSEXP, SEXP output_pathSEXP) {
+Rcpp::List mapinterface(Rcpp::NumericMatrix zita_par, Rcpp::NumericMatrix dat, int e_model, Rcpp::NumericMatrix quads, bool to_file_flag, std::string output_path, bool matrix_flag, SEXP prob_matrix);
+RcppExport SEXP IRTpp_mapinterface(SEXP zita_parSEXP, SEXP datSEXP, SEXP e_modelSEXP, SEXP quadsSEXP, SEXP to_file_flagSEXP, SEXP output_pathSEXP, SEXP matrix_flagSEXP, SEXP prob_matrixSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
@@ -93,15 +95,17 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type dat(datSEXP);
     Rcpp::traits::input_parameter< int >::type e_model(e_modelSEXP);
     Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type quads(quadsSEXP);
-    Rcpp::traits::input_parameter< bool >::type to_flag_file(to_flag_fileSEXP);
+    Rcpp::traits::input_parameter< bool >::type to_file_flag(to_file_flagSEXP);
     Rcpp::traits::input_parameter< std::string >::type output_path(output_pathSEXP);
-    __result = Rcpp::wrap(mapinterface(zita_par, dat, e_model, quads, to_flag_file, output_path));
+    Rcpp::traits::input_parameter< bool >::type matrix_flag(matrix_flagSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type prob_matrix(prob_matrixSEXP);
+    __result = Rcpp::wrap(mapinterface(zita_par, dat, e_model, quads, to_file_flag, output_path, matrix_flag, prob_matrix));
     return __result;
 END_RCPP
 }
 // eapinterfacefile
-Rcpp::List eapinterfacefile(Rcpp::NumericMatrix zita_par, std::string dat, int e_model, Rcpp::NumericMatrix quads, bool to_flag_file, std::string output_path);
-RcppExport SEXP IRTpp_eapinterfacefile(SEXP zita_parSEXP, SEXP datSEXP, SEXP e_modelSEXP, SEXP quadsSEXP, SEXP to_flag_fileSEXP, SEXP output_pathSEXP) {
+Rcpp::List eapinterfacefile(Rcpp::NumericMatrix zita_par, std::string dat, int e_model, Rcpp::NumericMatrix quads, bool to_file_flag, std::string output_path, bool matrix_flag, SEXP prob_matrix);
+RcppExport SEXP IRTpp_eapinterfacefile(SEXP zita_parSEXP, SEXP datSEXP, SEXP e_modelSEXP, SEXP quadsSEXP, SEXP to_file_flagSEXP, SEXP output_pathSEXP, SEXP matrix_flagSEXP, SEXP prob_matrixSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
@@ -109,15 +113,17 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< std::string >::type dat(datSEXP);
     Rcpp::traits::input_parameter< int >::type e_model(e_modelSEXP);
     Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type quads(quadsSEXP);
-    Rcpp::traits::input_parameter< bool >::type to_flag_file(to_flag_fileSEXP);
+    Rcpp::traits::input_parameter< bool >::type to_file_flag(to_file_flagSEXP);
     Rcpp::traits::input_parameter< std::string >::type output_path(output_pathSEXP);
-    __result = Rcpp::wrap(eapinterfacefile(zita_par, dat, e_model, quads, to_flag_file, output_path));
+    Rcpp::traits::input_parameter< bool >::type matrix_flag(matrix_flagSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type prob_matrix(prob_matrixSEXP);
+    __result = Rcpp::wrap(eapinterfacefile(zita_par, dat, e_model, quads, to_file_flag, output_path, matrix_flag, prob_matrix));
     return __result;
 END_RCPP
 }
 // eapinterface
-Rcpp::List eapinterface(Rcpp::NumericMatrix zita_par, Rcpp::NumericMatrix dat, int e_model, Rcpp::NumericMatrix quads, bool to_flag_file, std::string output_path);
-RcppExport SEXP IRTpp_eapinterface(SEXP zita_parSEXP, SEXP datSEXP, SEXP e_modelSEXP, SEXP quadsSEXP, SEXP to_flag_fileSEXP, SEXP output_pathSEXP) {
+Rcpp::List eapinterface(Rcpp::NumericMatrix zita_par, Rcpp::NumericMatrix dat, int e_model, Rcpp::NumericMatrix quads, bool to_file_flag, std::string output_path, bool matrix_flag, SEXP prob_matrix);
+RcppExport SEXP IRTpp_eapinterface(SEXP zita_parSEXP, SEXP datSEXP, SEXP e_modelSEXP, SEXP quadsSEXP, SEXP to_file_flagSEXP, SEXP output_pathSEXP, SEXP matrix_flagSEXP, SEXP prob_matrixSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
@@ -125,9 +131,11 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type dat(datSEXP);
     Rcpp::traits::input_parameter< int >::type e_model(e_modelSEXP);
     Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type quads(quadsSEXP);
-    Rcpp::traits::input_parameter< bool >::type to_flag_file(to_flag_fileSEXP);
+    Rcpp::traits::input_parameter< bool >::type to_file_flag(to_file_flagSEXP);
     Rcpp::traits::input_parameter< std::string >::type output_path(output_pathSEXP);
-    __result = Rcpp::wrap(eapinterface(zita_par, dat, e_model, quads, to_flag_file, output_path));
+    Rcpp::traits::input_parameter< bool >::type matrix_flag(matrix_flagSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type prob_matrix(prob_matrixSEXP);
+    __result = Rcpp::wrap(eapinterface(zita_par, dat, e_model, quads, to_file_flag, output_path, matrix_flag, prob_matrix));
     return __result;
 END_RCPP
 }

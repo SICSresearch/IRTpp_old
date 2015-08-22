@@ -24,12 +24,22 @@ Rcpp::List transformAbilityOutput(void *);
 
 PatternMatrix * getPatternMatrix(Rcpp::NumericMatrix r_dataSet);
 
-Rcpp::List irtpp_aux(PatternMatrix *datSet, int e_model, Rcpp::NumericMatrix quads,
-                     Rcpp::NumericMatrix init_val, bool init_val_flag,
-                     bool to_flag_file, string output_path);
+Rcpp::List irtpp_aux(PatternMatrix *datSet,
+                     int e_model,
+                     Rcpp::NumericMatrix quads,
+                     Rcpp::NumericMatrix init_val,
+                     bool init_val_flag,
+                     bool to_flag_file,
+                     string output_path);
 
-Rcpp::List abilityinterface(Rcpp::NumericMatrix zita_par, PatternMatrix * datSet,
-                            int e_model, Rcpp::NumericMatrix quads, int method,
-                            bool to_flag_file, string output_path);
+Rcpp::List abilityinterface(Rcpp::NumericMatrix zita_par,
+	                        PatternMatrix * datSet,
+                            int e_model,
+                            Rcpp::NumericMatrix quads,
+                            int method,
+                            bool to_flag_file,
+                            string output_path,
+                            bool matrix_flag,
+                            SEXP prob_matrix);
 
 #endif

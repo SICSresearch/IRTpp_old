@@ -139,10 +139,13 @@ Rcpp::List irtpp_aux(PatternMatrix *datSet, int e_model, Rcpp::NumericMatrix qua
             pars[i] = returnpars[i];
     }
 
+    Rcpp::XPtr< Matrix<double> > p_matrix((Matrix<double>*)status_list[2], false);
+
     Rcpp::List z = Rcpp::List::create(Rcpp::_["zita"] = to_file_flag ? pars_aux : pars,
                                       Rcpp::_["path"] = to_file_flag ? output_path : "No path",
                                       Rcpp::_["iterations"] = (*(int*)status_list[0]),
-                                      Rcpp::_["convergence"] = (*(bool*)status_list[1]));
+                                      Rcpp::_["convergence"] = (*(bool*)status_list[1]),
+                                      Rcpp::_["probability_matrix"] = p_matrix);
 
     delete model;
     delete theta;
@@ -156,7 +159,8 @@ Rcpp::List irtpp_aux(PatternMatrix *datSet, int e_model, Rcpp::NumericMatrix qua
 
 Rcpp::List abilityinterface(Rcpp::NumericMatrix zita_par, PatternMatrix * datSet,
                             int e_model, Rcpp::NumericMatrix quads, int method,
-                            bool to_file_flag, string output_path)
+                            bool to_file_flag, string output_path,
+                            bool matrix_flag, SEXP prob_matrix)
 {
     // Load the model
     Model *model;
@@ -214,10 +218,23 @@ Rcpp::List abilityinterface(Rcpp::NumericMatrix zita_par, PatternMatrix * datSet
     lte.setQuadratureNodes(&nodes);
 
     // Ready to estimate
-    if(method == 0)
-        lte.estimateLatentTraitsEAP(zita_set);
+    if(matrix_flag)
+    {
+        Rcpp::XPtr< Matrix<double> > matrix_ref(prob_matrix);
+        model->getParameterModel()->probabilityMatrix = matrix_ref;
+
+        if(method == 0)
+            lte.estimateLatentTraitsEAP();
+        else
+            lte.estimateLatentTraitsMAP(zita_set);
+    }
     else
-        lte.estimateLatentTraitsMAP(zita_set);
+    {
+        if(method == 0)
+            lte.estimateLatentTraitsEAP(zita_set);
+        else
+            lte.estimateLatentTraitsMAP(zita_set);
+    }
 
     result = lte.lt->getListPatternTheta();
 
@@ -262,6 +279,7 @@ Rcpp::List abilityinterface(Rcpp::NumericMatrix zita_par, PatternMatrix * datSet
                                       Rcpp::_["trait"] = to_file_flag ? pars_aux : pars2,
                                       Rcpp::_["path"] = to_file_flag ? output_path : "No path");
 
+    delete model->parameterModel->probabilityMatrix;
     delete model;
     delete theta;
     delete weight;

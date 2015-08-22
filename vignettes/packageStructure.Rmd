@@ -66,7 +66,7 @@ Patterns are usually represented as a ordered matrix, when it is returned from t
 
 ```{r}
 t = simulateTest(model="2PL",items=3,individuals=10)
-individual.traits(dataset=t$test[[1]],model="2PL",itempars=parameter.matrix(t$itempars), "EAP")
+individual.traits(dataset=t$test[[1]],model="2PL",itempars=parameter.matrix(t$itempars), method="EAP")
 ```
 
 ### Models

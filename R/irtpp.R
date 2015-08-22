@@ -40,38 +40,49 @@ irtpp <- function(dataset=NULL,model, initialvalues = NULL, filename=NULL, outpu
 #' @param itempars The item parameters for the model.
 #' @param method The method to estimate traits
 #' @return A list with the patterns and the estimated latent traits
-individual.traits<-function(dataset=NULL,model,itempars,method, filename=NULL, output=NULL){
+individual.traits<-function(model,
+                            itempars,
+                            method,
+                            dataset             = NULL,
+                            filename            = NULL,
+                            output              = NULL,
+                            probability_matrix  = NULL)
+{
+  
+  model = irtpp.model(model,asnumber=T)
+  cuads = as.matrix(read.table(system.file("extdata","Cuads.csv",package="IRTpp"),sep=",",header=T))
+
   if(is.null(filename)){
     if(is.null(dataset)){
       stop("Please provide a dataset or filename")
     }
-    model = irtpp.model(model,asnumber=T)
-    cuads = as.matrix(read.table(system.file("extdata","Cuads.csv",package="IRTpp"),sep=",",header=T))
     est.method = ifelse(method == "EAP", eapinterface, mapinterface)
-    est = est.method(zita_par=itempars,dat=dataset,e_model=model,quads=cuads,!is.null(output),ifelse(is.null(output), "", output))
-
-    if(is.null(output)){
-      est = list(matrix(est[[1]],ncol=dim(dataset)[[2]],byrow=T),est[[2]])
-      names(est) <- c("patterns","trait")
-    }else{
-      est = list(est[[3]])
-      names(est) <- c("path")
-    }
-
-  }
-  else{
-    model = irtpp.model(model,asnumber=T)
-    cuads = as.matrix(read.table(system.file("extdata","Cuads.csv",package="IRTpp"),sep=",",header=T))
+  }else{
     est.method = ifelse(method == "EAP", eapinterfacefile, mapinterfacefile)
-    est = est.method(zita_par=itempars,dat=filename,e_model=model,quads=cuads,!is.null(output),ifelse(is.null(output), "", output))
+  }
 
-    if(is.null(output)){
-      est = list(matrix(est[[1]],ncol=dim(dataset)[[2]],byrow=T),est[[2]])
-      names(est) <- c("patterns","trait")
-    }else{
-      est = list(est[[3]])
-      names(est) <- c("path")
-    }
+  est = est.method(zita_par     = itempars,
+                   dat          = dataset,
+                   e_model      = model,
+                   quads        = cuads,
+                   to_file_flag = !is.null(output),
+                   output_path  = ifelse(is.null(output), "", output),
+                   matrix_flag  = !is.null(probability_matrix),
+                   prob_matrix  = ifelse(is.null(probability_matrix), "", probability_matrix)
+                   )
+
+  est = individual.traits.aux(output=output, dataset=dataset, est=est)
+
+  est
+}
+
+individual.traits.aux <- function(output, dataset, est){
+  if(is.null(output)){
+    est = list(matrix(est[[1]],ncol=dim(dataset)[[2]],byrow=T),est[[2]])
+    names(est) <- c("patterns","trait")
+  }else{
+    est = list(est[[3]])
+    names(est) <- c("path")
   }
   est
 }
