@@ -20,7 +20,7 @@ git clone http://github.com/SICSResearch/IRTpp --recursive
 2 Build the package in the standard R way.
 
 ```
-R CMD build IRTpp
+R CMD INSTALL IRTpp
 ```
 
 3. Install the package using install-packages
