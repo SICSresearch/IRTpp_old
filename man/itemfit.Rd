@@ -8,7 +8,7 @@ evalua que tan bien se ajusta el modelo a los datos.}
 itemfit(a)
 }
 \arguments{
-\item{model:}{el modelo implementado.}
+\item{a}{el modelo implementado.}
 }
 \description{
 itemfit

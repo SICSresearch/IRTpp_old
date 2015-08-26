@@ -2,9 +2,12 @@
 #' @param dataset The matrix with the responses from the individuals
 #' @param model The model used to calibrate the parameters
 #' @param initialvalues The matrix with the initial values for the optimization process
+#' @param filename Optional argument specifying a CSV file to read instead of a dataset in memory
+#' @param output Optional. Additonal arguments that need to be documented by cristian
 #' @return The item parameters in a matrix.
 #' @export
-irtpp <- function(dataset=NULL,model, initialvalues = NULL, filename=NULL, output=NULL){
+irtpp <- function(dataset=NULL,model, initialvalues = NULL,
+                  filename=NULL, output=NULL){
   if(is.null(dataset)){
     if(is.null(filename)){
       stop("Please provide a dataset to irtpp")
@@ -40,6 +43,9 @@ irtpp <- function(dataset=NULL,model, initialvalues = NULL, filename=NULL, outpu
 #' @param model The model used to calibrate the parameters
 #' @param itempars The item parameters for the model.
 #' @param method The method to estimate traits
+#' @param filename The input filename instead of a in-memory dataset
+#' @param probability_matrix The pointer returned in the estimation to the probability matrix in case it does not need to be recalculated
+#' @param output Optional. Additonal arguments that need to be documented by cristian
 #' @return A list with the patterns and the estimated latent traits
 #' @export
 individual.traits<-function(model,

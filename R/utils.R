@@ -22,6 +22,7 @@ ua<-function(var,val){
 #' Prints different strings concatenating them with a " "
 #' @param ... The strings to print.
 #' @param sep The separator to pass
+#' @param verbose Pass the verbose parameter of a function to make this print invisible when verbose is false.
 print.sentence<-function(...,sep=" ",verbose=T){
   if(verbose){print(paste(sep=sep,...))}
 }

@@ -1,5 +1,5 @@
-#ifndef UTILP_HPP
-#define UTILP_HPP
+#ifndef UTILP_H
+#define UTILP_H
 
 #include <estimation/bayesian/LatentTraitEstimation.h>
 #include <estimation/classical/EMEstimation.h>

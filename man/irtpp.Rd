@@ -13,6 +13,10 @@ irtpp(dataset = NULL, model, initialvalues = NULL, filename = NULL,
 \item{model}{The model used to calibrate the parameters}
 
 \item{initialvalues}{The matrix with the initial values for the optimization process}
+
+\item{filename}{Optional argument specifying a CSV file to read instead of a dataset in memory}
+
+\item{output}{Optional. Additonal arguments that need to be documented by cristian}
 }
 \value{
 The item parameters in a matrix.

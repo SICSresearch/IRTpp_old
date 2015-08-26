@@ -1,4 +1,4 @@
-#include <util_package.hpp>
+#include <util_package.h>
 
 PatternMatrix * getPatternMatrix(string r_path)
 {

@@ -1,7 +1,7 @@
 #include <Rcpp.h>
 #include <string.h>
 
-#include <util_package.hpp>
+#include <util_package.h>
 
 // Pasar todos los argumentos como una lista
 // controlar todo con la menor cantidad de funciones posibles

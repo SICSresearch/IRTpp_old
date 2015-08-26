@@ -16,7 +16,8 @@
 #'}
 #'@author SICS Research Team
 #'@keywords IRT MIRT Psychometry 
-#'
+#'@useDynLib IRTpp
+#' @importFrom Rcpp sourceCpp
 #'@section Getting Started:
 #'Get started with the IRTpp package browsing the index of this documentation
 #'if you need help the vignettes should be helpful.

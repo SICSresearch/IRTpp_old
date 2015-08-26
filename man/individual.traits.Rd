@@ -15,6 +15,12 @@ individual.traits(model, itempars, method, dataset = NULL, filename = NULL,
 \item{method}{The method to estimate traits}
 
 \item{dataset}{The matrix with the responses from the individuals}
+
+\item{filename}{The input filename instead of a in-memory dataset}
+
+\item{output}{Optional. Additonal arguments that need to be documented by cristian}
+
+\item{probability_matrix}{The pointer returned in the estimation to the probability matrix in case it does not need to be recalculated}
 }
 \value{
 A list with the patterns and the estimated latent traits
