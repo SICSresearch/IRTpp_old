@@ -1,5 +1,4 @@
 #' @name IRTpp-package
-#' @aliases irtpp
 #' @docType package
 #' @title IRTpp : Item Response Theory Implemented in R and Cpp
 #' @description IRTpp supports the IRT and MIRT methodologies by implementing 

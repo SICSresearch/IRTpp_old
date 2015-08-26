@@ -3,6 +3,7 @@
 #' SimulateTest.
 #' Simulates a test according to a model
 #' 
+#' @export
 #' @description This function simulates tests according to a IRT model.
 #' @author Juan Liberato
 #' @return A List with the model, the seed , itempars the item parameters
@@ -166,6 +167,7 @@ simulateTest<-function(model="2PL",items=10,individuals=1000,reps=1,dims=1,filen
 }
 
 #' Simulates item parameters depending on a model
+#' @export
 #' @param items , Number of items to generate
 #' @param model A string with the model to simulate, please refer to the model documentation in irtpp documentation.
 #' @param dims Optional. The number of dimensions to simulate in the test if the model is multidimensional

@@ -3,6 +3,7 @@
 #' @param model The model used to calibrate the parameters
 #' @param initialvalues The matrix with the initial values for the optimization process
 #' @return The item parameters in a matrix.
+#' @export
 irtpp <- function(dataset=NULL,model, initialvalues = NULL, filename=NULL, output=NULL){
   if(is.null(dataset)){
     if(is.null(filename)){
@@ -40,6 +41,7 @@ irtpp <- function(dataset=NULL,model, initialvalues = NULL, filename=NULL, outpu
 #' @param itempars The item parameters for the model.
 #' @param method The method to estimate traits
 #' @return A list with the patterns and the estimated latent traits
+#' @export
 individual.traits<-function(model,
                             itempars,
                             method,

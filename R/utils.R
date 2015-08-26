@@ -2,6 +2,7 @@
 #' Autoapply a lapply to a function if the parameter is a list instead of a parameter.
 #' @param clist Argument that is possibly a list
 #' @param fun The function
+#' @param ... additional arguments
 autoapply<-function(clist,fun,...){
   if(!is.list(clist)) r=fun(clist,...) else {
     if(length(clist)==1) r=fun(clist[[1]],...) else r=lapply(clist,fun,...)
@@ -28,6 +29,7 @@ print.sentence<-function(...,sep=" ",verbose=T){
 #' Returns a parameter matrix from a parameter list.
 #' @param pars The parameter list
 #' @param model The model whose the list refers to.
+#' @export
 parameter.matrix<-function(pars, model="3PL"){
   cols=0;
   if(model=="1PL"){cols=3}
@@ -41,6 +43,7 @@ parameter.matrix<-function(pars, model="3PL"){
 #' Returns a parameter list from a parameter matrix.
 #' @param pars The parameter matrix
 #' @param model The model whose the matrix refers to.
+#' @export
 parameter.list<-function(pars,model="3PL"){
   names=NULL
   if(model=="1PL"){names=c("a","b","c")}
@@ -60,6 +63,7 @@ parameter.list<-function(pars,model="3PL"){
 #' @param model Model representation in a integer, string, character, or list with a model element
 #' @param asnumber Boolean. Set to true if you need the model as a integer (i.e. To interface with cpp)
 #' @return model The valid string model for this model.
+#' @export
 #' 
 irtpp.model<-function(model,asnumber=F){
   if(typeof(model)=="list"){
@@ -95,7 +99,7 @@ irtpp.model<-function(model,asnumber=F){
 #' Checks a test according to the model library to validate if it can be estimated or abort the current procedure
 #' @param model The model to check
 #' @param msg Additional error message
-#' @param stop Optional, If false, this function wont throw a stop. 
+#' @param error Optional, If false, this function wont throw a stop. 
 #' @return No return, in case that the model is not valid throws a stop, if error is false, Only prints a message
 check.model<-function(model,msg="",error=T){
   checkModel(model,msg,error)
@@ -111,6 +115,7 @@ checkModel<-function(model,msg="",error=T){
   }
 }
 #' Lists all available models
+#' @export
 irtpp.models<-function(){
   c("1PL","2PL","3PL","Rasch")
 }

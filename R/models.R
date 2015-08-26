@@ -17,6 +17,7 @@ irtpp.p<- function(model){
 #'@param theta The subject's latent trait.
 #'@param d Optional. Overrides the b parameter, it is equal to -a*b. Used in some functions.
 #'@param cp Optional. Overrides the c parameter, it is logit(c)
+#'@export
 probability.3pl = function(z,a=z$a,b=z$b,c=z$c, theta, d=-a*b,cp=NULL){
   if(is.null(cp)){
     c+((1-c)/(1+exp(-a*(theta-b))))
@@ -33,6 +34,7 @@ probability.3pl = function(z,a=z$a,b=z$b,c=z$c, theta, d=-a*b,cp=NULL){
 #'@param b The difficulty parameter. (Optional if d is specified)
 #'@param theta The subject's latent trait.
 #'@param d Optional. Overrides the b parameter, it is equal to -a*b. Used in some functions.
+#'@export
 probability.2pl = function(z,a=z$a,b=z$b,theta, d=-a*b)((1)/(1+exp(-a*(theta-b))))
 
 #'2PL probability function
@@ -40,6 +42,7 @@ probability.2pl = function(z,a=z$a,b=z$b,theta, d=-a*b)((1)/(1+exp(-a*(theta-b))
 #'@param z Optional. A list with the parameter b specified by keys.
 #'@param b The difficulty parameter. (Optional if d is specified)
 #'@param theta The subject's latent trait.
+#'@export
 probability.1pl = function(z,b=z$b,theta)((1)/(1+exp(-(theta-b))))
 
 #'LogLikelihood of a IRT model
@@ -47,6 +50,7 @@ probability.1pl = function(z,b=z$b,theta)((1)/(1+exp(-(theta-b))))
 #'@param traits A vector with each individual parameter.
 #'@param z A list with the parameters a b and c specified by keys.
 #' Each key must contain a vector of the item parameters for each parameter
+#' @export
 loglik<- function(test,traits,z){
   #prob matrix
   pm = lapply(traits,function(x)probability.3pl(z=z,theta=x))

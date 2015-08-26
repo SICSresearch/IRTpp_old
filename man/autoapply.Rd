@@ -10,6 +10,8 @@ autoapply(clist, fun, ...)
 \item{clist}{Argument that is possibly a list}
 
 \item{fun}{The function}
+
+\item{...}{additional arguments}
 }
 \description{
 Autoapply a lapply to a function if the parameter is a list instead of a parameter.
