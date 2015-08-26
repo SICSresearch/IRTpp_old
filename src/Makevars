@@ -5,7 +5,7 @@ PKG_CXXFLAGS=-I$(IRTPPDIR)/src -I./
 PKG_LIBS = -L$(IRTPPDIR) $(IRTPPLIB) $(LIBM)
 
 CXXFLAGS = -O3 -Wall -Wno-unused -march=native
-CXX_STD = CXX11
+CXX_STD = CXX03
 
 MAKE=make -j8
 
