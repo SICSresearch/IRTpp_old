@@ -2,8 +2,8 @@
 
 language: r
 warnings_are_errors: true
-sudo: false
 compiler: gcc
+sudo: required
 
 env:
  global:
