@@ -282,6 +282,9 @@ Rcpp::List abilityinterface(Rcpp::NumericMatrix zita_par, PatternMatrix * datSet
                                       Rcpp::_["trait"] = to_file_flag ? pars_aux : pars2,
                                       Rcpp::_["path"] = to_file_flag ? output_path : "No path");
 
+    for(int i = 0; i < 3; i++)
+        delete [] zita_set[i][0];
+    delete [] zita_set;
     delete model->parameterModel->probabilityMatrix;
     delete model;
     delete theta;
