@@ -153,6 +153,7 @@ Rcpp::List irtpp_aux(PatternMatrix *datSet, int e_model, Rcpp::NumericMatrix qua
 
     delete (int*)status_list[0];
     delete (bool*)status_list[1];
+    delete [] status_list;
 
     return z;
 }
@@ -227,6 +228,8 @@ Rcpp::List abilityinterface(Rcpp::NumericMatrix zita_par, PatternMatrix * datSet
             lte.estimateLatentTraitsEAP();
         else
             lte.estimateLatentTraitsMAP(zita_set);
+
+        delete model->getParameterModel()->probabilityMatrix;
     }
     else
     {
