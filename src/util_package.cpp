@@ -154,6 +154,7 @@ Rcpp::List irtpp_aux(PatternMatrix *datSet, int e_model, Rcpp::NumericMatrix qua
     delete (int*)status_list[0];
     delete (bool*)status_list[1];
     delete [] status_list;
+    delete [] returnpars;
 
     return z;
 }
@@ -278,12 +279,14 @@ Rcpp::List abilityinterface(Rcpp::NumericMatrix zita_par, PatternMatrix * datSet
         }
     }
 
+    lte.lt->deleteListPatternTheta(result);
+
     Rcpp::List z = Rcpp::List::create(Rcpp::_["patterns"] = to_file_flag ? pars_aux : pars1,
                                       Rcpp::_["trait"] = to_file_flag ? pars_aux : pars2,
                                       Rcpp::_["path"] = to_file_flag ? output_path : "No path");
 
-    for(int i = 0; i < 3; i++)
-        delete [] zita_set[i][0];
+    for(int i = 0; i < 3; i++) delete [] zita_set[i][0];
+    for(int i = 0; i < 3; i++) delete [] zita_set[i];
     delete [] zita_set;
     delete model;
     delete theta;
