@@ -285,7 +285,6 @@ Rcpp::List abilityinterface(Rcpp::NumericMatrix zita_par, PatternMatrix * datSet
     for(int i = 0; i < 3; i++)
         delete [] zita_set[i][0];
     delete [] zita_set;
-    delete model->parameterModel->probabilityMatrix;
     delete model;
     delete theta;
     delete weight;
