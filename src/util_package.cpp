@@ -49,21 +49,21 @@ Rcpp::List irtpp_aux(PatternMatrix *datSet, int e_model, Rcpp::NumericMatrix qua
     Matrix<double> *theta;
     Matrix<double> *weight;
     double *** zita_set;
-    int items;
+    unsigned int items, d = 1, c = 41;
     void ** status_list;
 
     model = new Model();
     modelFactory = new SICSGeneralModel();
 
     // Matrices for thetas and weights
-    theta = new Matrix<double>(1,41);
-    weight = new Matrix<double>(1,41);
+    theta = new Matrix<double>(d,c);
+    weight = new Matrix<double>(d,c);
 
     // Cast the quadrature matrices
-    for (int k = 0; k < quads.nrow(); k++)
+    for (unsigned int k = 0; k < quads.nrow(); k++)
         (*theta)(0,k)=quads[k];
 
-    for (int k = 0; k < quads.nrow(); k++)
+    for (unsigned int k = 0; k < quads.nrow(); k++)
         (*weight)(0,k)=quads[k+quads.nrow()];
 
     model->setModel(modelFactory, e_model);
@@ -171,7 +171,7 @@ Rcpp::List abilityinterface(Rcpp::NumericMatrix zita_par, PatternMatrix * datSet
     Matrix<double> *weight;
     double *** zita_set;
     double ** result;
-    int items;
+    unsigned int items, d = 1, c = 41;
 
     model = new Model();
     modelFactory = new SICSGeneralModel();
@@ -180,8 +180,8 @@ Rcpp::List abilityinterface(Rcpp::NumericMatrix zita_par, PatternMatrix * datSet
     delete modelFactory;
 
     // Matrices for thetas and weights
-    theta = new Matrix<double>(1,41);
-    weight = new Matrix<double>(1,41);
+    theta = new Matrix<double>(d,c);
+    weight = new Matrix<double>(d,c);
 
     // Cast the quadrature matrices
     for (int k = 0; k < quads.nrow(); k++)
