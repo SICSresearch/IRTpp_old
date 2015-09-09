@@ -65,8 +65,36 @@ Rcpp::List irtpp_aux(PatternMatrix *datSet, int e_model, Rcpp::NumericMatrix qua
 
     for (unsigned int k = 0; k < quads.nrow(); k++)
         (*weight)(0,k)=quads[k+quads.nrow()];
+    //from emodel infer the model type and model
+    /*
+    // 0 - 100 for Dichotomous
+    //  0 - 9 for unidimensional classic models
+    //  see the enum in constant.h
+    //  10 - 19 for the multidimensional classic models (Rasch ?)
+    //  20 - 29 for the multiunidim models
+    // 100 - 200 for Polytomous TODO
+    //
+    */
 
-    model->setModel(modelFactory, e_model);
+
+    int dimstype = 0;
+    if (e_model < 0) {
+      // Estimation procedure not valid
+    }
+    if (e_model < 10){
+      dimstype = 1;
+    }
+    else if (e_model < 20) {
+      dimstype = 2;
+      e_model = e_model - 10;
+    }
+    else if (e_model < 30){
+      dimstype = 3;
+      e_model = e_model - 20;
+    }
+
+    //Set the dimtype here , 1  is Unidimensional , 2 is Multidimensional and 3 is MultiUniDimModel
+    model->setModel(modelFactory, e_model, dimstype );
 
 
     delete modelFactory;
@@ -178,7 +206,7 @@ Rcpp::List abilityinterface(Rcpp::NumericMatrix zita_par, PatternMatrix * datSet
 
     model = new Model();
     modelFactory = new SICSGeneralModel();
-    model->setModel(modelFactory, e_model);
+    model->setModel(modelFactory, e_model , 1);
 
     delete modelFactory;
 
