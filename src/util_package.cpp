@@ -8,9 +8,9 @@ PatternMatrix * getPatternMatrix(string r_path)
     char * path = new char[r_path.size() + 1];
     std::copy(r_path.begin(), r_path.end(), path);
     path[r_path.size()] = '\0';
-    
+
     dataSet = new PatternMatrix(0);
-    
+
     input.importCSV(path, *dataSet, 1, 0);
 
     return dataSet;
@@ -68,6 +68,7 @@ Rcpp::List irtpp_aux(PatternMatrix *datSet, int e_model, Rcpp::NumericMatrix qua
 
     model->setModel(modelFactory, e_model);
 
+
     delete modelFactory;
 
     QuadratureNodes nodes(theta,weight);
@@ -75,6 +76,8 @@ Rcpp::List irtpp_aux(PatternMatrix *datSet, int e_model, Rcpp::NumericMatrix qua
     model->getItemModel()->setDataset(datSet);
 
     // Build parameter set
+    std::cout << "parameterSet is being built, look at the parameters" << std::endl;
+    std::cout << model->getDimensionModel() << std::endl;
     model->getParameterModel()->buildParameterSet(model->getItemModel(),model->getDimensionModel());
 
     // Create estimation
