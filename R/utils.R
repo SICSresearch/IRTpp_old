@@ -65,7 +65,7 @@ parameter.list<-function(pars,model="3PL"){
 #' @param asnumber Boolean. Set to true if you need the model as a integer (i.e. To interface with cpp)
 #' @return model The valid string model for this model.
 #' @export
-#' 
+#'
 irtpp.model<-function(model,asnumber=F){
   if(typeof(model)=="list"){
     model = model$model;
@@ -82,16 +82,16 @@ irtpp.model<-function(model,asnumber=F){
   }
   model = toupper(model)
   checkModel(model);
-  
+
   #If model return needs to be an integer.
-  
+
   if(asnumber){
     if(model=="1PL"){model=1}
     if(model=="2PL"){model=2}
     if(model=="3PL"){model=3}
     if(model=="RASCH"){model=4}
   }
-  
+
   if(model=="RASCH"){model="Rasch"}
   model
 }
@@ -100,7 +100,7 @@ irtpp.model<-function(model,asnumber=F){
 #' Checks a test according to the model library to validate if it can be estimated or abort the current procedure
 #' @param model The model to check
 #' @param msg Additional error message
-#' @param error Optional, If false, this function wont throw a stop. 
+#' @param error Optional, If false, this function wont throw a stop.
 #' @return No return, in case that the model is not valid throws a stop, if error is false, Only prints a message
 check.model<-function(model,msg="",error=T){
   checkModel(model,msg,error)
@@ -122,3 +122,37 @@ irtpp.models<-function(){
 }
 
 
+#' Model transformations
+#' Implements parameter transforms from one parameter to others dependent on the model
+#' Currently only 3PL supported with passings between b <-> d and c <-> cp'
+#' @param z The parameter matrix or named list.
+#' @param model The model to transform
+#' @param src The original parameter to transform
+#' @param target The target parameter of the transform
+#' @return z The parameters with the transform
+model.transform<-function(z,model,src,target){
+  z = parameter.matrix(z);
+  if(irtpp.model(model)=="3PL"){
+    #b = -d/a
+    #d = -ab
+    if(src == "b" && target == "d"){
+      z[,2] <- -z[,1]*z[,2];
+    }
+    else if(src == "d" && target == "b"){
+      z[,2] <- -z[,2]/z[,1];
+    }
+    else if(src == "c" && target == "cp"){
+      z[,3] <- qlogis(z[,3])
+    }
+    else if(src == "cp" && target == "c"){
+      z[,3] <- plogis(z[,3])
+    }
+    else{
+      stop("Source and target not recognized")
+    }
+  }
+  else{
+    stop("Model not recognized");
+  }
+  z
+}
