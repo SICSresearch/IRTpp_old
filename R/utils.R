@@ -156,3 +156,22 @@ model.transform<-function(z,model,src,target){
   }
   z
 }
+
+
+pattern.expand = function(pts){
+  pts[rep(1:nrow(pts),pts[,ncol(pts)]),-ncol(pts)]
+}
+
+
+full.pattern.expand = function(pts,expandcol){
+  pts[rep(1:nrow(pts),pts[,expandcol]),]
+}
+
+pattern.freqs = function(data, traitobj){
+  d <- data.frame(data)
+  ones <- rep(1,nrow(d))
+  pts = aggregate(ones,by=as.list(d),FUN=sum)
+  plist = lapply(names(pts)[-length(pts)],function(x){c(pts[x])}[[1]])
+  plist = do.call(order,plist)
+  pts[plist,]
+}
