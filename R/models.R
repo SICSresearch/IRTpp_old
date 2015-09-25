@@ -18,12 +18,19 @@ irtpp.p<- function(model){
 #'@param d Optional. Overrides the b parameter, it is equal to -a*b. Used in some functions.
 #'@param cp Optional. Overrides the c parameter, it is logit(c)
 #'@export
-probability.3pl = function(z,a=z$a,b=z$b,c=z$c, theta, d=-a*b,cp=NULL){
-  if(is.null(cp)){
-    c+((1-c)/(1+exp(-a*(theta-b))))
+probability.3pl<-function (z=NULL, a = z$a, b = z$b, c = z$c , d=z$d , cp = z$cp , theta){
+  if(is.null(d)){
+    d = -a*b;
   }
-  else{
-    exp(cp)/(1+exp(cp))+ (1-(exp(cp)/(1+exp(cp))))*(1 + exp(-(a*theta+d)))^(-1)
+  if(is.null(b)){
+    b = -d / a;
+  }
+  if (is.null(cp)) {
+    c + ((1 - c)/(1 + exp(-a * (theta - b))))
+  }
+  else {
+    exp(cp)/(1 + exp(cp)) + (1 - (exp(cp)/(1 + exp(cp)))) *
+      (1 + exp(-(a * theta + d)))^(-1)
   }
 }
 

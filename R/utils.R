@@ -45,16 +45,29 @@ parameter.matrix<-function(pars, model="3PL"){
 #' @param pars The parameter matrix
 #' @param model The model whose the matrix refers to.
 #' @export
-parameter.list<-function(pars,model="3PL"){
-  names=NULL
-  if(model=="1PL"){names=c("a","b","c")}
-  if(model=="2PL"){names=c("a","b","c")}
-  if(model=="3PL"){names=c("a","b","c")}
-  if(model=="Rasch"){names=c("a","b","c")}
-  if(is.null(names)){stop("No Valid model provided")}
-  pars=list(pars[,1],pars[,2],pars[,3])
-  names(pars)<-names
-  pars
+parameter.list<-function (pars, model = "3PL" , dpar = NULL , cp = NULL)
+{
+  if(is.null(dpar)){b = "b"}else{b="d"}
+  if(is.null(dpar)){c = "c"}else{c="cp"}
+  names = NULL
+if (model == "1PL") {
+  names = c("a", b, c)
+}
+if (model == "2PL") {
+  names = c("a", b, c)
+}
+if (model == "3PL") {
+  names = c("a", b, c)
+}
+if (model == "Rasch") {
+  names = c("a", b, c)
+}
+if (is.null(names)) {
+  stop("No Valid model provided")
+}
+pars = list(pars[, 1], pars[, 2], pars[, 3])
+names(pars) <- names
+pars
 }
 
 
