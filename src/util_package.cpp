@@ -49,7 +49,7 @@ Rcpp::List irtpp_aux(PatternMatrix *datSet, int e_model, Rcpp::NumericMatrix qua
     Matrix<double> *theta;
     Matrix<double> *weight;
     double *** zita_set;
-   i unnt items, d = 1, c = 41;
+    int items, d = 1, c = 41;
     void ** status_list;
     model = new Model();
     modelFactory = new SICSGeneralModel();

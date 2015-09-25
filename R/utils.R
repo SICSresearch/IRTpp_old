@@ -78,7 +78,6 @@ pars
 #' @param asnumber Boolean. Set to true if you need the model as a integer (i.e. To interface with cpp)
 #' @return model The valid string model for this model.
 #' @export
-#'
 irtpp.model<-function(model,asnumber=F){
   if(typeof(model)=="list"){
     model = model$model;
@@ -115,9 +114,11 @@ irtpp.model<-function(model,asnumber=F){
 #' @param msg Additional error message
 #' @param error Optional, If false, this function wont throw a stop.
 #' @return No return, in case that the model is not valid throws a stop, if error is false, Only prints a message
+#' @export
 check.model<-function(model,msg="",error=T){
   checkModel(model,msg,error)
 }
+#' @export
 checkModel<-function(model,msg="",error=T){
   #check if a model is valid according to the model list.
   if(!(model=="1PL"||model=="2PL"||model=="3PL"||model=="Rasch"))
@@ -143,6 +144,7 @@ irtpp.models<-function(){
 #' @param src The original parameter to transform
 #' @param target The target parameter of the transform
 #' @return z The parameters with the transform
+#' @export
 model.transform<-function(z,model,src,target){
   z = parameter.matrix(z);
   if(irtpp.model(model)=="3PL"){
@@ -170,16 +172,17 @@ model.transform<-function(z,model,src,target){
   z
 }
 
-
+#' @export
 pattern.expand = function(pts){
   pts[rep(1:nrow(pts),pts[,ncol(pts)]),-ncol(pts)]
 }
 
-
+#' @export
 full.pattern.expand = function(pts,expandcol){
   pts[rep(1:nrow(pts),pts[,expandcol]),]
 }
 
+#' @export
 pattern.freqs = function(data, traitobj){
   d <- data.frame(data)
   ones <- rep(1,nrow(d))
