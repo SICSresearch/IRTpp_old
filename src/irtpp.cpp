@@ -23,12 +23,8 @@ Rcpp::List irtpp_r(Rcpp::NumericMatrix dat, int e_model, Rcpp::NumericMatrix qua
                    Rcpp::NumericMatrix init_val, bool init_val_flag,
                    bool to_file_flag, std::string output_path)
 {
-  std::cout<<"Usually this solves it nigga"<<std::endl;
-  
   PatternMatrix *datSet = getPatternMatrix(dat);
-  std::cout<<"Usually this solves it nigga"<<std::endl;
   Rcpp::List result = irtpp_aux(datSet, e_model, quads, init_val, init_val_flag, to_file_flag, output_path);
-  std::cout<<"Usually this solves it nigga"<<std::endl;
   delete datSet;
 
   return result;
@@ -44,7 +40,6 @@ Rcpp::List irtppinterface(Rcpp::NumericMatrix dat, int e_model, Rcpp::NumericMat
                           bool to_file_flag, std::string output_path)
 {
   Rcpp::NumericMatrix init_val(1,1);
-  std::cout<<"Usually this solves it nigga"<<std::endl;
   return irtpp_r(dat, e_model, quads, init_val, false, to_file_flag, output_path);
 }
 

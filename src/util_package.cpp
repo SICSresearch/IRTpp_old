@@ -43,7 +43,6 @@ Rcpp::List irtpp_aux(PatternMatrix *datSet, int e_model, Rcpp::NumericMatrix qua
                      Rcpp::NumericMatrix init_val, bool init_val_flag,
                      bool to_file_flag, string output_path)
 {   
-    std::cout<<"So, you have comed to my land niggle"<<std::endl;
     EMEstimation em;
     Model *model;
     ModelFactory *modelFactory;
@@ -52,21 +51,18 @@ Rcpp::List irtpp_aux(PatternMatrix *datSet, int e_model, Rcpp::NumericMatrix qua
     double *** zita_set;
    i unnt items, d = 1, c = 41;
     void ** status_list;
-    std::cout<<"So, you have comed to my land niggle"<<std::endl;
     model = new Model();
     modelFactory = new SICSGeneralModel();
 
     // Matrices for thetas and weights
     theta = new Matrix<double>(d,c);
     weight = new Matrix<double>(d,c);
-    std::cout<<"So, you have comed to my land niggle"<<std::endl;
     // Cast the quadrature matrices
     for (unsigned int k = 0; k < quads.nrow(); k++)
         (*theta)(0,k)=quads[k];
 
     for (unsigned int k = 0; k < quads.nrow(); k++)
         (*weight)(0,k)=quads[k+quads.nrow()];
-    std::cout<<"So, you have comed to my land niggle"<<std::endl;
     model->setModel(modelFactory, e_model);
 
     delete modelFactory;
@@ -74,7 +70,6 @@ Rcpp::List irtpp_aux(PatternMatrix *datSet, int e_model, Rcpp::NumericMatrix qua
     QuadratureNodes nodes(theta,weight);
     // Set datset to model
     model->getItemModel()->setDataset(datSet);
-    std::cout<<"So, you have comed to my land niggle"<<std::endl;
     // Build parameter set
     model->getParameterModel()->buildParameterSet(model->getItemModel(),model->getDimensionModel());
 
@@ -82,7 +77,6 @@ Rcpp::List irtpp_aux(PatternMatrix *datSet, int e_model, Rcpp::NumericMatrix qua
     em.setQuadratureNodes(&nodes);
 
     em.setModel(model);
-    std::cout<<"So, you have comed to my land niggle"<<std::endl;
     if(!init_val_flag)
         em.setInitialValues(Constant::ANDRADE);
     else
@@ -104,7 +98,6 @@ Rcpp::List irtpp_aux(PatternMatrix *datSet, int e_model, Rcpp::NumericMatrix qua
 
         em.setInitialValues(zita_set);
     }
-    std::cout<<"So, you have comed to my land niggle"<<std::endl;
     // We estimate here
     status_list = em.estimate();
     double* returnpars;

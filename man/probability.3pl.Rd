@@ -5,8 +5,8 @@
 \title{3PL probability function
 The probability function in the 3PL model.}
 \usage{
-probability.3pl(z, a = z$a, b = z$b, c = z$c, theta, d = -a * b,
-  cp = NULL)
+probability.3pl(z = NULL, a = z$a, b = z$b, c = z$c, d = z$d,
+  cp = z$cp, theta)
 }
 \arguments{
 \item{z}{Optional. A list with the parameters a b and c specified by keys.}
@@ -17,11 +17,11 @@ probability.3pl(z, a = z$a, b = z$b, c = z$c, theta, d = -a * b,
 
 \item{c}{The guessing parameter}
 
-\item{theta}{The subject's latent trait.}
-
 \item{d}{Optional. Overrides the b parameter, it is equal to -a*b. Used in some functions.}
 
 \item{cp}{Optional. Overrides the c parameter, it is logit(c)}
+
+\item{theta}{The subject's latent trait.}
 }
 \description{
 3PL probability function

@@ -5,10 +5,19 @@
 \title{itemfit
 evalua que tan bien se ajusta el modelo a los datos.}
 \usage{
-itemfit(a)
+itemfit(model, z, patterns, theta)
 }
 \arguments{
-\item{a}{el modelo implementado.}
+\item{model}{el modelo implementado.}
+
+\item{z}{Parametros de los items}
+
+\item{patterns}{Patrones y frecuencias}
+
+\item{theta}{Trazos por patron}
+}
+\value{
+est Estadistica X² y P-valor
 }
 \description{
 itemfit

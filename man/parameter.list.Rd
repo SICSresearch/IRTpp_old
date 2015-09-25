@@ -4,7 +4,7 @@
 \alias{parameter.list}
 \title{Returns a parameter list from a parameter matrix.}
 \usage{
-parameter.list(pars, model = "3PL")
+parameter.list(pars, model = "3PL", dpar = NULL, cp = NULL)
 }
 \arguments{
 \item{pars}{The parameter matrix}
