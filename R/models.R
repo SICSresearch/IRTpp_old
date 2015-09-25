@@ -18,18 +18,20 @@ irtpp.p<- function(model){
 #'@param d Optional. Overrides the b parameter, it is equal to -a*b. Used in some functions.
 #'@param cp Optional. Overrides the c parameter, it is logit(c)
 #'@export
-probability.3pl<-function (z=NULL, a = z$a, b = z$b, c = z$c , d=z$d , cp = z$cp , theta){
-  if(is.null(d)){
-    d = -a*b;
+probability.3pl<-function (z = NULL, a = z$a, b = z$b, c = z$c, d = z$d, cp = z$cp, 
+                           theta) 
+{
+  if (is.null(d)) {
+    d = -a * b
   }
-  if(is.null(b)){
-    b = -d / a;
+  if (is.null(b)) {
+    b = -d/a
   }
   if (is.null(cp)) {
     c + ((1 - c)/(1 + exp(-a * (theta - b))))
   }
   else {
-    exp(cp)/(1 + exp(cp)) + (1 - (exp(cp)/(1 + exp(cp)))) *
+    exp(cp)/(1 + exp(cp)) + (1 - (exp(cp)/(1 + exp(cp)))) * 
       (1 + exp(-(a * theta + d)))^(-1)
   }
 }
@@ -58,11 +60,10 @@ probability.1pl = function(z,b=z$b,theta)((1)/(1+exp(-(theta-b))))
 #'@param z A list with the parameters a b and c specified by keys.
 #' Each key must contain a vector of the item parameters for each parameter
 #' @export
-loglik<- function(test,traits,z){
-  #prob matrix
-  pm = lapply(traits,function(x)probability.3pl(z=z,theta=x))
-  #flatten it and flatten the test, then do the if and Sumall with the reduce
-  Reduce("+",mapply(function(x,y){
-    ifelse(y,log(x),log(1-x))
-  },unlist(pm),c(test),SIMPLIFY=F))
+loglik<- loglik<-function (test, traits, z) 
+{
+  pm = lapply(traits, function(x) probability.3pl(z = z, theta = x));
+  Reduce("+", mapply(function(x, y) {
+    ifelse(y, log(x), log(1 - x))
+  }, unlist(pm), c(t(test)), SIMPLIFY = F))
 }

@@ -9,3 +9,4 @@ itemfit<-function(model,z,patterns,theta){
   
   
 }
+
