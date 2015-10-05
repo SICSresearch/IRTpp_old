@@ -83,7 +83,7 @@ itemfit<-function(model,z,patterns,pval.sim,G,FUN,B=NULL){
 #' @param data: datos
 #' @param zita: Parametros de los items (con el c en todo R y el d en lugar del b)
 #' @param patterns: Matriz con los patrones, las frecuencias y los trazos.
-#' @return
+#' @return Z3_personfit
 
 
 ############## Objetos para ir probando
@@ -106,7 +106,7 @@ itemfit<-function(model,z,patterns,pval.sim,G,FUN,B=NULL){
 ##################################################################
 
 #función  que calcula item fit basado en Z3 
-itemFit2 = function(data,zita,patterns){
+itemFit2_p = function(data,zita,patterns){
   #zita  = est$zita #est. de los parametros de items
   #zita[,3] = qlogis(zita[,3]) # c en todo R
   scores = patterns[,-(ncol(patterns)-1)]
@@ -156,7 +156,7 @@ itemFit2 = function(data,zita,patterns){
 #' @param data: datos
 #' @param zita: Parametros de los items (con el c en todo R y el d en lugar del b)
 #' @param patterns: Matriz con los patrones, las frecuencias y los trazos.
-#' @return
+#' @return Z3_itemfit
 
 ############## Objetos para ir probando
 
@@ -178,7 +178,7 @@ itemFit2 = function(data,zita,patterns){
 ##################################################################
 
 #función  que calcula item fit basado en Z3 
-itemFit2 = function(data,zita,patterns){
+itemFit2_i = function(data,zita,patterns){
   #zita  = est$zita #est. de los parametros de items
   #zita[,3] = qlogis(zita[,3]) # c en todo R
   scores = patterns[,-(ncol(patterns)-1)]
