@@ -201,3 +201,15 @@ pattern.freqs = function(data, traitobj){
   plist = do.call(order,plist)
   pts[plist,]
 }
+
+#expande los patrones (x2 itemfit)
+indexPat = function(data,pats){
+  comprimData = apply(data,MARGIN=1,FUN=paste,collapse="/")
+  comprimPats = apply(pats[,1:ncol(data)],MARGIN=1,FUN=paste,collapse="/")
+  index = lapply(comprimPats,FUN = function(x) {which(x == comprimData)})
+  index
+}
+
+
+
+

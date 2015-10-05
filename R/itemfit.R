@@ -1,27 +1,28 @@
-model="3PL"
-G = 10 
-B=100
-FUN = median
-library(ltm)
-library(IRTpp)
-data(LSAT7)
-LSAT7 = as.matrix(LSAT7)
-datos = expand.table(LSAT7)
-modelo=tpm(datos)
-modelo$coefficients
-nitems=ncol(datos)
-zita=matrix(0,nrow=nitems,ncol=3)
-zita[,1]=modelo$coefficients[,3]
-zita[,2]=modelo$coefficients[,2]
-zita[,3]=plogis(modelo$coefficients[, 1])
-zita=zita[,-4]
-zita=parameter.list(zita,"3PL",dpar=T)
-z=zita
-patterns=factor.scores(modelo)$score.dat[,-c(7,9)]
-p=ncol(patterns[,-c(ncol(patterns)-1,ncol(patterns))])
+#model="3PL"
+#G = 10 
+#B=100
+#FUN = median
+#library(ltm)
+#library(IRTpp)
+#data(LSAT7)
+#LSAT7 = as.matrix(LSAT7)
+#datos = expand.table(LSAT7)
+#modelo=tpm(datos)
+#modelo$coefficients
+#nitems=ncol(datos)
+#zita=matrix(0,nrow=nitems,ncol=3)
+#zita[,1]=modelo$coefficients[,3]
+#zita[,2]=modelo$coefficients[,2]
+#zita[,3]=plogis(modelo$coefficients[, 1])
+#zita=zita[,-4]
+#zita=parameter.list(zita,"3PL",dpar=T)
+#z=zita
+#patterns=factor.scores(modelo)$score.dat[,-c(7,9)]
+#p=ncol(patterns[,-c(ncol(patterns)-1,ncol(patterns))])
 
+#################################################
 
-#' itemfit
+#' itemfit x2
 #' evalua que tan bien se ajusta el modelo a los datos.
 #' @param model el modelo implementado.
 #' @param z Parametros de los items, el c esta en (0,1) y recibe en el siguiente orden a,d,c OJO:d
@@ -77,45 +78,275 @@ itemfit<-function(model,z,patterns,pval.sim,G,FUN,B=NULL){
 }
 
 
-#################################################################################
+#' Z3 PERSONFIT
+#' Calcula la estadística Z3
+#' @param data: datos
+#' @param zita: Parametros de los items (con el c en todo R y el d en lugar del b)
+#' @param patterns: Matriz con los patrones, las frecuencias y los trazos.
+#' @return
 
 
-#' x2
-#' Calcula la estadistica X².
-#' @param model el modelo implementado.
-#' @param z Parametros de los items
-#' @param patterns Matriz con los patrones, las frecuencias y los trazos.
-#' @param G Numero de particiones de los trazos.
-#' @param FUN funcion de representante de grupo
-#' @return x2 Estadistica X²
-x2<-function(model,z,patterns,G,FUN){
-  ##Expandir los patrones
-  #fp = full.pattern.expand(patterns,ncol(patterns)-1);
-  #theta = fp[,ncol(patterns)]
-  theta = patterns[,ncol(patterns)]
-  frec = patterns[,ncol(patterns)-1]
-  groups = quantile(theta,seq(0, 1, length.out = G + 1))
-  groups[1] = groups[1] - 0.1
-  #summary(theta)
-  groups[G + 1] = groups[G + 1] + 0.1
-  groups.Ind = findInterval(theta,groups)  #que theta pertenece a que intervalo (grupos)
-  groups.Ind = factor(groups.Ind, levels = sort(unique(groups.Ind)))  #volverla un factor
-  thetaG = tapply(rep(theta, frec), rep(groups.Ind, frec), FUN = FUN) #por grupos calcule la mediana
-  #thetaG es los trazos latentes representantes de los grupos
-  z = model.transform(z,"3PL","c","cp")
-  prs = matrix(unlist(lapply(thetaG,function(x){probability.3pl(parameter.list(z,dpar=T,cp = T),theta=x)})),ncol=5,byrow = T)
-  z = model.transform(z,"3PL","cp","c")
+############## Objetos para ir probando
+
+#data(LSAT7)
+#LSAT7 = as.matrix(LSAT7)
+#data= expand.table(LSAT7)  #data
+
+#modelo=irtpp(data,"3PL")
+#zita=parameter.matrix(modelo$zita)
+#it=individual.traits("3PL",zita,dataset = data,method = "EAP")
+
+#patterns=cbind(pattern.freqs(data,it),it$trait)     #patterns
+
+#zita=model.transform(zita,"3PL","c","cp")
+#zita=model.transform(zita,"3PL","b","d")
+
+#zita=parameter.list(zita,"3PL",dpar=T,cp=T)  #zita
+
+##################################################################
+
+#función  que calcula item fit basado en Z3 
+itemFit2 = function(data,zita,patterns){
+  #zita  = est$zita #est. de los parametros de items
+  #zita[,3] = qlogis(zita[,3]) # c en todo R
+  scores = patterns[,-(ncol(patterns)-1)]
+  nitems = ncol(data) #numero de items
+  nscores = nrow(patterns) #numero de patrones (scores distintos)
+  ninds = nrow(data) #numero de individuos
   
-  Njs = as.vector(tapply(frec, groups.Ind, sum))
-  Obss2 = rowsum(frec * patterns[,-c(ncol(patterns)-1,ncol(patterns))], groups.Ind, reorder = T)/Njs
+  #Expansión de patrones sobre los datos originales
+  index = indexPat(data,patterns[,-ncol(patterns)])  #que individuos corresponden a que patron
+  scoresTot = numeric(nrow(data)) #define vector donde van a ir los trazos por individuo
+  for(mm in 1:nrow(scores)){
+    scoresTot[index[[mm]]] = scores[mm,ncol(data) +1]  ##trazo por individuo (en el vector anterior)  
+  }
   
-  chi.square = Njs * (Obss2 - prs)^2/(prs * (1 - prs))   #matriz pre estadistica  
-  x2 = colSums(chi.square, na.rm = TRUE)        #estadistica
-  return(x2)
+  #Matriz de probabilidad
+  P = lapply(scoresTot,FUN=function(x){probability.3pl(theta=x,z=zita)}) #p_i (probabilidad de contestar correctamente al item i)
+  P=matrix(unlist(P),ncol=nitems,byrow=T)
+  
+  #Calculo de logverosimilitud
+  LL = matrix(0,ncol = ncol(P),nrow = nrow(P)) #matriz de tamaño ninds*nitems
+  LL[data == 1] = P[data == 1] #p_{i}(theta estimado) para todos los individuos
+  LL[data == 0] = 1 - P[data == 0] #q_{i}(theta estimado) para todos los individuos
+  LL = rowSums(log(LL)) #log-verosimilitud (7) del articulo
+  
+  #Calculo de estimado Z3
+  mu = sigmaCuad = rep(0,ninds)  
+  for( i in 1:nitems){
+    Pi = cbind(P[,i],1 - P[,i]) 
+    logPi = log(Pi)
+    mu = mu+rowSums(Pi * logPi)    
+    #sigmaCuad = sigmaCuad + Pi[,1] * Pi[,2] * (log(Pi[,1]/Pi[,2])^2)
+    sigmaCuad = sigmaCuad + (Pi[,1] * Pi[,2] * (log(Pi[,1]/Pi[,2])^2))
+  }
+  
+  # print(dim(LL))
+  # print(dim(mu))
+  # print(dim(sigmaCuad))
+  
+  Z3 = (LL - mu) / sqrt(sigmaCuad)
+  Z3
+  
 }
 
 
-####################################################
+#' Z3 ITEMFIT
+#' Calcula la estadística Z3
+#' @param data: datos
+#' @param zita: Parametros de los items (con el c en todo R y el d en lugar del b)
+#' @param patterns: Matriz con los patrones, las frecuencias y los trazos.
+#' @return
 
-itemfit(model = "3PL",patterns = patterns,z = z,pval.sim = T,FUN = median,G=10)
+############## Objetos para ir probando
+
+#data(LSAT7)
+#LSAT7 = as.matrix(LSAT7)
+#data= expand.table(LSAT7)  #data
+
+#modelo=irtpp(data,"3PL")
+#zita=parameter.matrix(modelo$zita)
+#it=individual.traits("3PL",zita,dataset = data,method = "EAP")
+
+#patterns=cbind(pattern.freqs(data,it),it$trait)     #patterns
+
+#zita=model.transform(zita,"3PL","c","cp")
+#zita=model.transform(zita,"3PL","b","d")
+
+#zita=parameter.list(zita,"3PL",dpar=T,cp=T)  #zita
+
+##################################################################
+
+#función  que calcula item fit basado en Z3 
+itemFit2 = function(data,zita,patterns){
+  #zita  = est$zita #est. de los parametros de items
+  #zita[,3] = qlogis(zita[,3]) # c en todo R
+  scores = patterns[,-(ncol(patterns)-1)]
+  nitems = ncol(data) #numero de items
+  nscores = nrow(patterns) #numero de patrones (scores distintos)
+  ninds = nrow(data) #numero de individuos
+  
+  #Expansión de patrones sobre los datos originales
+  index = indexPat(data,patterns[,-ncol(patterns)])  #que individuos corresponden a que patron
+  scoresTot = numeric(nrow(data)) #define vector donde van a ir los trazos por individuo
+  for(mm in 1:nrow(scores)){
+    scoresTot[index[[mm]]] = scores[mm,ncol(data) +1]  ##trazo por individuo (en el vector anterior)  
+  }
+  
+  #Matriz de probabilidad
+    P = lapply(scoresTot,FUN=function(x){probability.3pl(theta=x,z=zita)}) #p_i (probabilidad de contestar correctamente al item i)
+    P=matrix(unlist(P),ncol=nitems,byrow=T)
+    
+  #Calculo de logverosimilitud
+  LL = matrix(0,ncol = ncol(P),nrow = nrow(P)) #matriz de tamaño ninds*nitems
+  LL[data == 1] = P[data == 1] #p_{i}(theta estimado) para todos los individuos
+  LL[data == 0] = 1 - P[data == 0] #q_{i}(theta estimado) para todos los individuos
+  LL = colSums(log(LL)) #log-verosimilitud (7) del articulo
+  
+  #Calculo de estimado Z3
+  mu = sigmaCuad = rep(0,nitems)  #vector donde va a ir E_3 y SIGMA_3
+  for( i in 1:nitems){
+    Pi = cbind(P[,i],1 - P[,i]) #define una matriz: en la primer columna p_i y en la otra q_i
+    logPi = log(Pi) #log de la matriz anterior
+    mu[i] = sum(Pi * logPi)    #(13) del articulo
+    sigmaCuad[i] = sum(Pi[,1] * Pi[,2] * (log(Pi[,1]/Pi[,2])^2))  #14 del articulo
+    
+  }
+  Z3 = (LL - mu) / sqrt(sigmaCuad) #z3
+  Z3
+}
+
+
+#' Orlando
+#' Calcula la estadística de Orlando
+#' @param patterns: matriz con los patrones de respuesta, las frecuencias y los trazos
+#' @param G numero de puntos de cuadratura
+#' @param zita: MATRIZ de estimaciones de parametros de los items (a,b,c)
+#' @param FUN : funcion de representante de cada grupo
+#' @return estadística de Orlando
+
+#####objetos de sics para ir probando:
+
+item.fit.sics = function(patterns,zita,theta,G = 61,FUN = median){
+  
+  pats = patterns[,-ncol(patterns)]   #patrones sin frecuencia
+  frec = patterns[,"x"]     #fr. de los patrones de respuesta
+  nitems = nrow(zita)       #num de items
+  patsSinFrec = pats[,-ncol(pats)]   #patrones sin frecuencia
+  
+  
+  seq=seq(-6,6,length=61)
+  pesos=dnorm(seq)/sum(dnorm(seq))
+  Cuad=matrix(c(seq,pesos),byrow=F,ncol=2)# cuadraturas
+  
+  theta=Cuad
+  w.cuad = theta[,2] #pesos
+  thetaG = theta[,1] #nodos
+  
+  zita=parameter.list(zita,"3PL")  
+  pr = lapply(thetaG,FUN=function(x){probability.3pl(theta=x,z=zita)}) #probabilidad para cada punto de cuadratura
+  pr=matrix(unlist(pr),ncol=nitems,byrow=T)
+  
+  s_ss=function(pr){
+    sact = matrix(0,ncol = nitems +1,nrow = G)   ###con los cambios en los indices se parece mucho mas a mirt
+    for(m in 1:G){                 
+      sant = rep(0,(nitems))         
+      sant[1] = 1 - pr[m,1]    #(6)
+      sant[2] = pr[m,1]       #(7)
+      
+      for(k in 2:(nitems)){  #item "i" añadido(empieza desde 2 por q ya incluyo el primer item en (6) y (7) )     
+        
+        sact[m,1] = (1-pr[m,k]) * sant[1]   #(8)
+        
+        for(kk in 2:k){ #scores 1:(i-1)
+          sact[m,kk] = pr[m,k] * sant[kk-1] + (1 - pr[m,k]) * sant[kk]  #(9)
+        }
+        sact[m,(k+1)] = pr[m,k] * sant[k] #score "i"  #(10)
+        sant = sact[m,]
+      }
+      
+      
+    }
+    return(sact)
+  }
+  
+  ### FRECUENCIAS OBSERVADAS
+  
+  score = rowSums(patsSinFrec )  #suma de los patrones(scores sin agrupar)
+  Oik = matrix(0,ncol = nitems -1 ,nrow = nitems)  # 4 scores(columnas) y nitems(filas)
+  for(i in 1:nitems - 1){  #recorriendo los scores(fijando un score)
+    inds = print(which(score == i)); #para agrupar los patrones q determinen un mismo score (i)
+    for(j in 1:(nitems)){  #recorriendo los items, para llenar la matriz por items fiijado un score (i)
+      patsCoin = pats[inds,]   #patrones q determinan el score "i": agrupados
+      if(class(patsCoin) == "matrix"){  
+        if(dim(patsCoin)[1] != 0){     #(si hay 1 patron o mas)
+          Oik[j,i] = sum(apply(X = patsCoin,MARGIN = 1,FUN = function(x){ifelse(x[j] == 1,yes = x[nitems + 1],0)})) 
+        }else{
+          Oik[j,i] = 0
+        }        
+      }else{
+        if(class(patsCoin) == "numeric"){
+          Oik[j,i] = ifelse(patsCoin[j] == 1,yes = patsCoin[nitems + 1],0)
+        }
+      }
+    }
+  }
+  
+  
+  
+  ### TOTALES POR SCORE
+  
+  Nk=NULL
+  for(i in 1:nitems - 1){  #recorriendo los scores(fijando un score)
+    inds = print(which(score == i)) #para agrupar llos patrones q determinen un mismo score (i)
+    patsCoin = pats[inds,]   #patrones q determinan el score "i": agrupados
+    if(class(patsCoin) == "matrix"){  
+      if(dim(patsCoin)[1] != 0){     #(si hay 1 patron o mas)
+        Nk[i] = sum(patsCoin[,ncol(patsCoin)])
+      }else{
+        Nk[i] = 0
+      }        
+    }else{
+      if(class(patsCoin) == "numeric"){
+        Nk[i] = patsCoin[length(patsCoin)]
+      }
+    }
+  }
+  
+  #FRECUENCIAS OBSERVADAS RELATIVAS.
+  
+  O=Oik/matrix(rep(Nk,nitems),ncol=4,byrow=T) #O son frecuencias relativas y Oik absolutas
+  
+  
+  ### S SIN MOÑO
+  
+  sact=s_ss(pr)
+  Denom = colSums(matrix(rep(w.cuad,nitems -1 ),ncol = nitems - 1) * sact[,-c(1,ncol(sact))])  
+  
+  
+  ### S MOÑO
+  
+  nitems = nitems - 1
+  smoño=list()
+  
+  for(p in 1:(nitems+1)){
+    smoño[[p]]=s_ss(pr[,-p]) 
+  }
+  
+  ### Eik   
+  
+  nitems=ncol(patsSinFrec)
+  E=matrix(0,nrow=nitems,ncol=(nitems-1))
+  for(i in 1:length(smoño)){
+    E[i,]=colSums(smoño[[i]][,-ncol(smoño[[i]])]*(pr[,i]*w.cuad))/Denom
+  }
+  
+  
+  ###Estadística
+  
+  return(rowSums(matrix(rep(Nk,nitems),ncol=nitems-1,byrow=T)*((O-E)^2)/(E*(1-E))))
+  
+}
+
+
 
