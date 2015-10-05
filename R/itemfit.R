@@ -1,26 +1,3 @@
-#model="3PL"
-#G = 10 
-#B=100
-#FUN = median
-#library(ltm)
-#library(IRTpp)
-#data(LSAT7)
-#LSAT7 = as.matrix(LSAT7)
-#datos = expand.table(LSAT7)
-#modelo=tpm(datos)
-#modelo$coefficients
-#nitems=ncol(datos)
-#zita=matrix(0,nrow=nitems,ncol=3)
-#zita[,1]=modelo$coefficients[,3]
-#zita[,2]=modelo$coefficients[,2]
-#zita[,3]=plogis(modelo$coefficients[, 1])
-#zita=zita[,-4]
-#zita=parameter.list(zita,"3PL",dpar=T)
-#z=zita
-#patterns=factor.scores(modelo)$score.dat[,-c(7,9)]
-#p=ncol(patterns[,-c(ncol(patterns)-1,ncol(patterns))])
-
-#################################################
 
 #' itemfit x2
 #' evalua que tan bien se ajusta el modelo a los datos.
@@ -83,30 +60,9 @@ itemfit<-function(model,z,patterns,pval.sim,G,FUN,B=NULL){
 #' @param data: datos
 #' @param zita: Parametros de los items (con el c en todo R y el d en lugar del b)
 #' @param patterns: Matriz con los patrones, las frecuencias y los trazos.
-#' @return
+#' @return Z3_personfit
 
-
-############## Objetos para ir probando
-
-#data(LSAT7)
-#LSAT7 = as.matrix(LSAT7)
-#data= expand.table(LSAT7)  #data
-
-#modelo=irtpp(data,"3PL")
-#zita=parameter.matrix(modelo$zita)
-#it=individual.traits("3PL",zita,dataset = data,method = "EAP")
-
-#patterns=cbind(pattern.freqs(data,it),it$trait)     #patterns
-
-#zita=model.transform(zita,"3PL","c","cp")
-#zita=model.transform(zita,"3PL","b","d")
-
-#zita=parameter.list(zita,"3PL",dpar=T,cp=T)  #zita
-
-##################################################################
-
-#función  que calcula item fit basado en Z3 
-itemFit2 = function(data,zita,patterns){
+itemFit2_p = function(data,zita,patterns){
   #zita  = est$zita #est. de los parametros de items
   #zita[,3] = qlogis(zita[,3]) # c en todo R
   scores = patterns[,-(ncol(patterns)-1)]
@@ -156,29 +112,11 @@ itemFit2 = function(data,zita,patterns){
 #' @param data: datos
 #' @param zita: Parametros de los items (con el c en todo R y el d en lugar del b)
 #' @param patterns: Matriz con los patrones, las frecuencias y los trazos.
-#' @return
+#' @return Z3_itemfit
 
-############## Objetos para ir probando
-
-#data(LSAT7)
-#LSAT7 = as.matrix(LSAT7)
-#data= expand.table(LSAT7)  #data
-
-#modelo=irtpp(data,"3PL")
-#zita=parameter.matrix(modelo$zita)
-#it=individual.traits("3PL",zita,dataset = data,method = "EAP")
-
-#patterns=cbind(pattern.freqs(data,it),it$trait)     #patterns
-
-#zita=model.transform(zita,"3PL","c","cp")
-#zita=model.transform(zita,"3PL","b","d")
-
-#zita=parameter.list(zita,"3PL",dpar=T,cp=T)  #zita
-
-##################################################################
 
 #función  que calcula item fit basado en Z3 
-itemFit2 = function(data,zita,patterns){
+itemFit2_i = function(data,zita,patterns){
   #zita  = est$zita #est. de los parametros de items
   #zita[,3] = qlogis(zita[,3]) # c en todo R
   scores = patterns[,-(ncol(patterns)-1)]
@@ -224,8 +162,6 @@ itemFit2 = function(data,zita,patterns){
 #' @param zita: MATRIZ de estimaciones de parametros de los items (a,b,c)
 #' @param FUN : funcion de representante de cada grupo
 #' @return estadística de Orlando
-
-#####objetos de sics para ir probando:
 
 item.fit.sics = function(patterns,zita,theta,G = 61,FUN = median){
   

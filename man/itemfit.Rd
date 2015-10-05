@@ -2,25 +2,31 @@
 % Please edit documentation in R/itemfit.R
 \name{itemfit}
 \alias{itemfit}
-\title{itemfit
+\title{itemfit x2
 evalua que tan bien se ajusta el modelo a los datos.}
 \usage{
-itemfit(model, z, patterns, theta)
+itemfit(model, z, patterns, pval.sim, G, FUN, B = NULL)
 }
 \arguments{
 \item{model}{el modelo implementado.}
 
-\item{z}{Parametros de los items}
+\item{z}{Parametros de los items, el c esta en (0,1) y recibe en el siguiente orden a,d,c OJO:d}
 
-\item{patterns}{Patrones y frecuencias}
+\item{patterns}{Patrones, frecuencias y trazos}
 
-\item{theta}{Trazos por patron}
+\item{pval.sim}{si es verdadero se simularara un valor p con bootstrap}
+
+\item{G}{es el numero de grupos}
+
+\item{FUN}{es la funcion con la que se calcula la probabilidad esperada en cada grupo}
+
+\item{B}{es el numero de iteraciones bootstrap, por defecto es 100}
 }
 \value{
 est Estadistica X² y P-valor
 }
 \description{
-itemfit
+itemfit x2
 evalua que tan bien se ajusta el modelo a los datos.
 }
 
