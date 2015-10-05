@@ -100,6 +100,8 @@ Rcpp::List irtpp_aux(PatternMatrix *datSet, int e_model, Rcpp::NumericMatrix qua
     }
     // We estimate here
     status_list = em.estimate();
+    double fulloglik = em.getLoglik();
+    std::cout<<"Ll : "<<fulloglik<<std::endl;
     double* returnpars;
 
     returnpars = new double[3*datSet->size];
@@ -139,7 +141,9 @@ Rcpp::List irtpp_aux(PatternMatrix *datSet, int e_model, Rcpp::NumericMatrix qua
                                       Rcpp::_["path"] = to_file_flag ? output_path : "No path",
                                       Rcpp::_["iterations"] = (*(int*)status_list[0]),
                                       Rcpp::_["convergence"] = (*(bool*)status_list[1]),
-                                      Rcpp::_["probability_matrix"] = p_matrix);
+                                      Rcpp::_["probability_matrix"] = p_matrix,
+                                      Rcpp::_["loglikelihood"] = fulloglik);
+                                      ;
 
     delete model;
     delete theta;
