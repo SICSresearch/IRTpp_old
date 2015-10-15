@@ -40,7 +40,8 @@ PatternMatrix * getPatternMatrix(Rcpp::NumericMatrix r_dataSet)
 }
 
 //[[Rcpp::export]]
-Rcpp::List irtppmultidim(PatternMatrix * datSet , int e_model , Rcpp::NumericMatrix quads , Rcpp::NumericMatrix initvals, int dimension){
+Rcpp::List irtppmultidim(Rcpp::NumericMatrix ndatSet , int e_model , Rcpp::NumericMatrix quads , Rcpp::NumericMatrix initvals, int dimension){
+        PatternMatrix * datSet = getPatternMatrix(ndatSet);
         Matrix <double> cuad(41,2);
         Model *model = new Model();
         ModelFactory *modelFactory;
@@ -61,7 +62,7 @@ Rcpp::List irtppmultidim(PatternMatrix * datSet , int e_model , Rcpp::NumericMat
 
             //Start by telling the model that it is a multidimensional model.
       int dimstype = 2;
-      model->setModel(modelFactory, ESTIMATION_MODEL, dimstype);
+      model->setModel(modelFactory, e_model, dimstype);
 
 
       //Here we must set the number of dimensions to estimate in the given model
@@ -95,15 +96,15 @@ status_list = em.estimate();
   double fulloglik = em.getLoglik();
       std::cout<<"Ll : "<<fulloglik<<std::endl;
       double* returnpars;
-      double* pars;
+      //double* pars;
 
 
-      returnpars = new double[(dims+2)*dataSet->size];
+      returnpars = new double[(dims+2)*datSet->size];
       model->parameterModel->getParameters(returnpars);
-      Rcpp::NumericVector pars((dims+2)*dataSet->size);
+      Rcpp::NumericVector pars((dims+2)*datSet->size);
 
           // Return in list
-          for (int i = 0; i < (dims+2)*dataSet->size; i++){
+          for (int i = 0; i < (dims+2)*datSet->size; i++){
               pars[i] = returnpars[i];
               std::cout<<pars[i]<<" . "<<std::endl;
       }
@@ -116,8 +117,7 @@ status_list = em.estimate();
 
       Rcpp::XPtr< Matrix<double> > p_matrix((Matrix<double>*)status_list[2], false);
 
-      Rcpp::List z = Rcpp::List::create(Rcpp::_["zita"] = to_file_flag ? pars_aux : pars,
-                                        Rcpp::_["path"] = to_file_flag ? output_path : "No path",
+      Rcpp::List z = Rcpp::List::create(Rcpp::_["zita"] = pars,
                                         Rcpp::_["iterations"] = (*(int*)status_list[0]),
                                         Rcpp::_["convergence"] = (*(bool*)status_list[1]),
                                         Rcpp::_["probability_matrix"] = p_matrix);
@@ -159,7 +159,7 @@ Rcpp::List irtpp_aux(PatternMatrix *datSet, int e_model, Rcpp::NumericMatrix qua
 
     for (unsigned int k = 0; k < quads.nrow(); k++)
         (*weight)(0,k)=quads[k+quads.nrow()];
-    model->setModel(modelFactory, e_model);
+    model->setModel(modelFactory, e_model,1);
 
     delete modelFactory;
 
@@ -270,7 +270,7 @@ Rcpp::List abilityinterface(Rcpp::NumericMatrix zita_par, PatternMatrix * datSet
 
     model = new Model();
     modelFactory = new SICSGeneralModel();
-    model->setModel(modelFactory, e_model);
+    model->setModel(modelFactory, e_model,1);
 
     delete modelFactory;
 

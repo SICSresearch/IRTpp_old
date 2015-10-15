@@ -1,7 +1,7 @@
 #' Estimate a test item parameters according to Item Response Theory.
 #' @param dataset The matrix with the responses from the individuals
 #' @param model The model used to calibrate the parameters
-#' @oaram dims The dimensions to use on the estimation, remember to use the initial parameters if you want highquality estimation
+#' @param dims The dimensions to use on the estimation, remember to use the initial parameters if you want highquality estimation
 #' @param initialvalues The matrix with the initial values for the optimization process
 #' @param filename Optional argument specifying a CSV file to read instead of a dataset in memory
 #' @param output Optional. Additonal arguments that need to be documented by cristian
@@ -13,7 +13,7 @@ irtpp <- function(dataset=NULL,model, dims =1 ,initialvalues = NULL,
   if(dims > 1){
     print("Multidimensional interface enabled.")
     ## Initial must be provided at this point.
-    irtppmultidim(dataset,model,cuads,inits)
+    ret = irtppmultidim(dataset,model,cuads,inits, dims)
   }
   
   if(is.null(dataset)){
