@@ -8,9 +8,9 @@ PatternMatrix * getPatternMatrix(string r_path)
     char * path = new char[r_path.size() + 1];
     std::copy(r_path.begin(), r_path.end(), path);
     path[r_path.size()] = '\0';
-    
+
     dataSet = new PatternMatrix(0);
-    
+
     input.importCSV(path, *dataSet, 1, 0);
 
     return dataSet;
@@ -39,10 +39,106 @@ PatternMatrix * getPatternMatrix(Rcpp::NumericMatrix r_dataSet)
     return dataSet;
 }
 
+//[[Rcpp::export]]
+Rcpp::List irtppmultidim(PatternMatrix * datSet , int e_model , Rcpp::NumericMatrix quads , Rcpp::NumericMatrix initvals, int dimension){
+        Matrix <double> cuad(41,2);
+        Model *model = new Model();
+        ModelFactory *modelFactory;
+        void ** status_list;
+        Matrix<double> *theta;
+        Matrix<double> *weight;
+        modelFactory = new SICSGeneralModel();
+
+        theta = new Matrix<double>(1, 41);
+        weight = new Matrix<double>(1, 41);
+
+        for (unsigned int k = 0; k < quads.nrow(); k++)
+            (*theta)(0,k)=quads[k];
+
+        for (unsigned int k = 0; k < quads.nrow(); k++)
+            (*weight)(0,k)=quads[k+quads.nrow()];
+
+
+            //Start by telling the model that it is a multidimensional model.
+      int dimstype = 2;
+      model->setModel(modelFactory, ESTIMATION_MODEL, dimstype);
+
+
+      //Here we must set the number of dimensions to estimate in the given model
+model->getDimensionModel()->setDims(dimension);
+int dims = model->getDimensionModel()->getNumDimensions();
+std::cout<<"Dims used : "<<dims<<std::endl;
+delete modelFactory;
+
+        // Set datset to model
+        model->getItemModel()->setDataset(datSet);
+        // Build parameter set
+        model->getParameterModel()->buildParameterSet(model->getItemModel(),model->getDimensionModel());
+
+
+        EMEstimation em;
+  //Here is where quadratures must be set.
+  //create the quad nodes
+std::cout << "Declaring QuadratureNodes" << std::endl;
+  QuadratureNodes nodes(theta, weight);
+std::cout << "Setting them" << std::endl;
+  em.setQuadratureNodes(&nodes);
+std::cout << "Setting Model" << std::endl;
+  em.setModel(model);
+    std::cout << "Ready to ANDRADE" << std::endl;
+  em.setInitialValues(Constant::ANDRADE);
+
+  //Run the estimation
+std::cout << "em.estimate" << std::endl;
+
+status_list = em.estimate();
+  double fulloglik = em.getLoglik();
+      std::cout<<"Ll : "<<fulloglik<<std::endl;
+      double* returnpars;
+      double* pars;
+
+
+      returnpars = new double[(dims+2)*dataSet->size];
+      model->parameterModel->getParameters(returnpars);
+      Rcpp::NumericVector pars((dims+2)*dataSet->size);
+
+          // Return in list
+          for (int i = 0; i < (dims+2)*dataSet->size; i++){
+              pars[i] = returnpars[i];
+              std::cout<<pars[i]<<" . "<<std::endl;
+      }
+
+
+          // Return in list
+          for (int i = 0; i < 3*datSet->size; i++)
+              pars[i] = returnpars[i];
+
+
+      Rcpp::XPtr< Matrix<double> > p_matrix((Matrix<double>*)status_list[2], false);
+
+      Rcpp::List z = Rcpp::List::create(Rcpp::_["zita"] = to_file_flag ? pars_aux : pars,
+                                        Rcpp::_["path"] = to_file_flag ? output_path : "No path",
+                                        Rcpp::_["iterations"] = (*(int*)status_list[0]),
+                                        Rcpp::_["convergence"] = (*(bool*)status_list[1]),
+                                        Rcpp::_["probability_matrix"] = p_matrix);
+
+      delete model;
+      delete theta;
+      delete weight;
+
+      delete (int*)status_list[0];
+      delete (bool*)status_list[1];
+      delete [] status_list;
+      delete [] returnpars;
+
+      return z;
+
+}
+
 Rcpp::List irtpp_aux(PatternMatrix *datSet, int e_model, Rcpp::NumericMatrix quads,
                      Rcpp::NumericMatrix init_val, bool init_val_flag,
                      bool to_file_flag, string output_path)
-{   
+{
     EMEstimation em;
     Model *model;
     ModelFactory *modelFactory;
@@ -100,6 +196,10 @@ Rcpp::List irtpp_aux(PatternMatrix *datSet, int e_model, Rcpp::NumericMatrix qua
     }
     // We estimate here
     status_list = em.estimate();
+
+    //We must get loglik here
+    double loglikelihood = em.getLoglik();
+
     double* returnpars;
 
     returnpars = new double[3*datSet->size];
