@@ -202,3 +202,60 @@ simulateItemParameters<- function(items, model, dims=1, boundaries=NULL){
   ret = list(a=a,b=b,c=c);
   ret
 }
+
+#FUNCION PARA CALCULAR LA PRBABILIDAD
+prob <- function(theta,a,d,c)
+{
+  prob <- c + (1 - c)/(1 + exp(-(sum(theta*a)+d)))
+  return(prob)
+}
+
+#' @export
+#FUNCION PARA SIMULAR EL TEST
+testmulti=function(nitems,ninds,dim,model){
+  
+  #GENERACIÓN DE PARÁMETROS
+  
+  a=matrix(runif(dim * nitems, min = 0, max = 7), nrow = nitems) #a_j
+  b=rnorm(nitems, mean = 0, sd = 0.7)#b
+  d=rep(NA, nitems)
+  for (i in 1:nitems){                                                                                                                                                                                                                   
+    d[i]=-b[i]*sqrt(sum(a[i, ]^2))#d
+  }
+  c <- runif(nitems, min = 0, max = 0.25)#c
+  
+  
+  mu=rep(0,dim)
+  sigma=matrix(0,dim,dim)
+  corr=runif(((dim^2-dim)/2),min = 0,max = .6)
+  sigma[lower.tri(sigma)]=corr
+  sigma=t(sigma)+sigma
+  diag(sigma)=1
+  
+  
+  theta <- mvrnorm(n = ninds, mu = mu, Sigma = sigma)
+  
+  #PROBABILIDAD
+  
+  if(model=="2PL"){c=rep(0,nitems)}
+  if(model=="1PL"){c=rep(0,nitems);a=matrix(1,ncol = dim,nrow = nitems)}
+  if(model=="3PL"){c=c;a=a}
+  
+  psics <- matrix(NA, nrow = ninds, ncol = nitems)
+  for (j in 1:ninds){
+    for (i in 1:nitems){
+      psics[j, i] <- prob(theta = theta[j, ], a = a[i, ], d = d[i], c = c[i])    
+    }
+  }
+  
+  #TEST
+  
+  test=matrix(NA, nrow = ninds, ncol = nitems)
+  for (j in 1:ninds){
+    for (i in 1:nitems){
+      test[j, i] <- ifelse(runif(1)<psics[j,i],1,0)    
+    }
+  }
+  
+  return(test)
+}

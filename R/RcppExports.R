@@ -33,6 +33,7 @@ eapinterface <- function(zita_par, dat, e_model, quads, to_file_flag, output_pat
     .Call('IRTpp_eapinterface', PACKAGE = 'IRTpp', zita_par, dat, e_model, quads, to_file_flag, output_path, matrix_flag, prob_matrix)
 }
 
+#' @export
 irtppmultidim <- function(ndatSet, e_model, quads, initvals, dimension) {
     .Call('IRTpp_irtppmultidim', PACKAGE = 'IRTpp', ndatSet, e_model, quads, initvals, dimension)
 }

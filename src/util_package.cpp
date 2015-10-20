@@ -39,6 +39,7 @@ PatternMatrix * getPatternMatrix(Rcpp::NumericMatrix r_dataSet)
     return dataSet;
 }
 
+//' @export
 //[[Rcpp::export]]
 Rcpp::List irtppmultidim(Rcpp::NumericMatrix ndatSet , int e_model , Rcpp::NumericMatrix quads , Rcpp::NumericMatrix initvals, int dimension){
         PatternMatrix * datSet = getPatternMatrix(ndatSet);

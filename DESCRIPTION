@@ -15,7 +15,8 @@ License: GPL-3
 LinkingTo: Rcpp
 Imports: Rcpp (>= 0.11.0)
 Suggests: testthat,
-    knitr
+    knitr,
+    MASS
 VignetteBuilder: knitr
 URL: http://github.com/SICSResearch/IRTpp
 BugReports: http://github.com/SICSResearch/IRTpp/issues
