@@ -284,17 +284,6 @@ prob <- function(theta,a,d,c)
   return(prob)
 }
 
-
-<<<<<<< HEAD
-############ Las funciones de probabilidad no son iguales hay que hacer una que acepte multidimensionales y unidimensionales
-########### La nueva funcion de probabilidad es poco vectorizable.
-length(c(0,0,-1))
-prob(c(0,0,-1),c(1,2,1.7),2,0.1)
-probability.3pl(a=c(1,2,1.7),d=2,c=0.1,theta=c(0,2,2))
-
-#' @export
-=======
->>>>>>> 6aad8822745fca3b15021399e36af3ed9c5e5b73
 #FUNCION PARA SIMULAR EL TEST
 
 #' testmulti
