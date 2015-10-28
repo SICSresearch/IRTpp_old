@@ -266,7 +266,18 @@ simulateItemParameters<- function(items, model, dims=1, boundaries=NULL){
   ret
 }
 
-#FUNCION PARA CALCULAR LA PRBABILIDAD
+#FUNCION PARA CALCULAR LA PRBABILIDAD EN EL CASO MULTIDIMENSIONAL
+
+#' prob.
+
+#' @description calcula la probabilidad en el caso multidimensional
+#' @author Juan David Cortés
+#' @return la probabilidad
+#' @param theta: eltrazo latente multidimensional 
+#' @param a: parametro de discrimnacion en el caso multidimensional
+#' @param d: parametro d en el caso multidimensional
+#' @param c: parametro de azar en el caso multidimensional
+
 prob <- function(theta,a,d,c)
 {
   prob <- c + (1 - c)/(1 + exp(-(sum(theta*a)+d)))
@@ -274,6 +285,7 @@ prob <- function(theta,a,d,c)
 }
 
 
+<<<<<<< HEAD
 ############ Las funciones de probabilidad no son iguales hay que hacer una que acepte multidimensionales y unidimensionales
 ########### La nueva funcion de probabilidad es poco vectorizable.
 length(c(0,0,-1))
@@ -281,7 +293,20 @@ prob(c(0,0,-1),c(1,2,1.7),2,0.1)
 probability.3pl(a=c(1,2,1.7),d=2,c=0.1,theta=c(0,2,2))
 
 #' @export
+=======
+>>>>>>> 6aad8822745fca3b15021399e36af3ed9c5e5b73
 #FUNCION PARA SIMULAR EL TEST
+
+#' testmulti
+
+#' @description simula un test multidimensional
+#' @author Juan David Cortés
+#' @return el test y los parámeros poblacionales con los que se simuló
+#' @param nitems: numero de items
+#' @param ninds: numero de individuos
+#' @param dim: dimension del trazo
+#' @param model: 1pl, 2pl o 3pl
+
 testmulti=function(nitems,ninds,dim,model){
   
   #GENERACIÓN DE PARÁMETROS
@@ -289,7 +314,7 @@ testmulti=function(nitems,ninds,dim,model){
   a=matrix(runif(dim * nitems, min = 0, max = 7), nrow = nitems) #a_j
   b=rnorm(nitems, mean = 0, sd = 0.7)#b
   d=rep(NA, nitems)
-  for (i in 1:nitems){                                                                                                                                                                                                                   
+  for (i in 1:nitems){
     d[i]=-b[i]*sqrt(sum(a[i, ]^2))#d
   }
   c <- runif(nitems, min = 0, max = 0.25)#c
@@ -327,5 +352,7 @@ testmulti=function(nitems,ninds,dim,model){
     }
   }
   
-  return(test)
+  param=list("a"=a,"b"=b,"c"=c,"d"=d)
+  lista=list("test"=test,"param"=param)
+  return(lista)
 }
