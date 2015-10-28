@@ -1,3 +1,5 @@
+
+
 ### Items Reclassify (determine items to drop, function for internal use.)
 items.reclassify<-function(n, tmpd , axis){
   POS.PROY<- vector("list")   ## Vector of higher projection in the submatrix
@@ -30,6 +32,35 @@ items.reclassify<-function(n, tmpd , axis){
 
 ## Make clusters of items.
 ## Iterative PCA.
+
+### y.datF1 is the data 0's and 1's
+library(FactoMineR)
+#library(optimx)
+#library(numDeriv)
+
+library(IRTpp)
+t = simulateTest()
+test = t$test[[1]]
+acp = ACPI(y.datF1,0.8,0.9,6,15)
+y.datF1 = read.table("/home/liberato/Downloads/Aplicacion_UN/respon.original.txt", header=T) 
+
+names(acp)
+acp[[1]]
+acp[[2]]
+dim(acp[[3]]) ##Latent traits
+dim(y.datF1)
+acp[[4]] ## Items per each dimension
+length(acp[[5]])
+acp[[5]] ## Submatrices for the test.
+lapply(acp[[5]][[2]],dim)
+typeof(acp[[5]][[2]])
+lapply(acp)
+do.call(cbind,acp[[5]])
+
+##Fuse submatrices
+
+
+
 
 ACPI<-function(y.datF1,h7,h2,hn,angu){
   y.datF1<-y.datF1
@@ -225,8 +256,13 @@ ACPI<-function(y.datF1,h7,h2,hn,angu){
   tore<-vector('list')
   tore[[1]]=c(n.clustF1I, n.clustF1)
   tore[[2]]=c(sF1, sF1.1)
-  tore[[3]]<-AXISF1
-  tore[[4]]<-items.subm
-  tore[[5]]<-tmp.datF1
+  tore[["traits"]]<-AXISF1
+  tore[["itemdims"]]<-items.subm
+  tore[["submatrices"]]<-tmp.datF1
+  print(sF1)
+  print(sF1.1)
   return(tore)
 }
+
+
+

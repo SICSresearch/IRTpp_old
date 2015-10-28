@@ -5,6 +5,7 @@
 #' @param initialvalues The matrix with the initial values for the optimization process
 #' @param filename Optional argument specifying a CSV file to read instead of a dataset in memory
 #' @param output Optional. Additonal arguments that need to be documented by cristian
+#' @param fixeditems Optional. Items to fix.
 #' @return The item parameters in a matrix.
 #' @export
 irtpp <- function(dataset=NULL,model, dims =1 ,initialvalues = NULL,

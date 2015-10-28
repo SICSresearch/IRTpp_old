@@ -1,6 +1,47 @@
 
+library(IRTpp)
 
-#' SimulateTest.
+#' SimulateTest
+#' Simulates a test according to a irt model
+#' 
+#' @export
+#' @description Simulates a test according to a IRT Model
+#' @author Juan Liberato
+#' @return List with model, seed item pars, and the test simulated.
+#' 
+#' 
+#' 
+simulateTest = function(model = "2PL" , items = 10 , latentTraits=NULL ,individuals = 1000, boundaries = NULL, dims = 1 , itempars = NULL , verbose = F , threshold = 0, seed = NULL){
+  ret = NULL;
+  ret$model = model;
+  seed = ua(seed,floor(runif(1)*10000000))
+  set.seed(seed);
+  ret$seed = seed;
+  check.model(model);
+  z = ua(itempars,simulateItemParameters(items,model,dims,boundaries));
+  ret$itempars = z;
+  #Generate the individual parameters (assume normal for now, change later)
+  th=rnorm(individuals*dims,0,1)
+  th=(th-mean(th))/sd(th)
+  th = matrix(th,ncol=dims);
+  ret$latentTraits = ua(latentTraits,th)
+  th=ret$latentTraits;
+  gc()
+  ##Here th must be exactly the latent traits of these individuals in this test.
+  ret$prob=do.call(rbind,lapply(th,function(x,z) probability.3pl(theta=x,z=z),z=z))
+  gc()
+  coins=matrix(runif(items*individuals),ncol=items);
+  gc()
+  ret$test = ifelse(ret$prob>coins,1,0)
+  coins=NULL
+  gc()
+  if(verbose){print("Simulation finished ... ")}
+  ret
+}
+
+
+
+#' SimulateTest.slow.
 #' Simulates a test according to a model
 #' 
 #' @export
@@ -22,7 +63,7 @@
 #' @param verbose Optional. If true, output is made to know the status of the algorithm
 #' @examples
 #' k=simulateTest(items=20,individuals=2000,threshold=0.01,dims=1,reps=3,model="3PL")
-simulateTest<-function(model="2PL",items=10,individuals=1000,reps=1,dims=1,filename="test",directory=NULL,boundaries=NULL,itempars=NULL,latentTraits=NULL,seed=NULL,verbose=F,threshold=0)
+simulateTest.slow<-function(model="2PL",items=10,individuals=1000,reps=1,dims=1,filename="test",directory=NULL,boundaries=NULL,itempars=NULL,latentTraits=NULL,seed=NULL,verbose=F,threshold=0)
 { 
   dirflag=F;
   if(!is.null(directory)){
@@ -166,6 +207,9 @@ simulateTest<-function(model="2PL",items=10,individuals=1000,reps=1,dims=1,filen
   ret
 }
 
+
+simulateItemParameters(10,"3PL",4)
+
 #' Simulates item parameters depending on a model
 #' @export
 #' @param items , Number of items to generate
@@ -181,6 +225,8 @@ simulateItemParameters<- function(items, model, dims=1, boundaries=NULL){
   bd$a_lower = ua(bd$a_lower,0.0001); 
   bd$c_upper = ua(bd$c_upper,0.35); 
   bd$c_lower = ua(bd$c_lower,0);
+  if(dims == 1){
+  
   b = rnorm(items);
   if(model == "3PL"){
     a = rlnorm(items,meanlog=0,sdlog=1/4)
@@ -200,6 +246,23 @@ simulateItemParameters<- function(items, model, dims=1, boundaries=NULL){
     c = rep(0,items)
   }
   ret = list(a=a,b=b,c=c);
+  }
+  if(dims > 1){
+    ##Multidimensional
+    a=matrix(runif(dims * items, min = 0, max = 7), nrow = items) #a_j
+    b=rnorm(items, mean = 0, sd = 0.7)#b
+    d=rep(NA, items)
+    for (i in 1:items){                                                                                                                                                                                                                   
+      d[i]=-b[i]*sqrt(sum(a[i, ]^2))#d
+    }
+    c <- runif(items, min = 0, max = 0.25) #c
+    
+    if(model=="2PL"){c=rep(0,items)}
+    if(model=="1PL"){c=rep(0,items);a=matrix(1,ncol = dim,nrow = items)}
+    if(model=="3PL"){c=c;a=a}
+    ret = list(a=a,d=d,c=c);
+  }
+  ret$model = model;
   ret
 }
 
@@ -210,12 +273,19 @@ prob <- function(theta,a,d,c)
   return(prob)
 }
 
+
+############ Las funciones de probabilidad no son iguales hay que hacer una que acepte multidimensionales y unidimensionales
+########### La nueva funcion de probabilidad es poco vectorizable.
+length(c(0,0,-1))
+prob(c(0,0,-1),c(1,2,1.7),2,0.1)
+probability.3pl(a=c(1,2,1.7),d=2,c=0.1,theta=c(0,2,2))
+
 #' @export
 #FUNCION PARA SIMULAR EL TEST
 testmulti=function(nitems,ninds,dim,model){
   
   #GENERACIÓN DE PARÁMETROS
-  
+  ret = NULL;
   a=matrix(runif(dim * nitems, min = 0, max = 7), nrow = nitems) #a_j
   b=rnorm(nitems, mean = 0, sd = 0.7)#b
   d=rep(NA, nitems)

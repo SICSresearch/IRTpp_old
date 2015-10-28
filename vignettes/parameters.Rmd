@@ -1,0 +1,99 @@
+---
+title: "Models and Parameters"
+author: "Juan Liberato"
+date: "October 21, 2015"
+output: html_document
+---
+
+In item response theory models , tests can be modelled through different models, in IRTpp each test calibrated parameters are in a simple data structure that is passed around the IRTpp functions.
+
+### UIRT models
+
+In UIRT models, typically Rasch , 2PL and 3PL, in IRTpp the item parameters are usually these : 
+
+ * $a$ Discrimination parameter (Also the slope of the ICC)
+ * $b$ Difficulty parameter 
+ * $c$ Guessing parameter 
+ * $d$ A transformation of the b parameter , this is $-a * b$
+ * $c'$. The logistic transform of the c parameter , codename : **cp**.
+ 
+IRTpp functions must accept these parameters and transform them accordingly in the functions.
+
+The UIRT model types accepted by IRTpp are :
+  
+  * **1PL** (Logistic model with b parameter only , a = 1, and c = 0)
+  * **2PL** (Logistic model where parameters a and b are estimated, c = 0)
+  * **3PL** (Logistic model with parameters a, b and c)
+  
+The MIRT model types accepted are :
+
+  * **2PL** Multidimensional 2PL (In this case , the a parameter is a matrix)
+  * **3PL** Multidimensional 3PL
+  * **MU3PL** MultiUnidimensional 3PL (There are multiple dimensions but each item has only one dimension)
+  * **MU2PL** MultiUnidimensional 2PL
+  
+The MIRT models for polytomous items are :
+  
+  * **MPC** Multidimensional partial credit model
+  * **MGR** Multidimensional Graded response model
+
+### Functions
+
+Therefore functions are required to :
+ 
+  * Simulate random parameters for all kinds of models and dimensions.
+  * Simulate tests based on a model and parameters.
+  * Transform between parameter types when is appropiate
+  * Display item parameters for the end user.
+  * Allow the end user to enter restrictions in the parameters.
+  
+#### Simulation functions :
+
+```
+sim.test
+sim.itempars
+```
+
+#### Model checking and transformation functions :
+
+```
+model.transform // Transform a model parameters ?
+model.check // Check if a model is valid or not.
+model.extract // Extract a named parameter from a parameter list.
+as.model // Makes a irtpp model from whatever you try to throw at it.
+
+```
+
+### Model and parameter list examples :
+
+$a $b $c $model $dims
+
+
+### Generic Probability functions :
+
+In spite of generalism , the probability function is completely flexible for all models.
+To calculate a probability we need the model, the parameters and the abilities.
+
+### Functions for estimation
+
+```
+irtpp : estimate item parameters
+latent.traits : estimate individual parameters
+
+```
+
+
+Workflow
+
+Simulate a test 
+Estimate item parameters
+Estimate individual parameters
+Calculate item fit statistics
+
+test = simulateTest(model = "3PL" , items = 100, individuals = 10000);
+est = irtpp(fulltest = test)
+indpars = latent.traits(est)
+
+
+ 
+ 
