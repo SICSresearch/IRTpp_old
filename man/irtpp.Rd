@@ -4,15 +4,23 @@
 \alias{irtpp}
 \title{Estimate a test item parameters according to Item Response Theory.}
 \usage{
-irtpp(dataset = NULL, model, initialvalues = NULL, filename = NULL,
-  output = NULL)
+irtpp(dataset = NULL, model, dims = 1, initialvalues = NULL,
+  filename = NULL, output = NULL)
 }
 \arguments{
 \item{dataset}{The matrix with the responses from the individuals}
 
 \item{model}{The model used to calibrate the parameters}
 
+\item{dims}{The dimensions to use on the estimation, remember to use the initial parameters if you want highquality estimation}
+
 \item{initialvalues}{The matrix with the initial values for the optimization process}
+
+\item{filename}{Optional argument specifying a CSV file to read instead of a dataset in memory}
+
+\item{output}{Optional. Additonal arguments that need to be documented by cristian}
+
+\item{fixeditems}{Optional. Items to fix.}
 }
 \value{
 The item parameters in a matrix.

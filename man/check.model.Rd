@@ -12,7 +12,7 @@ check.model(model, msg = "", error = T)
 
 \item{msg}{Additional error message}
 
-\item{stop}{Optional, If false, this function wont throw a stop.}
+\item{error}{Optional, If false, this function wont throw a stop.}
 }
 \value{
 No return, in case that the model is not valid throws a stop, if error is false, Only prints a message

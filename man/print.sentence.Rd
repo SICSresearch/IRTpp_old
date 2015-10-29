@@ -11,6 +11,8 @@ Prints different strings concatenating them with a " "}
 \item{...}{The strings to print.}
 
 \item{sep}{The separator to pass}
+
+\item{verbose}{Pass the verbose parameter of a function to make this print invisible when verbose is false.}
 }
 \description{
 Print Sentence, Helper function
