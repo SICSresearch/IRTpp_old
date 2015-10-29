@@ -139,18 +139,3 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
-// irtppmultidim
-Rcpp::List irtppmultidim(Rcpp::NumericMatrix ndatSet, int e_model, Rcpp::NumericMatrix quads, Rcpp::NumericMatrix initvals, int dimension);
-RcppExport SEXP IRTpp_irtppmultidim(SEXP ndatSetSEXP, SEXP e_modelSEXP, SEXP quadsSEXP, SEXP initvalsSEXP, SEXP dimensionSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject __result;
-    Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type ndatSet(ndatSetSEXP);
-    Rcpp::traits::input_parameter< int >::type e_model(e_modelSEXP);
-    Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type quads(quadsSEXP);
-    Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type initvals(initvalsSEXP);
-    Rcpp::traits::input_parameter< int >::type dimension(dimensionSEXP);
-    __result = Rcpp::wrap(irtppmultidim(ndatSet, e_model, quads, initvals, dimension));
-    return __result;
-END_RCPP
-}

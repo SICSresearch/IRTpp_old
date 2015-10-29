@@ -3,6 +3,7 @@
 \docType{package}
 \name{IRTpp-package}
 \alias{IRTpp-package}
+\alias{irtpp}
 \title{IRTpp : Item Response Theory Implemented in R and Cpp}
 \description{
 IRTpp supports the IRT and MIRT methodologies by implementing

@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <meta http-equiv="x-ua-compatible" content="IE=9" >
 
-<title>Simulating Item Response Theory tests and item parameters</title>
+<title>Package Structure</title>
 
 <style type="text/css">
 body, td {
@@ -179,112 +179,180 @@ hljs.initHighlightingOnLoad();
 </head>
 
 <body>
-<h1>Simulating Item Response Theory tests and item parameters</h1>
+<h1>Package Structure</h1>
 
-<p>Sometimes it is useful to simulate tests and items in Item Response Theory, this vignette specifies how to simulate tests and use or interpret the output, using the IRTpp package.</p>
+<p>Currently the package has the following main functionalities.</p>
 
-<p>To simulate a test use the function <code>simulateTest</code> as follows</p>
+<ol>
+<li>Estimating Item and Individual parameters according to an IRT model.</li>
+<li>Exploratory statistics for tests.</li>
+<li>Test Simulation and Goodness of fit statistics.</li>
+</ol>
 
-<pre><code class="r">library(IRTpp)
-test &lt;- simulateTest(model=&quot;2PL&quot;,items=10,individuals=1000)
-</code></pre>
+<p>Some common objects between the functions are : </p>
 
-<p>This runs a simulation with a 2 parameter logistic model, using 10 items and 1000 individuals. A list is returned with the item parameters, the test (Correct responses of the individuals are marked as a 1, in dichotomic models).
-For the test we just simulated, item parameters are : </p>
+<ul>
+<li>Item parameters</li>
+<li>Test (responses)</li>
+<li>Response pattern</li>
+<li>Model</li>
+</ul>
 
-<pre><code class="r">test$itempars
+<h3>Item parameters</h3>
+
+<p>Item parameters can be passed around in two ways : </p>
+
+<p>*As a list of named parameters</p>
+
+<pre><code class="r">library(IRTpp) 
+t = simulateItemParameters(items=10, model=&quot;2PL&quot; , dims= 5)
+t
 </code></pre>
 
 <pre><code>## $a
-##  [1] 1.2781254 0.7500210 0.9143067 1.1486045 1.2492079 0.9073839 1.0716809
-##  [8] 1.4132750 0.9853236 1.4997870
+##  [1] 0.7621606 1.0330272 1.0086665 0.6783732 1.2551742 0.9292022 1.0038345
+##  [8] 0.7303077 1.0364596 1.0634311
 ## 
 ## $b
-##  [1] -1.3692219 -0.4825097 -0.1677545  0.3497572 -0.7796809 -0.9854877
-##  [7]  1.2455310  1.7199984  0.2736120 -1.1449408
+##  [1]  0.7835553  0.5206096 -0.7594416 -0.5060052  0.4095894 -0.4387058
+##  [7] -1.7435894 -2.1817079 -0.9354447 -0.8256422
 ## 
 ## $c
 ##  [1] 0 0 0 0 0 0 0 0 0 0
 </code></pre>
 
-<p>Where <code>test$itempars$a</code> indicates the parameters belonging to the discrimination parameter, and so on. Notice that the c parameter is a vector of 0, since we are simulating a 2 parameter logistic model.</p>
+<p>*As a matrix or dataframe with equal column number.</p>
 
-<p>The test element of the list returned by <code>simulateTest</code> contain a list of tests generated, notice that if you simulate only one test, the response data will be in :</p>
-
-<pre><code class="r">responses &lt;-test$test[[1]]
-responses[1:10,]
+<pre><code class="r">parameter.matrix(t,model=&quot;2PL&quot;)
 </code></pre>
 
-<pre><code>##       [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
-##  [1,]    1    1    1    1    1    1    0    0    1     1
-##  [2,]    0    1    0    1    1    0    1    0    0     1
-##  [3,]    1    1    0    1    1    0    0    0    0     0
-##  [4,]    1    0    0    0    0    1    0    0    0     0
-##  [5,]    1    0    1    1    1    1    0    0    0     1
-##  [6,]    1    1    0    0    1    1    1    0    1     1
-##  [7,]    1    0    0    1    0    0    0    0    1     1
-##  [8,]    0    1    1    0    1    1    0    0    0     1
-##  [9,]    1    0    1    1    1    1    0    0    0     1
-## [10,]    1    1    1    0    1    0    1    0    0     0
+<pre><code>##            [,1]       [,2] [,3]
+##  [1,] 0.7621606  0.7835553    0
+##  [2,] 1.0330272  0.5206096    0
+##  [3,] 1.0086665 -0.7594416    0
+##  [4,] 0.6783732 -0.5060052    0
+##  [5,] 1.2551742  0.4095894    0
+##  [6,] 0.9292022 -0.4387058    0
+##  [7,] 1.0038345 -1.7435894    0
+##  [8,] 0.7303077 -2.1817079    0
+##  [9,] 1.0364596 -0.9354447    0
+## [10,] 1.0634311 -0.8256422    0
 </code></pre>
 
-<p><code>responses[1:10,]</code> are the first 10 rows of the simulated test.</p>
+<p>For casting between these types <code>parameter.list</code> and <code>parameter.matrix</code> functions are provided</p>
 
-<h2>Simulating multiple tests</h2>
+<h3>Test (responses)</h3>
 
-<p>IRTpp has built-in capabilities for simulating multiple tests at once, use the option <code>reps</code> to simulate multiple tests at once. All the tests are simulated with the same individual and item parameters.</p>
+<p>Functions can receive either a single test or a test vector for performing the same computation on many tests, in the function please check if test is a vector of tests instead of a single test and either vectorise the computation or provide an error message to the user.</p>
 
-<p>For example simulating 3 tests of the one parameter logistic model :</p>
-
-<pre><code class="r">t = simulateTest(model=&quot;1PL&quot;,items=4,individuals=5,reps=3)
-length(t$test)
+<pre><code class="r">tests = simulateTest(model=&quot;3PL&quot;,items=10,individuals=3,reps=4)
+typeof(tests$test)
 </code></pre>
 
-<pre><code>## [1] 3
+<pre><code>## [1] &quot;list&quot;
 </code></pre>
 
-<h2>Adding boundaries to the simulation</h2>
-
-<p>Sometimes you want the item parameters to fall in a range, use the boundaries option to achieve this.
-The boundaries option receives a list of the parameter bounds you want to implement.
-Let&#39;s look at the parameter boundaries in an ordinary 3PL simulated test.</p>
-
-<pre><code class="r">t3 = simulateTest(model=&quot;3PL&quot;,items=500,individuals=10);
-summary(t3$itempars$c)
+<pre><code class="r">typeof(tests$test[[1]])
 </code></pre>
 
-<pre><code>##      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
-## 0.0005547 0.0925300 0.1954000 0.1832000 0.2677000 0.3498000
+<pre><code>## [1] &quot;double&quot;
 </code></pre>
 
-<p>As you can see, the item parameters will most likely fall inside 0 and 0.35 which are the package defaults, however we can impose a lower boundary for the c parameter as follows:</p>
-
-<pre><code class="r">bd = list(c_lower=0.2)
-t3 = simulateTest(model=&quot;3PL&quot;,items=500,individuals=10,boundaries=bd);
-summary(t3$itempars$c)
+<pre><code class="r">is.matrix(tests$test[[1]])
 </code></pre>
 
-<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-##  0.2000  0.2413  0.2773  0.2767  0.3138  0.3497
+<pre><code>## [1] TRUE
 </code></pre>
 
-<p>Notice how the lower boundary has been imposed in the c parameter.</p>
+<p>A test must be a R numeric or integer matrix, and typeof double, if checked with <code>is.matrix</code> it must return TRUE.</p>
 
-<h2>Keeping individual scores in a given threshold</h2>
+<p>A test can also be expressed as the response patterns of the test and the frequencies of these patterns</p>
 
-<p>When simulating tests, sometimes, perfect responses by an individual can affect procedures made with the tests themselves, or it is required for the simulation that the individuals do not answer less (or more) than a percent of the items, to impose restrictions in the individual classic scores use the threshold parameter.</p>
+<h3>Response patterns</h3>
 
-<pre><code class="r">t3 = simulateTest(model=&quot;3PL&quot;,items=10,individuals=100,threshold=0.2);
+<p>In IRT response patterns are very important because these represent a set of individuals who answered the test in the same manner and must have the same latent trait.</p>
+
+<p>Patterns are usually represented as a ordered matrix, when it is returned from the <code>individual.traits</code> function. </p>
+
+<pre><code class="r">t = simulateTest(model=&quot;2PL&quot;,items=3,individuals=10)
+individual.traits(dataset=t$test[[1]],model=&quot;2PL&quot;,itempars=parameter.matrix(t$itempars))
 </code></pre>
 
-<p>This threshold ensures that the individuals do not answer less than 20% of the answers or more than 80% of the answers.</p>
-
-<pre><code class="r">response &lt;- t3$test[[1]]
-summary(rowSums(response))
+<pre><code>## Error in eval(expr, envir, enclos): could not find function &quot;individual.traits&quot;
 </code></pre>
 
-<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-##    2.00    5.00    6.00    6.21    7.00   10.00
+<h3>Models</h3>
+
+<p>Models in IRT can be very diverse, a list with the current valid models must be mantained to instruct users in what models can they use.</p>
+
+<p>A model is represented by a single string with the model standard name in the package, in UIRT the three main models are &ldquo;1PL&rdquo; , &ldquo;2PL&rdquo; , and &ldquo;3PL&rdquo;.</p>
+
+<p>In the IRTpp package, multiple functions are given to help receiving models upon user input.</p>
+
+<h4>Helper functions for model</h4>
+
+<p><code>check.model</code> verifies if a model is valid, if not it throws an error to the user.</p>
+
+<p><code>irtpp.model</code> Casts possible unambiguous inputs for a model into a single standardized model string.</p>
+
+<p>If a function receives the model as a parameter this is usually named modispla
+del. And the function irtpp.model can cast the user input.
+irtpp.models can list all the available models.</p>
+
+<pre><code class="r">irtpp.model(2)
+</code></pre>
+
+<pre><code>## [1] &quot;2PL&quot;
+</code></pre>
+
+<pre><code class="r">irtpp.model(&quot;2&quot;)
+</code></pre>
+
+<pre><code>## [1] &quot;2PL&quot;
+</code></pre>
+
+<pre><code class="r">irtpp.model(&quot;2pl&quot;)
+</code></pre>
+
+<pre><code>## [1] &quot;2PL&quot;
+</code></pre>
+
+<pre><code class="r">irtpp.model(&quot;2PL&quot;)
+</code></pre>
+
+<pre><code>## [1] &quot;2PL&quot;
+</code></pre>
+
+<pre><code class="r">irtpp.models()
+</code></pre>
+
+<pre><code>## [1] &quot;1PL&quot;   &quot;2PL&quot;   &quot;3PL&quot;   &quot;1PLAD&quot;
+</code></pre>
+
+<h4>Probability functions within models</h4>
+
+<p>The naming of probability functions is usually probability.<model> in lowercase, the function irtpp.p is also provided which gives the model probability function for a specific model.</p>
+
+<pre><code class="r">probability.3pl
+</code></pre>
+
+<pre><code>## function (z, a = z$a, b = z$b, c = z$c, theta, d = -a * b, cp = NULL) 
+## {
+##     if (is.null(cp)) {
+##         c + ((1 - c)/(1 + exp(-a * (theta - b))))
+##     }
+##     else {
+##         exp(cp)/(1 + exp(cp)) + (1 - (exp(cp)/(1 + exp(cp)))) * 
+##             (1 + exp(-(a * theta + d)))^(-1)
+##     }
+## }
+## &lt;environment: namespace:IRTpp&gt;
+</code></pre>
+
+<pre><code class="r">irtpp.p(model=&quot;3PL&quot;)
+</code></pre>
+
+<pre><code>## NULL
 </code></pre>
 
 </body>

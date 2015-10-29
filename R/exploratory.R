@@ -141,14 +141,13 @@ alpha.curve <- function (test)
 
 
 #######################################################################
-#' @name information
+#' @name Test or Item information 
 #' @title Test or Item information
 #' @description Computes the amount of test or item information. 
 #' License :GPL (>= 2) Adapted from CMC_1.0 package
 #' @param object a matrix that contain the coefficient estimates 
 #' @param range a interval for which the test information should be computed.
-#' @param items the items for which the information should be computed.
-#' @param ... Additional arguments to integrate
+#' @param items the items for which the information shoulb be computed.
 #' @return TotalInfo the total amount of information.
 #' @return RangeInfo the amount of information in the specified interval.
 #' @return RangeProp the proportion of information in the specified interval.

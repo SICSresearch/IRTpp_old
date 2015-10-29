@@ -1,0 +1,105 @@
+---
+title: "IRTpp package structure and naming conventions"
+author: "Juan Liberato"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{IRTpp package structure and naming conventions}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+Package Structure
+==================================
+Currently the package has the following main functionalities.
+
+1. Estimating Item and Individual parameters according to an IRT model.
+2. Exploratory statistics for tests.
+3. Test Simulation and Goodness of fit statistics.
+
+Some common objects between the functions are : 
+
+* Item parameters
+* Test (responses)
+* Response pattern
+* Model
+
+### Item parameters
+Item parameters can be passed around in two ways : 
+
+*As a list of named parameters
+
+```{r}
+library(IRTpp) 
+t = simulateItemParameters(items=10, model="2PL" , dims= 5)
+t
+```
+
+*As a matrix or dataframe with equal column number.
+
+```{r}
+parameter.matrix(t,model="2PL")
+```
+
+For casting between these types `parameter.list` and `parameter.matrix` functions are provided
+
+### Test (responses)
+
+Functions can receive either a single test or a test vector for performing the same computation on many tests, in the function please check if test is a vector of tests instead of a single test and either vectorise the computation or provide an error message to the user.
+
+```{r}
+tests = simulateTest(model="3PL",items=10,individuals=3,reps=4)
+typeof(tests$test)
+typeof(tests$test[[1]])
+is.matrix(tests$test[[1]])
+```
+
+A test must be a R numeric or integer matrix, and typeof double, if checked with `is.matrix` it must return TRUE.
+
+A test can also be expressed as the response patterns of the test and the frequencies of these patterns
+
+### Response patterns
+
+In IRT response patterns are very important because these represent a set of individuals who answered the test in the same manner and must have the same latent trait.
+
+Patterns are usually represented as a ordered matrix, when it is returned from the `individual.traits` function. 
+
+```{r}
+t = simulateTest(model="2PL",items=3,individuals=10)
+individual.traits(dataset=t$test[[1]],model="2PL",itempars=parameter.matrix(t$itempars), method="EAP")
+```
+
+### Models
+
+Models in IRT can be very diverse, a list with the current valid models must be mantained to instruct users in what models can they use.
+
+A model is represented by a single string with the model standard name in the package, in UIRT the three main models are "1PL" , "2PL" , and "3PL".
+
+In the IRTpp package, multiple functions are given to help receiving models upon user input.
+
+#### Helper functions for model
+
+`check.model` verifies if a model is valid, if not it throws an error to the user.
+
+`irtpp.model` Casts possible unambiguous inputs for a model into a single standardized model string.
+
+If a function receives the model as a parameter this is usually named modispla
+del. And the function irtpp.model can cast the user input.
+irtpp.models can list all the available models.
+
+```{r}
+irtpp.model(2)
+irtpp.model("2")
+irtpp.model("2pl")
+irtpp.model("2PL")
+irtpp.models()
+```
+
+#### Probability functions within models
+
+The naming of probability functions is usually probability.<model> in lowercase, the function irtpp.p is also provided which gives the model probability function for a specific model.
+
+```{r}
+probability.3pl
+irtpp.p(model="3PL")
+```

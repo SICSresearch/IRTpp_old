@@ -1,4 +1,4 @@
-#include <util_package.h>
+#include <util_package.hpp>
 
 PatternMatrix * getPatternMatrix(string r_path)
 {
@@ -8,9 +8,9 @@ PatternMatrix * getPatternMatrix(string r_path)
     char * path = new char[r_path.size() + 1];
     std::copy(r_path.begin(), r_path.end(), path);
     path[r_path.size()] = '\0';
-
+    
     dataSet = new PatternMatrix(0);
-
+    
     input.importCSV(path, *dataSet, 1, 0);
 
     return dataSet;
@@ -39,103 +39,6 @@ PatternMatrix * getPatternMatrix(Rcpp::NumericMatrix r_dataSet)
     return dataSet;
 }
 
-//' @export
-//[[Rcpp::export]]
-Rcpp::List irtppmultidim(Rcpp::NumericMatrix ndatSet , int e_model , Rcpp::NumericMatrix quads , Rcpp::NumericMatrix initvals, int dimension){
-        PatternMatrix * datSet = getPatternMatrix(ndatSet);
-        Matrix <double> cuad(41,2);
-        Model *model = new Model();
-        ModelFactory *modelFactory;
-        void ** status_list;
-        Matrix<double> *theta;
-        Matrix<double> *weight;
-        modelFactory = new SICSGeneralModel();
-
-        theta = new Matrix<double>(1, 41);
-        weight = new Matrix<double>(1, 41);
-
-        for (unsigned int k = 0; k < quads.nrow(); k++)
-            (*theta)(0,k)=quads[k];
-
-        for (unsigned int k = 0; k < quads.nrow(); k++)
-            (*weight)(0,k)=quads[k+quads.nrow()];
-
-
-            //Start by telling the model that it is a multidimensional model.
-      int dimstype = 2;
-      model->setModel(modelFactory, e_model, dimstype);
-
-
-      //Here we must set the number of dimensions to estimate in the given model
-model->getDimensionModel()->setDims(dimension);
-int dims = model->getDimensionModel()->getNumDimensions();
-std::cout<<"Dims used : "<<dims<<std::endl;
-delete modelFactory;
-
-        // Set datset to model
-        model->getItemModel()->setDataset(datSet);
-        // Build parameter set
-        model->getParameterModel()->buildParameterSet(model->getItemModel(),model->getDimensionModel());
-
-
-        EMEstimation em;
-  //Here is where quadratures must be set.
-  //create the quad nodes
-std::cout << "Declaring QuadratureNodes" << std::endl;
-  QuadratureNodes nodes(theta, weight);
-std::cout << "Setting them" << std::endl;
-  em.setQuadratureNodes(&nodes);
-std::cout << "Setting Model" << std::endl;
-  em.setModel(model);
-    std::cout << "Ready to ANDRADE" << std::endl;
-  em.setInitialValues(Constant::ANDRADE);
-
-  //Run the estimation
-std::cout << "em.estimate" << std::endl;
-
-status_list = em.estimate();
-  double fulloglik = em.getLoglik();
-      std::cout<<"Ll : "<<fulloglik<<std::endl;
-      double* returnpars;
-      //double* pars;
-
-
-      returnpars = new double[(dims+2)*datSet->size];
-      model->parameterModel->getParameters(returnpars);
-      Rcpp::NumericVector pars((dims+2)*datSet->size);
-
-          // Return in list
-          for (int i = 0; i < (dims+2)*datSet->size; i++){
-              pars[i] = returnpars[i];
-              std::cout<<pars[i]<<" . "<<std::endl;
-      }
-
-
-          // Return in list
-          for (int i = 0; i < 3*datSet->size; i++)
-              pars[i] = returnpars[i];
-
-
-      Rcpp::XPtr< Matrix<double> > p_matrix((Matrix<double>*)status_list[2], false);
-
-      Rcpp::List z = Rcpp::List::create(Rcpp::_["zita"] = pars,
-                                        Rcpp::_["iterations"] = (*(int*)status_list[0]),
-                                        Rcpp::_["convergence"] = (*(bool*)status_list[1]),
-                                        Rcpp::_["probability_matrix"] = p_matrix);
-
-      delete model;
-      delete theta;
-      delete weight;
-
-      delete (int*)status_list[0];
-      delete (bool*)status_list[1];
-      delete [] status_list;
-      delete [] returnpars;
-
-      return z;
-
-}
-
 Rcpp::List irtpp_aux(PatternMatrix *datSet, int e_model, Rcpp::NumericMatrix quads,
                      Rcpp::NumericMatrix init_val, bool init_val_flag,
                      bool to_file_flag, string output_path)
@@ -146,27 +49,31 @@ Rcpp::List irtpp_aux(PatternMatrix *datSet, int e_model, Rcpp::NumericMatrix qua
     Matrix<double> *theta;
     Matrix<double> *weight;
     double *** zita_set;
-    int items, d = 1, c = 41;
+    int items;
     void ** status_list;
+
     model = new Model();
     modelFactory = new SICSGeneralModel();
 
     // Matrices for thetas and weights
-    theta = new Matrix<double>(d,c);
-    weight = new Matrix<double>(d,c);
+    theta = new Matrix<double>(1,41);
+    weight = new Matrix<double>(1,41);
+
     // Cast the quadrature matrices
-    for (unsigned int k = 0; k < quads.nrow(); k++)
+    for (int k = 0; k < quads.nrow(); k++)
         (*theta)(0,k)=quads[k];
 
-    for (unsigned int k = 0; k < quads.nrow(); k++)
+    for (int k = 0; k < quads.nrow(); k++)
         (*weight)(0,k)=quads[k+quads.nrow()];
-    model->setModel(modelFactory, e_model,1);
+
+    model->setModel(modelFactory, e_model);
 
     delete modelFactory;
 
     QuadratureNodes nodes(theta,weight);
     // Set datset to model
     model->getItemModel()->setDataset(datSet);
+
     // Build parameter set
     model->getParameterModel()->buildParameterSet(model->getItemModel(),model->getDimensionModel());
 
@@ -174,6 +81,7 @@ Rcpp::List irtpp_aux(PatternMatrix *datSet, int e_model, Rcpp::NumericMatrix qua
     em.setQuadratureNodes(&nodes);
 
     em.setModel(model);
+
     if(!init_val_flag)
         em.setInitialValues(Constant::ANDRADE);
     else
@@ -195,11 +103,9 @@ Rcpp::List irtpp_aux(PatternMatrix *datSet, int e_model, Rcpp::NumericMatrix qua
 
         em.setInitialValues(zita_set);
     }
+
     // We estimate here
     status_list = em.estimate();
-
-    double fulloglik = em.getLoglik();
-    std::cout<<"Ll : "<<fulloglik<<std::endl;
     double* returnpars;
 
     returnpars = new double[3*datSet->size];
@@ -239,9 +145,7 @@ Rcpp::List irtpp_aux(PatternMatrix *datSet, int e_model, Rcpp::NumericMatrix qua
                                       Rcpp::_["path"] = to_file_flag ? output_path : "No path",
                                       Rcpp::_["iterations"] = (*(int*)status_list[0]),
                                       Rcpp::_["convergence"] = (*(bool*)status_list[1]),
-                                      Rcpp::_["probability_matrix"] = p_matrix,
-                                      Rcpp::_["loglikelihood"] = fulloglik);
-                                      ;
+                                      Rcpp::_["probability_matrix"] = p_matrix);
 
     delete model;
     delete theta;
@@ -249,8 +153,6 @@ Rcpp::List irtpp_aux(PatternMatrix *datSet, int e_model, Rcpp::NumericMatrix qua
 
     delete (int*)status_list[0];
     delete (bool*)status_list[1];
-    delete [] status_list;
-    delete [] returnpars;
 
     return z;
 }
@@ -267,17 +169,17 @@ Rcpp::List abilityinterface(Rcpp::NumericMatrix zita_par, PatternMatrix * datSet
     Matrix<double> *weight;
     double *** zita_set;
     double ** result;
-    int items, d = 1, c = 41;
+    int items;
 
     model = new Model();
     modelFactory = new SICSGeneralModel();
-    model->setModel(modelFactory, e_model,1);
+    model->setModel(modelFactory, e_model);
 
     delete modelFactory;
 
     // Matrices for thetas and weights
-    theta = new Matrix<double>(d,c);
-    weight = new Matrix<double>(d,c);
+    theta = new Matrix<double>(1,41);
+    weight = new Matrix<double>(1,41);
 
     // Cast the quadrature matrices
     for (int k = 0; k < quads.nrow(); k++)
@@ -325,8 +227,6 @@ Rcpp::List abilityinterface(Rcpp::NumericMatrix zita_par, PatternMatrix * datSet
             lte.estimateLatentTraitsEAP();
         else
             lte.estimateLatentTraitsMAP(zita_set);
-
-        delete model->getParameterModel()->probabilityMatrix;
     }
     else
     {
@@ -375,15 +275,11 @@ Rcpp::List abilityinterface(Rcpp::NumericMatrix zita_par, PatternMatrix * datSet
         }
     }
 
-    lte.lt->deleteListPatternTheta(result);
-
     Rcpp::List z = Rcpp::List::create(Rcpp::_["patterns"] = to_file_flag ? pars_aux : pars1,
                                       Rcpp::_["trait"] = to_file_flag ? pars_aux : pars2,
                                       Rcpp::_["path"] = to_file_flag ? output_path : "No path");
 
-    for(int i = 0; i < 3; i++) delete [] zita_set[i][0];
-    for(int i = 0; i < 3; i++) delete [] zita_set[i];
-    delete [] zita_set;
+    delete model->parameterModel->probabilityMatrix;
     delete model;
     delete theta;
     delete weight;

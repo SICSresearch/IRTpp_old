@@ -9,9 +9,7 @@ Item Response Theory Software made in Cpp and R
 
 ## Installation
 
-This is currently a source package only, you can either install the development version from this repository or  the last stable release from [the releases page](https://github.com/SICSresearch/IRTpp/releases). This is the recommended option if you are not developing the package.
-
-### Installing the dev version.
+This is currently a source package only
 
 1. Clone the repo with the recursive option.
 
