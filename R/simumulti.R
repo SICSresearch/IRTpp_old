@@ -4,6 +4,7 @@
 #Robert, C. P. Simulation of truncated normal variables. Statistics and Computing (1995) 5, 121?125
 
 
+
 rtnorm <-function (n, mean = 0, sd = 1, lower = -Inf, upper = Inf)
 {
   if (length(n) > 1)
@@ -89,19 +90,23 @@ normalize<-function(x){#normaliza un vector(divide por la norma)
 } # end normalize
 
 
-dims = 3;
-clusters = 4;
+dims = 2;
+clusters = 3;
 seed = 45;
-items = 101;
+items = 10;
+individuals = 500;
+
+simulateTestMD <- function(items = 10, individuals = 1000, dims = 3, clusters = 4 , seed = 10)
+  {
 
 ####Start here
 ### Decide number of items per cluster.
 rem = items%%clusters
 nitems = items - rem
-itemlist = rep(nitems/clusters,4)
+itemlist = rep(nitems/clusters,clusters)
 itemlist[[clusters]] = itemlist[[clusters]] + rem
 ##split
-itemlist
+print(itemlist)
 
 ##determinar direcciones principales
 idnoisy = diag(dims)+matrix(rnorm(dims*dims,0.15,0.05),nrow=dims,ncol=dims);
@@ -123,9 +128,9 @@ set.seed(seed)
 ##List item limits
 ends = cumsum(itemlist)
 inits = (c(0,cumsum(itemlist))+1)[1:length(itemlist)]
-dir_beta[101,]
+dir_beta[items,]
 i = 1
-for (i in 1:4) {
+for (i in 1:clusters) {
   dir_beta[inits[i]:ends[i],] = matrix(beta_w[i,], itemlist[i], dims, byrow=TRUE) + matrix(runif(itemlist[i]*dims,-noise[i],noise[i]), itemlist[i],dims)
 }
 
@@ -152,8 +157,47 @@ Alpha <- rtnorm(items, mean = 0, sd = 1.0, lower = l_a,  upper = u_a)#genera los
 length(Alpha)
 
 # clasical a-parameters
+print(dim(dir_beta))
 a = dir_beta * matrix(Alpha, items,dims, byrow=FALSE)
 
+# B parametters
+
+sd.gamma <-1
+Gamma <- rnorm(items,0,sd.gamma)
+Gamma[inits[1:dims]] = 0;
+
+## C parameters
+
+guessing=runif(items,0,0.25)
+
+theta <- matrix(rnorm(individuals*dims,0,1),individuals,dims)
+# this line is to garantee the the covariance matrix is the identity
+theta <- theta %*% solve((chol(cov(theta))))
+cov(theta)
+theta.true <- theta
+
+## Setting prob matrix
+eta  <- theta%*% t(a) -  matrix(Gamma,individuals,items,byrow=TRUE)
+P = guessing + (1-guessing)/(1+exp(-eta))
+## Coins
+U <- matrix(runif(items*individuals),individuals,items);
+
+responses <- ifelse(P>U,1,0)
+
+t.score = rowSums(P);
+c.score = rowSums(responses);
+
+cor(t.score,c.score)
+
+##Return everything
+
+return (list("test"= responses,"z" = list("a"=a,"b"=Gamma,"c"=guessing),"clusters"=itemlist,"direction" = beta_w))
+}
+
+
+
+
+simulateTestMD(items = 10, individuals = 500, dims = 2, clusters = 3)
 
 
 

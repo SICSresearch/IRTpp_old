@@ -341,6 +341,7 @@ testmulti=function(nitems,ninds,dim,model){
     }
   }
   
+
   param=list("a"=a,"b"=b,"c"=c,"d"=d)
   lista=list("test"=test,"param"=param)
   return(lista)
