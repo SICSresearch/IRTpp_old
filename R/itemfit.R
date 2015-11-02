@@ -62,7 +62,7 @@ itemfit<-function(model,z,patterns,pval.sim,G,FUN,B=NULL){
 #' @param patterns: Matriz con los patrones, las frecuencias y los trazos.
 #' @return Z3_personfit
 
-z3_personf = function(data,zita,patterns){
+zh_personf = function(data,zita,patterns){
   #zita  = est$zita #est. de los parametros de items
   #zita[,3] = qlogis(zita[,3]) # c en todo R
   scores = patterns[,-(ncol(patterns)-1)]
@@ -116,7 +116,7 @@ z3_personf = function(data,zita,patterns){
 
 
 #función  que calcula item fit basado en Z3 
-z3_itemf = function(data,zita,patterns){
+zh_itemf = function(data,zita,patterns){
   #zita  = est$zita #est. de los parametros de items
   #zita[,3] = qlogis(zita[,3]) # c en todo R
   scores = patterns[,-(ncol(patterns)-1)]
