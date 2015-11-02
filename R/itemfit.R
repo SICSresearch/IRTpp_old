@@ -62,7 +62,7 @@ itemfit<-function(model,z,patterns,pval.sim,G,FUN,B=NULL){
 #' @param patterns: Matriz con los patrones, las frecuencias y los trazos.
 #' @return Z3_personfit
 
-itemFit2_p = function(data,zita,patterns){
+z3_personf = function(data,zita,patterns){
   #zita  = est$zita #est. de los parametros de items
   #zita[,3] = qlogis(zita[,3]) # c en todo R
   scores = patterns[,-(ncol(patterns)-1)]
@@ -116,7 +116,7 @@ itemFit2_p = function(data,zita,patterns){
 
 
 #función  que calcula item fit basado en Z3 
-itemFit2_i = function(data,zita,patterns){
+z3_itemf = function(data,zita,patterns){
   #zita  = est$zita #est. de los parametros de items
   #zita[,3] = qlogis(zita[,3]) # c en todo R
   scores = patterns[,-(ncol(patterns)-1)]
@@ -155,17 +155,36 @@ itemFit2_i = function(data,zita,patterns){
 }
 
 
-#' Orlando
-#' Calcula la estadística de Orlando
-#' @param patterns: matriz con los patrones de respuesta, las frecuencias y los trazos
-#' @param G numero de puntos de cuadratura
-#' @param zita: MATRIZ de estimaciones de parametros de los items (a,b,c)
-#' @param FUN : funcion de representante de cada grupo
-#' @return estadística de Orlando
+#' Orlando's statistic
+#' 
+#' calculates the S-X2 values from Maria Orlando and David Thisen.
+#' @param patterns: matrix of patterns response, the frequency of each pattern and the latent traits
+#' @param G number of quadrature Points
+#' @param zita: matrix of estimations of the parameters of the items (discrimination,difficulty, guessing)
+#' @param model type of model ( "1PL", 2PL", "3PL" )
+#' @return Orlando's statistic, degrees of freedom and pvalue for each item
+#' @author SICS Research, National University of Colombia \email{ammontenegrod@@unal.edu.co}
+#' @export 
+#'
+#' @seealso
+#' \code{\link{z3_itemf}}, \code{\link{x2_itemf}}
+#'
+#' @references
+#'
+#' Orlando, M. & Thissen, D. (2000). Likelihood-based item fit indices for dichotomous item
+#' response theory models. \emph{Applied Psychological Measurement, 24}, 50-64.
+#'
+#' @examples
+#'
+#'irtpp()
 
-#####objetos de sics para ir probando:
 
-orlando_itemf=function(patterns,G,zita,FUN){
+
+orlando_itemf=function(patterns,G,zita,model){
+  
+  if(model=="3PL"){mod=3}
+  if(model=="2PL"){mod=2}
+  if(model=="1PL"){mod=1}
   
   pats = patterns[,-ncol(patterns)]   #patrones sin frecuencia
   frec = patterns[,"x"]     #fr. de los patrones de respuesta
@@ -267,7 +286,7 @@ orlando_itemf=function(patterns,G,zita,FUN){
   E <- coll$E
   for (i in 1:length(O)) {
     S_X2[i] <- sum((O[[i]] - E[[i]])^2/E[[i]], na.rm = TRUE)
-    df.S_X2[i] <- sum(!is.na(E[[i]])) - nrow(E[[i]]) - 3
+    df.S_X2[i] <- sum(!is.na(E[[i]])) - nrow(E[[i]]) - mod
   }
   
   pval=pchisq(S_X2,df.S_X2,lower.tail = F)
