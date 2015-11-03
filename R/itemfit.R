@@ -61,8 +61,11 @@ itemfit<-function(model,z,patterns,pval.sim,G,FUN,B=NULL){
 #' @param zita: Parametros de los items (con el c en todo R y el d en lugar del b)
 #' @param patterns: Matriz con los patrones, las frecuencias y los trazos.
 #' @return Z3_personfit
+#' @export 
 
-itemFit2_p = function(data,zita,patterns){
+
+
+z3_personf = function(data,zita,patterns){
   #zita  = est$zita #est. de los parametros de items
   #zita[,3] = qlogis(zita[,3]) # c en todo R
   scores = patterns[,-(ncol(patterns)-1)]
@@ -113,10 +116,11 @@ itemFit2_p = function(data,zita,patterns){
 #' @param zita: Parametros de los items (con el c en todo R y el d en lugar del b)
 #' @param patterns: Matriz con los patrones, las frecuencias y los trazos.
 #' @return Z3_itemfit
+#' @export 
 
 
 #función  que calcula item fit basado en Z3 
-itemFit2_i = function(data,zita,patterns){
+z3_itemf = function(data,zita,patterns){
   #zita  = est$zita #est. de los parametros de items
   #zita[,3] = qlogis(zita[,3]) # c en todo R
   scores = patterns[,-(ncol(patterns)-1)]
@@ -155,20 +159,41 @@ itemFit2_i = function(data,zita,patterns){
 }
 
 
-#' Orlando
-#' Calcula la estadística de Orlando
-#' @param patterns: matriz con los patrones de respuesta, las frecuencias y los trazos
-#' @param G numero de puntos de cuadratura
-#' @param zita: MATRIZ de estimaciones de parametros de los items (a,b,c)
-#' @param FUN : funcion de representante de cada grupo
-#' @return estadística de Orlando
+#' Orlando's statistic
+#' 
+#' calculates the S-X2 values from Maria Orlando and David Thisen.
+#' @param patterns: matrix of patterns response, the frequency of each pattern and the latent traits
+#' @param G number of quadrature Points
+#' @param zita: matrix of estimations of the parameters of the items (discrimination,difficulty, guessing)
+#' @param model type of model ( "1PL", 2PL", "3PL" )
+#' @return Orlando's statistic, degrees of freedom and pvalue for each item
+#' @author SICS Research, National University of Colombia \email{ammontenegrod@@unal.edu.co}
+#' @export 
+#'
+#' @seealso
+#' \code{\link{z3_itemf}}, \code{\link{x2_itemf}}
+#'
+#' @references
+#'
+#' Orlando, M. & Thissen, D. (2000). Likelihood-based item fit indices for dichotomous item
+#' response theory models. \emph{Applied Psychological Measurement, 24}, 50-64.
+#'
+#' @examples
+#'
+#'irtpp()
 
-item.fit.sics = function(patterns,zita,theta,G = 61,FUN = median){
+
+
+orlando_itemf=function(patterns,G,zita,model){
+  
+  if(model=="3PL"){mod=3}
+  if(model=="2PL"){mod=2}
+  if(model=="1PL"){mod=1}
   
   pats = patterns[,-ncol(patterns)]   #patrones sin frecuencia
   frec = patterns[,"x"]     #fr. de los patrones de respuesta
-  nitems = nrow(zita)       #num de items
   patsSinFrec = pats[,-ncol(pats)]   #patrones sin frecuencia
+  nitems=ncol(patsSinFrec)
   
   
   seq=seq(-6,6,length=61)
@@ -183,55 +208,9 @@ item.fit.sics = function(patterns,zita,theta,G = 61,FUN = median){
   pr = lapply(thetaG,FUN=function(x){probability.3pl(theta=x,z=zita)}) #probabilidad para cada punto de cuadratura
   pr=matrix(unlist(pr),ncol=nitems,byrow=T)
   
-  s_ss=function(pr){
-    sact = matrix(0,ncol = nitems +1,nrow = G)   ###con los cambios en los indices se parece mucho mas a mirt
-    for(m in 1:G){                 
-      sant = rep(0,(nitems))         
-      sant[1] = 1 - pr[m,1]    #(6)
-      sant[2] = pr[m,1]       #(7)
-      
-      for(k in 2:(nitems)){  #item "i" añadido(empieza desde 2 por q ya incluyo el primer item en (6) y (7) )     
-        
-        sact[m,1] = (1-pr[m,k]) * sant[1]   #(8)
-        
-        for(kk in 2:k){ #scores 1:(i-1)
-          sact[m,kk] = pr[m,k] * sant[kk-1] + (1 - pr[m,k]) * sant[kk]  #(9)
-        }
-        sact[m,(k+1)] = pr[m,k] * sant[k] #score "i"  #(10)
-        sant = sact[m,]
-      }
-      
-      
-    }
-    return(sact)
-  }
-  
-  ### FRECUENCIAS OBSERVADAS
-  
-  score = rowSums(patsSinFrec )  #suma de los patrones(scores sin agrupar)
-  Oik = matrix(0,ncol = nitems -1 ,nrow = nitems)  # 4 scores(columnas) y nitems(filas)
-  for(i in 1:nitems - 1){  #recorriendo los scores(fijando un score)
-    inds = print(which(score == i)); #para agrupar los patrones q determinen un mismo score (i)
-    for(j in 1:(nitems)){  #recorriendo los items, para llenar la matriz por items fiijado un score (i)
-      patsCoin = pats[inds,]   #patrones q determinan el score "i": agrupados
-      if(class(patsCoin) == "matrix"){  
-        if(dim(patsCoin)[1] != 0){     #(si hay 1 patron o mas)
-          Oik[j,i] = sum(apply(X = patsCoin,MARGIN = 1,FUN = function(x){ifelse(x[j] == 1,yes = x[nitems + 1],0)})) 
-        }else{
-          Oik[j,i] = 0
-        }        
-      }else{
-        if(class(patsCoin) == "numeric"){
-          Oik[j,i] = ifelse(patsCoin[j] == 1,yes = patsCoin[nitems + 1],0)
-        }
-      }
-    }
-  }
-  
-  
-  
   ### TOTALES POR SCORE
   
+  score = rowSums(patsSinFrec )  #suma de los patrones(scores sin agrupar)
   Nk=NULL
   for(i in 1:nitems - 1){  #recorriendo los scores(fijando un score)
     inds = print(which(score == i)) #para agrupar llos patrones q determinen un mismo score (i)
@@ -249,14 +228,36 @@ item.fit.sics = function(patterns,zita,theta,G = 61,FUN = median){
     }
   }
   
-  #FRECUENCIAS OBSERVADAS RELATIVAS.
   
-  O=Oik/matrix(rep(Nk,nitems),ncol=4,byrow=T) #O son frecuencias relativas y Oik absolutas
+  ### FRECUENCIAS OBSERVADAS
   
+  
+  O=list()
+  print("nitems")
+  print(nitems)
+  Oik = matrix(0,ncol = nitems -1 ,nrow = nitems)  # 4 scores(columnas) y nitems(filas)
+  for(i in 1:nitems - 1){  #recorriendo los scores(fijando un score)
+    inds = print(which(score == i)); #para agrupar los patrones q determinen un mismo score (i)
+    for(j in 1:(nitems)){  #recorriendo los items, para llenar la matriz por items fiijado un score (i)
+      patsCoin = pats[inds,]   #patrones q determinan el score "i": agrupados
+      if(class(patsCoin) == "matrix"){  
+        if(dim(patsCoin)[1] != 0){     #(si hay 1 patron o mas)
+          Oik[j,i] = sum(apply(X = patsCoin,MARGIN = 1,FUN = function(x){ifelse(x[j] == 1,yes = x[nitems + 1],0)})) 
+        }else{
+          Oik[j,i] = 0
+        }        
+      }else{
+        if(class(patsCoin) == "numeric"){
+          Oik[j,i] = ifelse(patsCoin[j] == 1,yes = patsCoin[nitems + 1],0)
+        }
+      }
+      O[[j]]=cbind(Nk-Oik[j,],Oik[j,])
+    }
+  }
   
   ### S SIN MOÑO
   
-  sact=s_ss(pr)
+  sact=s_ss(pr,nitems=nitems)
   Denom = colSums(matrix(rep(w.cuad,nitems -1 ),ncol = nitems - 1) * sact[,-c(1,ncol(sact))])  
   
   
@@ -266,23 +267,36 @@ item.fit.sics = function(patterns,zita,theta,G = 61,FUN = median){
   smoño=list()
   
   for(p in 1:(nitems+1)){
-    smoño[[p]]=s_ss(pr[,-p]) 
+    smoño[[p]]=s_ss(pr[,-p],nitems=nitems) 
   }
   
   ### Eik   
   
   nitems=ncol(patsSinFrec)
-  E=matrix(0,nrow=nitems,ncol=(nitems-1))
+  E=list()
   for(i in 1:length(smoño)){
-    E[i,]=colSums(smoño[[i]][,-ncol(smoño[[i]])]*(pr[,i]*w.cuad))/Denom
+    E[[i]]=cbind(1-colSums(smoño[[i]][,-ncol(smoño[[i]])]*(pr[,i]*w.cuad))/Denom,colSums(smoño[[i]][,-ncol(smoño[[i]])]*(pr[,i]*w.cuad))/Denom)
   }
   
   
-  ###Estadística
   
-  return(rowSums(matrix(rep(Nk,nitems),ncol=nitems-1,byrow=T)*((O-E)^2)/(E*(1-E))))
+  #Estadística
+  
+  S_X2=NULL
+  df.S_X2=NULL
+  for (i in 1:nitems) E[[i]] <- E[[i]] * Nk
+  coll <- collapseCells(O, E, mincell = 1)
+  O <- coll$O
+  E <- coll$E
+  for (i in 1:length(O)) {
+    S_X2[i] <- sum((O[[i]] - E[[i]])^2/E[[i]], na.rm = TRUE)
+    df.S_X2[i] <- sum(!is.na(E[[i]])) - nrow(E[[i]]) - mod
+  }
+  
+  pval=pchisq(S_X2,df.S_X2,lower.tail = F)
+  
+  lista=cbind("S_X2"=S_X2,"df.SX2"=df.S_X2,"p.val.S_X2"=pval)
+  
+  return(lista)
   
 }
-
-
-
