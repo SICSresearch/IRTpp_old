@@ -65,8 +65,7 @@ items.reclassify<-function(n, tmpd , axis){
 
 
 
-
-ACPI<-function(y.datF1,h7,h2,hn,angu){
+ACPI<-function(y.datF1,h7=0.8,h2=0.9,hn=6,angu=15){
   y.datF1<-y.datF1
   originalF1<- y.datF1
   yc.datF1=y.datF1

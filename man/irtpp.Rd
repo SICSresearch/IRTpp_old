@@ -5,7 +5,7 @@
 \title{Estimate a test item parameters according to Item Response Theory.}
 \usage{
 irtpp(dataset = NULL, model, dims = 1, initialvalues = NULL,
-  filename = NULL, output = NULL)
+  filename = NULL, output = NULL, restricted.items = c())
 }
 \arguments{
 \item{dataset}{The matrix with the responses from the individuals}

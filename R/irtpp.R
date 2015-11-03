@@ -9,7 +9,7 @@
 #' @return The item parameters in a matrix.
 #' @export
 irtpp <- function(dataset=NULL,model, dims =1 ,initialvalues = NULL,
-                  filename=NULL, output=NULL){
+                  filename=NULL, output=NULL, restricted.items=c()){
   
   if(dims > 1){
     print("Multidimensional interface enabled.")
@@ -20,9 +20,9 @@ irtpp <- function(dataset=NULL,model, dims =1 ,initialvalues = NULL,
     print(typeof(dataset));
     print(typeof(cuads));
     print(typeof(initialvalues));
-    ret = irtppmultidim(dataset,model,cuads,initialvalues, dims)
+    ret = irtppmultidim(dataset,model,cuads,initialvalues, dims , restricted.items)
   }
-  
+  else{
   if(is.null(dataset)){
     if(is.null(filename)){
       stop("Please provide a dataset to irtpp")
@@ -50,7 +50,9 @@ irtpp <- function(dataset=NULL,model, dims =1 ,initialvalues = NULL,
         ret = irtppinterfacefilevalues(dataset,model,cuads,initialvalues,!is.null(output),ifelse(is.null(output), "", output))
     }
   }
+    }
   ret
+  
 }
 
 #' Estimate the latent traits of the individuals in a test with some given item parameters

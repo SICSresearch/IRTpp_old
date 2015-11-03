@@ -4,7 +4,7 @@
 #Robert, C. P. Simulation of truncated normal variables. Statistics and Computing (1995) 5, 121?125
 
 
-
+#' @export
 rtnorm <-function (n, mean = 0, sd = 1, lower = -Inf, upper = Inf)
 {
   if (length(n) > 1)
@@ -78,6 +78,8 @@ rtnorm <-function (n, mean = 0, sd = 1, lower = -Inf, upper = Inf)
 # a simple vector is possible
 # using the metric space (R^n,Sigma)
 ##################################################################
+
+#' @export
 normalize<-function(x){#normaliza un vector(divide por la norma)
   #control section
   if(!is.numeric(x))
@@ -91,101 +93,115 @@ normalize<-function(x){#normaliza un vector(divide por la norma)
 
 
 
+
+#' @export
 simulateTestMD <- function(items = 10, individuals = 1000, dims = 3, clusters = 4 , seed = 10)
-  {
-
-####Start here
-### Decide number of items per cluster.
-rem = items%%clusters
-nitems = items - rem
-itemlist = rep(nitems/clusters,clusters)
-itemlist[[clusters]] = itemlist[[clusters]] + rem
-##split
-print(itemlist)
-
-##determinar direcciones principales
-idnoisy = diag(dims)+matrix(rnorm(dims*dims,0.15,0.05),nrow=dims,ncol=dims);
-idnoisy = idnoisy * ifelse(idnoisy < 1 , 1, 0) + diag(dims)
-idnoisy = normalize(idnoisy)
-beta_w =rbind(idnoisy,matrix(rnorm(dims*(clusters-dims),0.3,0.05),nrow = (clusters-dims), dims))
-beta_w
-
-noise <- seq(0.1,by=.25 / clusters, length.out=clusters)
-
-
-# Matrix of the beta directions
-dir_beta = matrix(NA,sum(itemlist),dims)
-
-# seed for reproducible experiments
-set.seed(seed)
-
-#Perturb the dims
-##List item limits
-ends = cumsum(itemlist)
-inits = (c(0,cumsum(itemlist))+1)[1:length(itemlist)]
-dir_beta[items,]
-i = 1
-for (i in 1:clusters) {
-  dir_beta[inits[i]:ends[i],] = matrix(beta_w[i,], itemlist[i], dims, byrow=TRUE) + matrix(runif(itemlist[i]*dims,-noise[i],noise[i]), itemlist[i],dims)
-}
-
-dir_beta = normalize(dir_beta)
-
-## Quitar negativos
-dir_beta = ifelse(dir_beta<0,0,dir_beta)
-
-## Definir vectores de identificacion.
-dir_beta[inits[1:dims],] = diag(dims)
-
-
-##True reference directions
-true_w = matrix(NA,clusters,dims)
-for (i in 1:clusters) {
-  true_w[i,] <- abs(eigen(t(dir_beta[inits[i]:ends[i],])%*%dir_beta[inits[i]:ends[i],])$vectors)[,1] 
-}
-
-### Now simulate itempars
-
-l_a=0.25
-u_a = Inf
-Alpha <- rtnorm(items, mean = 0, sd = 1.0, lower = l_a,  upper = u_a)#genera los alphas
-length(Alpha)
-
-# clasical a-parameters
-print(dim(dir_beta))
-a = dir_beta * matrix(Alpha, items,dims, byrow=FALSE)
-
-# B parametters
-
-sd.gamma <-1
-Gamma <- rnorm(items,0,sd.gamma)
-Gamma[inits[1:dims]] = 0;
-
-## C parameters
-
-guessing=runif(items,0,0.25)
-
-theta <- matrix(rnorm(individuals*dims,0,1),individuals,dims)
-# this line is to garantee the the covariance matrix is the identity
-theta <- theta %*% solve((chol(cov(theta))))
-cov(theta)
-theta.true <- theta
-
-## Setting prob matrix
-eta  <- theta%*% t(a) -  matrix(Gamma,individuals,items,byrow=TRUE)
-P = guessing + (1-guessing)/(1+exp(-eta))
-## Coins
-U <- matrix(runif(items*individuals),individuals,items);
-
-responses <- ifelse(P>U,1,0)
-
-t.score = rowSums(P);
-c.score = rowSums(responses);
-
-cor(t.score,c.score)
-
-##Return everything
-
-return (list("test"= responses,"z" = list("a"=a,"b"=Gamma,"c"=guessing),"clusters"=itemlist,"direction" = beta_w))
+{
+  
+  
+  ####Start here
+  ### Decide number of items per cluster.
+  rem = items%%clusters
+  nitems = items - rem
+  itemlist = rep(nitems/clusters,clusters)
+  itemlist[[clusters]] = itemlist[[clusters]] + rem
+  ##split
+  print(itemlist)
+  
+  ##determinar direcciones principales
+  idnoisy = diag(dims)+matrix(rnorm(dims*dims,0.15,0.05),nrow=dims,ncol=dims);
+  idnoisy = idnoisy * ifelse(idnoisy < 1 , 1, 0) + diag(dims)
+  idnoisy = normalize(idnoisy)
+  beta_w =rbind(idnoisy,matrix(rnorm(dims*(clusters-dims),0.3,0.05),nrow = (clusters-dims), dims))
+  beta_w
+  
+  noise <- seq(0.1,by=.25 / clusters, length.out=clusters)
+  
+  
+  # Matrix of the beta directions
+  dir_beta = matrix(NA,sum(itemlist),dims)
+  
+  # seed for reproducible experiments
+  set.seed(seed)
+  
+  #Perturb the dims
+  ##List item limits
+  ends = cumsum(itemlist)
+  inits = (c(0,cumsum(itemlist))+1)[1:length(itemlist)]
+  dir_beta[items,]
+  i = 1
+  for (i in 1:clusters) {
+    dir_beta[inits[i]:ends[i],] = matrix(beta_w[i,], itemlist[i], dims, byrow=TRUE) + matrix(runif(itemlist[i]*dims,-noise[i],noise[i]), itemlist[i],dims)
+  }
+  
+  dir_beta = normalize(dir_beta)
+  
+  ## Quitar negativos
+  dir_beta = ifelse(dir_beta<0,0,dir_beta)
+  
+  ## Definir vectores de identificacion.
+  dir_beta[inits[1:dims],] = diag(dims)
+  
+  
+  ##True reference directions
+  true_w = matrix(NA,clusters,dims)
+  for (i in 1:clusters) {
+    true_w[i,] <- abs(eigen(t(dir_beta[inits[i]:ends[i],])%*%dir_beta[inits[i]:ends[i],])$vectors)[,1] 
+  }
+  
+  ### Now simulate itempars
+  
+  l_a=0.25
+  u_a = Inf
+  Alpha <- rtnorm(items, mean = 0, sd = 1.0, lower = l_a,  upper = u_a)#genera los alphas
+  length(Alpha)
+  
+  # clasical a-parameters
+  print(dim(dir_beta))
+  a = dir_beta * matrix(Alpha, items,dims, byrow=FALSE)
+  
+  # B parametters
+  
+  sd.gamma <-1
+  Gamma <- rnorm(items,0,sd.gamma)
+  Gamma[inits[1:dims]] = 0;
+  
+  ## C parameters
+  
+  guessing=runif(items,0,0.25)
+  
+  theta <- matrix(rnorm(individuals*dims,0,1),individuals,dims)
+  # this line is to garantee the the covariance matrix is the identity
+  theta <- theta %*% solve((chol(cov(theta))))
+  cov(theta)
+  theta.true <- theta
+  
+  ## Setting prob matrix
+  eta  <- theta%*% t(a) -  matrix(Gamma,individuals,items,byrow=TRUE)
+  P = guessing + (1-guessing)/(1+exp(-eta))
+  ## Coins
+  U <- matrix(runif(items*individuals),individuals,items);
+  
+  responses <- ifelse(P>U,1,0)
+  
+  t.score = rowSums(P);
+  c.score = rowSums(responses);
+  
+  cor(t.score,c.score)
+  
+  restrict = matrix(0,items,dims+2)
+  ###restrict a's of the first dims. and the b's
+  for (i in 1:ncol(restrict)) {
+    for (j in 1:nrow(restrict)) {
+      if(i <= dims && j <= dims + 1){
+        restrict[i,j]=1;
+      }
+    }
+  }
+  ##Return everything
+  
+  return (list("test"= responses,"z" = list("a"=a,"b"=Gamma,"c"=guessing),"clusters"=itemlist,"direction" = beta_w,
+               "clustinit"=inits, "restricted"=restrict
+  ))
 }
 

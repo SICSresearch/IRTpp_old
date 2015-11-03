@@ -31,13 +31,16 @@ print.sentence<-function(...,sep=" ",verbose=T){
 #' @param pars The parameter list
 #' @param model The model whose the list refers to.
 #' @export
-parameter.matrix<-function(pars, model="3PL"){
+parameter.matrix<-function(pars, model="3PL", dims = 1){
   cols=0;
   if(model=="1PL"){cols=3}
   if(model=="2PL"){cols=3}
   if(model=="3PL"){cols=3}
   if(model=="Rasch"){cols=3}
   if(cols==0){stop("No valid model provided")}
+  if(dims>1){
+    cols = cols + dims - 1 ;
+  }
   matrix(unlist(pars,use.names=F,recursive=T),ncol=cols)
 }
 

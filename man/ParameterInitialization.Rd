@@ -5,12 +5,15 @@
 \alias{parameters.initialize}
 \title{parameters.initialize}
 \usage{
-parameters.initialize(dataset, model, method = "DEFAULT", red.items = T)
+parameters.initialize(dataset, model, dims, method = "DEFAULT",
+  red.items = T)
 }
 \arguments{
 \item{dataset}{The dataset to calculate the initial parameters. A matrix of 0's  and 1's}
 
 \item{model}{The model with dimensions.}
+
+\item{dims}{To set the dimensions of use in the test.}
 
 \item{method.}{Optional, "PCA" for multidimensional and "ANDRADE" for unidimensional are teh current implementations}
 
