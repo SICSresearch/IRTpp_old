@@ -48,7 +48,7 @@ PatternMatrix * getPatternMatrix(Rcpp::NumericMatrix r_dataSet)
 Rcpp::List irtppmultidim(Rcpp::NumericMatrix ndatSet , int e_model , Rcpp::NumericMatrix quads , Rcpp::NumericMatrix initvals, int dimension , Rcpp::NumericVector notEstimated){
 
         PatternMatrix * datSet = getPatternMatrix(ndatSet);
-        Matrix <double> cuad(41,2);
+        Matrix <double> cuad(quads.nrow(),2);
         Model *model = new Model();
         ModelFactory *modelFactory;
         void ** status_list;
@@ -56,18 +56,21 @@ Rcpp::List irtppmultidim(Rcpp::NumericMatrix ndatSet , int e_model , Rcpp::Numer
         Matrix<double> *weight;
         modelFactory = new SICSGeneralModel();
 
-        theta = new Matrix<double>(1, 41);
-        weight = new Matrix<double>(1, 41);
+        theta = new Matrix<double>(1, quads.nrow());
+        weight = new Matrix<double>(1, quads.nrow());
 
         for (unsigned int k = 0; k < quads.nrow(); k++)
         (*theta)(0,k)=quads[k];
-
         for (unsigned int k = 0; k < quads.nrow(); k++)
         (*weight)(0,k)=quads[k+quads.nrow()];
 
 
         std::cout<<notEstimated.size()<<"  Size of non estimated"<<std::endl;
-
+        double * itemconstraint = new double [notEstimated.size()];
+        for (int it = 0; it < notEstimated.size(); it++) {
+                itemconstraint[it] = notEstimated[it];
+                std::cout << "itconst : "<<itemconstraint[it]<<"   <- "<<it<< std::endl;
+        }
         //Start by telling the model that it is a multidimensional model.
         int dimstype = 2;
         model->setModel(modelFactory, e_model, dimstype);
@@ -84,25 +87,41 @@ Rcpp::List irtppmultidim(Rcpp::NumericMatrix ndatSet , int e_model , Rcpp::Numer
         // Build parameter set
         model->getParameterModel()->buildParameterSet(model->getItemModel(),model->getDimensionModel());
 
+        ///Bring the initial values
+        std::cout<<"Building initial values"<<std::endl;
+        int items = ndatSet.ncol();
+        std::cout<<"With "<<dims<<" Dimensions and "<<items<<" Items "<<std::endl;
+        double *** parameterSet = new double**[3];
+        parameterSet[0] = new double *[1];
+        parameterSet[1] = new double *[1];
+        parameterSet[2] = new double *[1];
+        parameterSet[0][0] = new double[items*dims]; // multidim a parameter
+        parameterSet[1][0] = new double[items];
+        parameterSet[2][0] = new double[items];
+
+        //Now copy the parameters
+        // initvals has the a values in the first dims columns , then b is in the pre last column and c is the the last
+        for (int ii = 0; ii < items; ii++) {
+                for (int dd = 0; dd < dims; dd++) {
+                        parameterSet[0][0][ii*dims + dd] = initvals[dd,ii];
+                        std::cout<<"dd ii "<<dd<<" "<<ii<<" : "<<parameterSet[0][0][ii*dims+dd]<<endl;
+                }
+        }
 
         EMEstimation em;
         //Here is where quadratures must be set.
         //create the quad nodes
-        std::cout << "Declaring QuadratureNodes" << std::endl;
         QuadratureNodes nodes(theta, weight);
-        std::cout << "Setting them" << std::endl;
         em.setQuadratureNodes(&nodes);
-        std::cout << "Setting Modelizer" << std::endl;
         std::cout<<model<<std::endl;
-        std::cout<<"Nñaw"<<std::endl;
         em.setModel(model);
-        std::cout << "Ready to ANDRADE" << std::endl;
         em.setInitialValues(Constant::ANDRADE);
 
+        em.setRestrictedItem(itemconstraint, notEstimated.size());
         //Run the estimation
-        std::cout << "em.estimate" << std::endl;
+        //std::cout << "em.estimate" << std::endl;
 
-        status_list = em.estimate();
+        //status_list = em.estimate();
         double fulloglik = em.getLoglik();
         std::cout<<"Ll : "<<fulloglik<<std::endl;
         double* returnpars;
@@ -140,6 +159,7 @@ Rcpp::List irtppmultidim(Rcpp::NumericMatrix ndatSet , int e_model , Rcpp::Numer
         delete (bool*)status_list[1];
         delete [] status_list;
         delete [] returnpars;
+        delete [] itemconstraint;
 
         return z;
 
