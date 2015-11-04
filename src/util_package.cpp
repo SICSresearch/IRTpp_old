@@ -103,9 +103,10 @@ Rcpp::List irtppmultidim(Rcpp::NumericMatrix ndatSet , int e_model , Rcpp::Numer
         // initvals has the a values in the first dims columns , then b is in the pre last column and c is the the last
         for (int ii = 0; ii < items; ii++) {
                 for (int dd = 0; dd < dims; dd++) {
-                        parameterSet[0][0][ii*dims + dd] = initvals[dd,ii];
-                        std::cout<<"dd ii "<<dd<<" "<<ii<<" : "<<parameterSet[0][0][ii*dims+dd]<<endl;
+                        parameterSet[0][0][ii*dims + dd] = initvals(ii,dd);
                 }
+                parameterSet[1][0][ii] = initvals(ii,dims);
+                parameterSet[2][0][ii] = initvals(ii,dims+1);
         }
 
         EMEstimation em;
@@ -115,13 +116,13 @@ Rcpp::List irtppmultidim(Rcpp::NumericMatrix ndatSet , int e_model , Rcpp::Numer
         em.setQuadratureNodes(&nodes);
         std::cout<<model<<std::endl;
         em.setModel(model);
-        em.setInitialValues(Constant::ANDRADE);
+        em.setInitialValues(parameterSet);
 
         em.setRestrictedItem(itemconstraint, notEstimated.size());
         //Run the estimation
-        //std::cout << "em.estimate" << std::endl;
+        std::cout << "em.estimate" << std::endl;
 
-        //status_list = em.estimate();
+        status_list = em.estimate();
         double fulloglik = em.getLoglik();
         std::cout<<"Ll : "<<fulloglik<<std::endl;
         double* returnpars;
