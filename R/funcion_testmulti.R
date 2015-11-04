@@ -9,24 +9,16 @@
 #' @param TEST: el test que se quiere modelar
 #' @param DIMTEST: un vector que indique que items corresponden a que dimension (cluster)
 #' @export 
-
-
 fix.items=function(TEST,DIMTEST){
-
-acp=list()
-fijados=NULL
-i=1
-
-while(i<length(DIMTEST)){
-acp[[i]]=PCA(TEST[,DIMTEST[i]:DIMTEST[i+1]],graph=F)
-cor=acp[[i]]$var$cor[,1]
-print(acp[[i]]$var)
-print(cor)
-fijados[i]=names(cor[cor==max(cor)])
-i=i+2
+  acp=list()
+  fijados=NULL
+  i=1
+  while(i<length(DIMTEST)){
+    acp[[i]]=PCA(TEST[,DIMTEST[i]:DIMTEST[i+1]],graph=F)
+    cor=acp[[i]]$var$cor[,1]
+    fijados[i]=as.numeric(which(cor==max(cor)))+ifelse(i==1,0,DIMTEST[i-1])
+    i=i+2
+  }
+  fijados=na.omit(fijados)
+  return(fijados)
 }
-fijados=na.omit(fijados)
-return(fijados)
-}
-
-#fix.items(TEST,DIMTEST)
