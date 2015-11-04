@@ -102,7 +102,7 @@ Rcpp::List irtppmultidim(Rcpp::NumericMatrix ndatSet , int e_model , Rcpp::Numer
         //Run the estimation
         std::cout << "em.estimate" << std::endl;
 
-        //status_list = em.estimate();
+        status_list = em.estimate();
         double fulloglik = em.getLoglik();
         std::cout<<"Ll : "<<fulloglik<<std::endl;
         double* returnpars;

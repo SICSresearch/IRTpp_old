@@ -12,14 +12,14 @@ irtpp <- function(dataset=NULL,model, dims =1 ,initialvalues = NULL,
                   filename=NULL, output=NULL, restricted.items=c()){
   
   if(dims > 1){
-    print("Multidimensional interface enabled.")
+    print("Entering in the multidim.")
     model = irtpp.model(model,asnumber=T)
-    cuads = as.matrix(read.table(system.file("extdata","Cuads.csv",package="IRTpp"),sep=",",header=T))
-    
+    cuads = as.matrix(read.table(system.file("extdata","Cuads10.csv",package="IRTpp"),sep=",",header=T))
     ## Initial must be provided at this point.
     print(typeof(dataset));
-    print(typeof(cuads));
+    print(cuads);
     print(typeof(initialvalues));
+    print("Hallooo miss haimering")
     ret = irtppmultidim(dataset,model,cuads,initialvalues, dims , restricted.items)
   }
   else{

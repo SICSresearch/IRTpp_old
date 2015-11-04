@@ -1,8 +1,12 @@
 ---
 title: "Models and Parameters"
 author: "Juan Liberato"
-date: "October 21, 2015"
-output: html_document
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Models and Parameters}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 In item response theory models , tests can be modelled through different models, in IRTpp each test calibrated parameters are in a simple data structure that is passed around the IRTpp functions.
@@ -29,8 +33,9 @@ The MIRT model types accepted are :
 
   * **2PL** Multidimensional 2PL (In this case , the a parameter is a matrix)
   * **3PL** Multidimensional 3PL
-  * **MU3PL** MultiUnidimensional 3PL (There are multiple dimensions but each item has only one dimension)
-  * **MU2PL** MultiUnidimensional 2PL
+  
+  * . **MU3PL** MultiUnidimensional 3PL (There are multiple dimensions but each item has only one dimension)
+  * . **MU2PL** MultiUnidimensional 2PL
   
 The MIRT models for polytomous items are :
   

@@ -32,7 +32,7 @@ Where `test$itempars$a` indicates the parameters belonging to the discrimination
 The test element of the list returned by `simulateTest` contain a list of tests generated, notice that if you simulate only one test, the response data will be in :
 
 ```{r}
-responses <-test$test[[1]]
+responses <-test$test
 responses[1:10,]
 ```
 
@@ -45,7 +45,7 @@ IRTpp has built-in capabilities for simulating multiple tests at once, use the o
 
 For example simulating 3 tests of the one parameter logistic model :
 ```{r}
-t = simulateTest(model="1PL",items=4,individuals=5,reps=3)
+t = simulateTest(model="1PL",items=4,individuals=5)
 length(t$test)
 ```
 
@@ -80,6 +80,6 @@ t3 = simulateTest(model="3PL",items=10,individuals=100,threshold=0.2);
 This threshold ensures that the individuals do not answer less than 20% of the answers or more than 80% of the answers.
 
 ```{r}
-response <- t3$test[[1]]
+response <- t3$test
 summary(rowSums(response))
 ```
