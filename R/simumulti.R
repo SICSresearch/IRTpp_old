@@ -157,9 +157,10 @@ simulateTestMD <- function(items = 10, individuals = 1000, dims = 3, clusters = 
   length(Alpha)
   
   # clasical a-parameters
-  print(dim(dir_beta))
+  # print(dim(dir_beta))
+  print(dir_beta)
   a = dir_beta * matrix(Alpha, items,dims, byrow=FALSE)
-  
+  print(a)
   # B parametters
   
   sd.gamma <-1
@@ -177,7 +178,7 @@ simulateTestMD <- function(items = 10, individuals = 1000, dims = 3, clusters = 
   theta.true <- theta
   
   ## Setting prob matrix
-  eta  <- theta%*% t(a) -  matrix(Gamma,individuals,items,byrow=TRUE)
+  eta  <- theta %*% t(a) -  matrix(Gamma,individuals,items,byrow=TRUE)
   P = guessing + (1-guessing)/(1+exp(-eta))
   ## Coins
   U <- matrix(runif(items*individuals),individuals,items);

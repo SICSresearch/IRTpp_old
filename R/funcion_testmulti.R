@@ -7,7 +7,7 @@
 #' fix.items
 #' establece que items fijar en el modelo multi-unidimensional
 #' @param TEST: el test que se quiere modelar
-#' @param DIMTEST: un vector que indique que items corresponden a que dimension
+#' @param DIMTEST: un vector que indique que items corresponden a que dimension (cluster)
 #' @export 
 
 
@@ -18,14 +18,15 @@ fijados=NULL
 i=1
 
 while(i<length(DIMTEST)){
-acp[[i]]=PCA(y[,DIMTEST[i]:DIMTEST[i+1]],graph=F)
+acp[[i]]=PCA(TEST[,DIMTEST[i]:DIMTEST[i+1]],graph=F)
 cor=acp[[i]]$var$cor[,1]
+print(acp[[i]]$var)
+print(cor)
 fijados[i]=names(cor[cor==max(cor)])
 i=i+2
 }
 fijados=na.omit(fijados)
 return(fijados)
-
 }
 
 #fix.items(TEST,DIMTEST)
