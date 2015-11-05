@@ -63,9 +63,7 @@ itemfit<-function(model,z,patterns,pval.sim,G,FUN,B=NULL){
 #' @return Z3_personfit
 #' @export 
 
-
-
-z3_personf = function(data,zita,patterns){
+z3_personf=function(data,zita,patterns){
   #zita  = est$zita #est. de los parametros de items
   #zita[,3] = qlogis(zita[,3]) # c en todo R
   scores = patterns[,-(ncol(patterns)-1)]
@@ -118,9 +116,7 @@ z3_personf = function(data,zita,patterns){
 #' @return Z3_itemfit
 #' @export 
 
-
-#función  que calcula item fit basado en Z3 
-z3_itemf = function(data,zita,patterns){
+z3_itemf=function(data,zita,patterns){
   #zita  = est$zita #est. de los parametros de items
   #zita[,3] = qlogis(zita[,3]) # c en todo R
   scores = patterns[,-(ncol(patterns)-1)]
@@ -180,7 +176,24 @@ z3_itemf = function(data,zita,patterns){
 #'
 #' @examples
 #'
-#'irtpp()
+#' ## Simulates data "3PL" (5 items, default: 1000 individuals)
+#' data=simulateTest("3PL",items=5)
+#' data=data$test
+#'
+#' ## fit a model "3PL"
+#' model=irtpp(data,"3PL")
+#'
+#' ## objects required  by "orlando_itemf()"
+#' zita=parameter.matrix(model$zita) 
+#' it=individual.traits("3PL",zita,dataset = data,method = "EAP")
+#' patterns=as.matrix(cbind(pattern.freqs(data,it),it$trait)) #patterns (patrones, frecuencia y trazos)
+#' G = 61
+#'
+#' ## Orlando`s statistic
+#'
+#' statistic=orlando_itemf(patterns=patterns,G=G,zita=zita,model="3PL")
+#' statistic
+
 
 
 
