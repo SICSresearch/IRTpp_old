@@ -176,7 +176,7 @@ Rcpp::List irtpp_aux(PatternMatrix *datSet, int e_model, Rcpp::NumericMatrix qua
                 Matrix<double> *theta;
                 Matrix<double> *weight;
                 double *** zita_set;
-                int items, d = 1, c = 41;
+                int items, d = 1, c = quads.nrow();
                 void ** status_list;
                 model = new Model();
                 modelFactory = new SICSGeneralModel();
@@ -238,7 +238,6 @@ Rcpp::List irtpp_aux(PatternMatrix *datSet, int e_model, Rcpp::NumericMatrix qua
                 if(e_model < 3)
                 for (int i = 2*datSet->size;i < 3*datSet->size;i++)
                 returnpars[i]=0;
-
                 Rcpp::NumericVector pars(3*datSet->size);
                 Rcpp::NumericVector pars_aux(1);
 
@@ -276,13 +275,13 @@ Rcpp::List irtpp_aux(PatternMatrix *datSet, int e_model, Rcpp::NumericMatrix qua
                 delete model;
                 delete theta;
                 delete weight;
-
                 delete (int*)status_list[0];
                 delete (bool*)status_list[1];
                 delete [] status_list;
                 delete [] returnpars;
-
+                std::cout<<"A bout to return";
                 return z;
+                std::cout<<"To home";
         }
 
         Rcpp::List abilityinterface(Rcpp::NumericMatrix zita_par, PatternMatrix * datSet,

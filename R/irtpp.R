@@ -21,6 +21,10 @@ irtpp <- function(dataset=NULL,model, dims =1 ,initialvalues = NULL,
     print(typeof(initialvalues));
     print("Hallooo miss haimering")
     ret = irtppmultidim(dataset,model,cuads,initialvalues, dims , restricted.items)
+    mt = ret$zita;
+    mt = cbind(matrix(mt[1:(items*dims)],ncol=dims,byrow = T),matrix(mt[((items*dims)+1):length(mt)],ncol=2))
+    colnames(mt)<-c(rep("a",dims),"b","c")
+    ret$zita = mt
   }
   else{
   if(is.null(dataset)){

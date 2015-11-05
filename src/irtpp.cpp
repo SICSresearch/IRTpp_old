@@ -12,9 +12,9 @@ Rcpp::List irtpp_file(std::string dat, int e_model, Rcpp::NumericMatrix quads,
                       bool to_file_flag, std::string output_path)
 {
   PatternMatrix *datSet = getPatternMatrix(dat);
-  
+
   Rcpp::List result = irtpp_aux(datSet, e_model, quads, init_val, init_val_flag, to_file_flag, output_path);
-  
+
   delete datSet;
 
   return result;
@@ -25,9 +25,10 @@ Rcpp::List irtpp_r(Rcpp::NumericMatrix dat, int e_model, Rcpp::NumericMatrix qua
                    bool to_file_flag, std::string output_path)
 {
   PatternMatrix *datSet = getPatternMatrix(dat);
+  std::cout<<"R s here "<<std::endl;
   Rcpp::List result = irtpp_aux(datSet, e_model, quads, init_val, init_val_flag, to_file_flag, output_path);
+  std::cout<<"irtpp r died here "<<std::endl;
   delete datSet;
-
   return result;
 }
 
@@ -133,7 +134,7 @@ Rcpp::List eapinterface(Rcpp::NumericMatrix zita_par, Rcpp::NumericMatrix dat,
                         bool matrix_flag, SEXP prob_matrix)
 {
   PatternMatrix *datSet = getPatternMatrix(dat);
-  
+
   Rcpp::List result = abilityinterface(zita_par,
                                        datSet,
                                        e_model,
