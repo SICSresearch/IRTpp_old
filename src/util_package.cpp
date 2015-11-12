@@ -136,7 +136,7 @@ Rcpp::List irtppmultidim(Rcpp::NumericMatrix ndatSet , int e_model , Rcpp::Numer
         // Return in list
         for (int i = 0; i < (dims+2)*datSet->size; i++){
                 pars[i] = returnpars[i];
-                std::cout<<pars[i]<<" . "<<std::endl;
+                //std::cout<<pars[i]<<" . "<<std::endl;
         }
 
 

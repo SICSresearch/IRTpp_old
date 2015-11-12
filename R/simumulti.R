@@ -92,15 +92,22 @@ normalize<-function(x){#normaliza un vector(divide por la norma)
 } # end normalize
 
 
-
+#items = 10
+#individuals = 1000
+#dims = 2
+#clusters = 2
+#seed = 10
+#z = NULL
+#repetition=NULL
 
 #' @export
-simulateTestMD <- function(items = 10, individuals = 1000, dims = 3, clusters = 4 , seed = 10)
+simulateTestMD <- function(items = 10, individuals = 1000, dims = 3, clusters = 4 , seed = 10, z = NULL , repetition=NULL)
 {
   
   
   ####Start here
   ### Decide number of items per cluster.
+  set.seed(seed)
   rem = items%%clusters
   nitems = items - rem
   itemlist = rep(nitems/clusters,clusters)
@@ -150,26 +157,25 @@ simulateTestMD <- function(items = 10, individuals = 1000, dims = 3, clusters = 
   }
   
   ### Now simulate itempars
-  
+  if(is.null(z)){
   l_a=0.25
   u_a = Inf
   Alpha <- rtnorm(items, mean = 0, sd = 1.0, lower = l_a,  upper = u_a)#genera los alphas
+  Alpha[inits] = 1
   length(Alpha)
-  
-  # clasical a-parameters
-  # print(dim(dir_beta))
-  print(dir_beta)
   a = dir_beta * matrix(Alpha, items,dims, byrow=FALSE)
-  print(a)
   # B parametters
-  
   sd.gamma <-1
   Gamma <- rnorm(items,0,sd.gamma)
   Gamma[inits[1:dims]] = 0;
-  
   ## C parameters
-  
   guessing=runif(items,0,0.25)
+  }
+  else {
+    a = z$a;
+    Gamma = z$d;
+    guessing = z$c;
+  }
   
   theta <- matrix(rnorm(individuals*dims,0,1),individuals,dims)
   # this line is to garantee the the covariance matrix is the identity
@@ -181,6 +187,13 @@ simulateTestMD <- function(items = 10, individuals = 1000, dims = 3, clusters = 
   eta  <- theta %*% t(a) -  matrix(Gamma,individuals,items,byrow=TRUE)
   P = guessing + (1-guessing)/(1+exp(-eta))
   ## Coins
+  coinseed = seed;
+  if(!is.null(repetition)){
+    coinseed = repetition*3 + seed;
+  }
+  set.seed(coinseed);
+  nna = (repetition*repetition*coinseed)%%100
+  dd = runif(nna);
   U <- matrix(runif(items*individuals),individuals,items);
   
   responses <- ifelse(P>U,1,0)
@@ -201,8 +214,8 @@ simulateTestMD <- function(items = 10, individuals = 1000, dims = 3, clusters = 
   }
   ##Return everything
   
-  return (list("test"= responses,"z" = list("a"=a,"b"=Gamma,"c"=guessing),"clusters"=itemlist,"direction" = beta_w,
-               "clustinit"=inits, "restricted"=restrict
+  return (list("test"= responses,"z" = list("a"=a,"d"=Gamma,"c"=guessing),"clusters"=itemlist,"direction" = beta_w,
+               "clustinit"=inits, "restricted"=restrict, "coinseed"=coinseed, "dd"=list(dd,nna,coinseed)
   ))
 }
 
