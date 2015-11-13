@@ -17,7 +17,16 @@ irtpp <- function(dataset=NULL,model, dims =1 ,initialvalues = NULL,
     ## Initial must be provided at this point.
     ret = irtppmultidim(dataset,model,cuads,initialvalues, dims , restricted.items)
     mt = ret$zita;
-    mt = cbind(matrix(mt[1:(items*dims)],ncol=dims,byrow = T),matrix(mt[((items*dims)+1):length(mt)],ncol=2))
+    items = ncol(dataset);
+    #print(items)
+    #print(dims)
+    #print(items*dims)
+    mat.a = matrix(mt[1:(items*dims)],ncol=dims,byrow = T)
+    mat.b = matrix(mt[((items*dims)+1):length(mt)],ncol=2)
+    #print("Mat a and b")
+    #print(nrow(mat.a))
+    #print(nrow(mat.b))
+    mt = cbind(mat.a,mat.b)
     colnames(mt)<-c(rep("a",dims),"b","c")
     ret$zita = mt
   }

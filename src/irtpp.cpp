@@ -25,9 +25,7 @@ Rcpp::List irtpp_r(Rcpp::NumericMatrix dat, int e_model, Rcpp::NumericMatrix qua
                    bool to_file_flag, std::string output_path)
 {
   PatternMatrix *datSet = getPatternMatrix(dat);
-  std::cout<<"R s here "<<std::endl;
   Rcpp::List result = irtpp_aux(datSet, e_model, quads, init_val, init_val_flag, to_file_flag, output_path);
-  std::cout<<"irtpp r died here "<<std::endl;
   delete datSet;
   return result;
 }

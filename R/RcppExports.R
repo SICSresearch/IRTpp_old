@@ -35,6 +35,18 @@ eapinterface <- function(zita_par, dat, e_model, quads, to_file_flag, output_pat
 
 #' IRTpp multidimensional
 #' @export
+loglikinternal <- function(rargs, rpars) {
+    .Call('IRTpp_loglikinternal', PACKAGE = 'IRTpp', rargs, rpars)
+}
+
+#' IRTpp multidimensional
+#' @export
+optimgrad <- function(rargs, rpars) {
+    .Call('IRTpp_optimgrad', PACKAGE = 'IRTpp', rargs, rpars)
+}
+
+#' IRTpp multidimensional
+#' @export
 irtppmultidim <- function(ndatSet, e_model, quads, initvals, dimension, notEstimated) {
     .Call('IRTpp_irtppmultidim', PACKAGE = 'IRTpp', ndatSet, e_model, quads, initvals, dimension, notEstimated)
 }

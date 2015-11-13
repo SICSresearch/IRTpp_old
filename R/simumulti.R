@@ -92,13 +92,13 @@ normalize<-function(x){#normaliza un vector(divide por la norma)
 } # end normalize
 
 
-#items = 10
-#individuals = 1000
-#dims = 2
-#clusters = 2
-#seed = 10
-#z = NULL
-#repetition=NULL
+items = 100
+individuals = 1000
+dims = 2
+clusters = 2
+seed = 10
+z = NULL
+repetition=NULL
 
 #' @export
 simulateTestMD <- function(items = 10, individuals = 1000, dims = 3, clusters = 4 , seed = 10, z = NULL , repetition=NULL)
@@ -164,9 +164,13 @@ simulateTestMD <- function(items = 10, individuals = 1000, dims = 3, clusters = 
   Alpha[inits] = 1
   length(Alpha)
   a = dir_beta * matrix(Alpha, items,dims, byrow=FALSE)
+  
+  #sqrt(t(dir_beta[2,])%*%(dir_beta[2,]))
+  
   # B parametters
   sd.gamma <-1
   Gamma <- rnorm(items,0,sd.gamma)
+  Gamma <- Gamma*Alpha
   Gamma[inits[1:dims]] = 0;
   ## C parameters
   guessing=runif(items,0,0.25)

@@ -40,6 +40,58 @@ PatternMatrix * getPatternMatrix(Rcpp::NumericMatrix r_dataSet)
 }
 
 
+//' IRTpp multidimensional
+//' @export
+//[[Rcpp::export]]
+Rcpp::List loglikinternal(Rcpp::NumericVector rargs , Rcpp::NumericVector rpars){
+  int npars = 212;
+  int numargs = 4;
+  double (*fptr)(double*, double*, int, int);
+  void (*gptr)(double*, double*, int, int, double*);
+  void (*hptr)(double*, double*, int, int, double*);
+  fptr = &ThreePLModel::itemLogLikMultiDim;
+  gptr = &ThreePLModel::itemGradientMultiDim;
+  hptr = NULL;
+  double * args = new double [4];
+  double * pars = new double[212];
+  for (int oo = 0; oo < numargs; oo++) {
+    args[oo] = rargs[oo];
+  }
+  for (int oo = 0; oo < npars; oo++) {
+    pars[oo] = rpars[oo];
+  }
+  double result;
+  result = (*fptr)(args, pars, numargs,npars);
+  Rcpp::List z = Rcpp::List::create(Rcpp::_["value"] = result);
+  return z;
+}
+
+//' IRTpp multidimensional
+//' @export
+//[[Rcpp::export]]
+Rcpp::List optimgrad(Rcpp::NumericVector rargs , Rcpp::NumericVector rpars){
+  int npars = 212;
+  int numargs = 4;
+  double (*fptr)(double*, double*, int, int);
+  void (*gptr)(double*, double*, int, int, double*);
+  void (*hptr)(double*, double*, int, int, double*);
+  fptr = &ThreePLModel::itemLogLikMultiDim;
+  gptr = &ThreePLModel::itemGradientMultiDim;
+  hptr = NULL;
+  Optimizer optim;
+  double * args = new double [4];
+  double * pars = new double[212];
+  for (int oo = 0; oo < numargs; oo++) {
+    args[oo] = rargs[oo];
+  }
+  for (int oo = 0; oo < npars; oo++) {
+    pars[oo] = rpars[oo];
+  }
+  optim.searchOptimal(fptr, gptr, hptr, args, pars, numargs, npars);
+  Rcpp::List z = Rcpp::List::create();
+  return z;
+}
+
 
 //' IRTpp multidimensional
 //' @export
@@ -65,11 +117,11 @@ Rcpp::List irtppmultidim(Rcpp::NumericMatrix ndatSet , int e_model , Rcpp::Numer
         (*weight)(0,k)=quads[k+quads.nrow()];
 
 
-        std::cout<<notEstimated.size()<<"  Size of non estimated"<<std::endl;
+        //std::cout<<notEstimated.size()<<"  Size of non estimated"<<std::endl;
         double * itemconstraint = new double [notEstimated.size()];
         for (int it = 0; it < notEstimated.size(); it++) {
                 itemconstraint[it] = notEstimated[it];
-                std::cout << "itconst : "<<itemconstraint[it]<<"   <- "<<it<< std::endl;
+                //std::cout << "itconst : "<<itemconstraint[it]<<"   <- "<<it<< std::endl;
         }
         //Start by telling the model that it is a multidimensional model.
         int dimstype = 2;
@@ -79,7 +131,6 @@ Rcpp::List irtppmultidim(Rcpp::NumericMatrix ndatSet , int e_model , Rcpp::Numer
         //Here we must set the number of dimensions to estimate in the given model
         model->getDimensionModel()->setDims(dimension);
         int dims = model->getDimensionModel()->getNumDimensions();
-        std::cout<<"Dims used : "<<dims<<std::endl;
         delete modelFactory;
 
         // Set datset to model
@@ -88,9 +139,7 @@ Rcpp::List irtppmultidim(Rcpp::NumericMatrix ndatSet , int e_model , Rcpp::Numer
         model->getParameterModel()->buildParameterSet(model->getItemModel(),model->getDimensionModel());
 
         ///Bring the initial values
-        std::cout<<"Building initial values"<<std::endl;
         int items = ndatSet.ncol();
-        std::cout<<"With "<<dims<<" Dimensions and "<<items<<" Items "<<std::endl;
         double *** parameterSet = new double**[3];
         parameterSet[0] = new double *[1];
         parameterSet[1] = new double *[1];
@@ -120,7 +169,6 @@ Rcpp::List irtppmultidim(Rcpp::NumericMatrix ndatSet , int e_model , Rcpp::Numer
 
         em.setRestrictedItem(itemconstraint, notEstimated.size());
         //Run the estimation
-        std::cout << "em.estimate" << std::endl;
 
         status_list = em.estimate();
         double fulloglik = em.getLoglik();

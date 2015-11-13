@@ -139,6 +139,30 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// loglikinternal
+Rcpp::List loglikinternal(Rcpp::NumericVector rargs, Rcpp::NumericVector rpars);
+RcppExport SEXP IRTpp_loglikinternal(SEXP rargsSEXP, SEXP rparsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type rargs(rargsSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type rpars(rparsSEXP);
+    __result = Rcpp::wrap(loglikinternal(rargs, rpars));
+    return __result;
+END_RCPP
+}
+// optimgrad
+Rcpp::List optimgrad(Rcpp::NumericVector rargs, Rcpp::NumericVector rpars);
+RcppExport SEXP IRTpp_optimgrad(SEXP rargsSEXP, SEXP rparsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type rargs(rargsSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type rpars(rparsSEXP);
+    __result = Rcpp::wrap(optimgrad(rargs, rpars));
+    return __result;
+END_RCPP
+}
 // irtppmultidim
 Rcpp::List irtppmultidim(Rcpp::NumericMatrix ndatSet, int e_model, Rcpp::NumericMatrix quads, Rcpp::NumericMatrix initvals, int dimension, Rcpp::NumericVector notEstimated);
 RcppExport SEXP IRTpp_irtppmultidim(SEXP ndatSetSEXP, SEXP e_modelSEXP, SEXP quadsSEXP, SEXP initvalsSEXP, SEXP dimensionSEXP, SEXP notEstimatedSEXP) {

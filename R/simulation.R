@@ -8,7 +8,8 @@
 #' 
 #' 
 #' 
-simulateTest = function(model = "2PL" , items = 10 , latentTraits=NULL ,individuals = 1000, boundaries = NULL, dims = 1 , itempars = NULL , verbose = F , threshold = 0, seed = NULL){
+simulateTest = function(model = "3PL" , items = 10 , latentTraits=NULL ,individuals = 1000, boundaries = NULL, dims = 1 , itempars = NULL , verbose = F , threshold = 0, seed = NULL){
+  
   ret = NULL;
   ret$model = model;
   seed = ua(seed,floor(runif(1)*10000000))
@@ -36,7 +37,7 @@ simulateTest = function(model = "2PL" , items = 10 , latentTraits=NULL ,individu
   ret
 }
 
-
+#cor(rowSums(ret$prob),rowSums(ret$test))
 
 #' SimulateTest.slow.
 #' Simulates a test according to a model

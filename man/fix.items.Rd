@@ -10,7 +10,7 @@ fix.items(TEST, DIMTEST)
 \arguments{
 \item{TEST:}{el test que se quiere modelar}
 
-\item{DIMTEST:}{un vector que indique que items corresponden a que dimension}
+\item{DIMTEST:}{un vector que indique que items corresponden a que dimension (cluster)}
 }
 \description{
 fix.items
