@@ -1,8 +1,9 @@
 IRTPPDIR = ../inst/SICSRepository/SICS
+IRTPPCPPDIR = ../inst/irtppcpp
 IRTPPLIB = -lirtpp
 
-PKG_CXXFLAGS=-I$(IRTPPDIR)/src -I./
-PKG_LIBS = -L$(IRTPPDIR) $(IRTPPLIB) $(LIBM)
+PKG_CXXFLAGS=-I$(IRTPPDIR)/src -I$(IRTPPCPPDIR)/src -I./
+PKG_LIBS = -L$(IRTPPDIR) -L$(IRTPPCPPDIR) $(IRTPPLIB) $(LIBM)
 
 CXXFLAGS = -O3 -Wall -Wno-unused -march=native
 CXX_STD = CXX11
@@ -12,6 +13,8 @@ MAKE=make -j8
 all: irtpp $(SHLIB)
 	(cd $(IRTPPDIR) && $(MAKE) clean -f irtpp.mk)
 	rm $(IRTPPDIR)/libirtpp.a
+	(cd $(IRTPPCPPDIR) && $(MAKE) clean -f irtpp.mk)
+	rm $(IRTPPCPPDIR)/libirtppcpp.a
 
 irtpp:
 	(cd $(IRTPPDIR) && $(MAKE) -f irtpp.mk)
