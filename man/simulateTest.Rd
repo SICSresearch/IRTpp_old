@@ -5,12 +5,38 @@
 \title{SimulateTest
 Simulates a test according to a irt model}
 \usage{
-simulateTest(model = "2PL", items = 10, latentTraits = NULL,
+simulateTest(model = "3PL", items = 10, latentTraits = NULL,
   individuals = 1000, boundaries = NULL, dims = 1, itempars = NULL,
-  verbose = F, threshold = 0, seed = NULL)
+  verbose = F, threshold = 0, seed = NULL, clusters = NULL,
+  repetition = 0)
+}
+\arguments{
+\item{model.}{The IRT model. in Multidimensional is 3PL.}
+
+\item{items.}{The items to simulate in the test.}
+
+\item{latentTraits.}{The latentTraits in the UIRT case.}
+
+\item{individuals.}{The individuals to simulate in the test.}
+
+\item{The}{boundaries for parameter generation. See the \code{\link{simulateItemParameters}} documentation for help}
+
+\item{dims.}{The dimensionality of the test.}
+
+\item{itempars.}{A list with teh parameters of the items if provided.}
+
+\item{verbose.}{Verbosibity for more information about the process, use when simulating long tests.}
+
+\item{threshold.}{A boundary for the percent of answered questions to a test. i.e. 0.05 indicates the individuals will answer maximum the 95% of the questions and minimum the 5% of the questions. UIRT only.}
+
+\item{seed.}{The seed for reproducibility.}
+
+\item{clusters.}{In the multidimensional case, the clusters to simulate.}
+
+\item{repetition.}{Seed of a single set , this seed does not affect the itempars generated.}
 }
 \value{
-List with model, seed item pars, and the test simulated.
+List with model, seed  , itempars, and the test simulated. check the documentation of \code{\link{simulateTestMD}} for information on the return in the Multidimensional case.
 }
 \description{
 Simulates a test according to a IRT Model

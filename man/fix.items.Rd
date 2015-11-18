@@ -3,17 +3,22 @@
 \name{fix.items}
 \alias{fix.items}
 \title{fix.items
-establece que items fijar en el modelo multi-unidimensional}
+Establishes tests to fix in the multidimensional model.}
 \usage{
-fix.items(TEST, DIMTEST)
+fix.items(TEST, DIMTEST, simTest)
 }
 \arguments{
-\item{TEST:}{el test que se quiere modelar}
+\item{simTest}{: a Simulated test object which already specifies the clusters. \cr
+Warning : this function requires the package Factominer.}
 
-\item{DIMTEST:}{un vector que indique que items corresponden a que dimension (cluster)}
+\item{test}{: A response matrix.}
+
+\item{dimtest:}{A vector with the ranges of the clusters in the test, the ranges must be specified sequentially \cr
+For instance in the case fo three clusters \eqn{(a,b,c)} , the vector will be \eqn{(a_l,a_u,b_l,b_u,c_l,c_u)}. Where \eqn{(a_l)} is the lower
+boundary of the \eqn{a} cluster, and \eqn{a_u} is the upper boundary.}
 }
 \description{
 fix.items
-establece que items fijar en el modelo multi-unidimensional
+Establishes tests to fix in the multidimensional model.
 }
 

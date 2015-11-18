@@ -1,3 +1,6 @@
 [submodule "inst/SICSRepository"]
 	path = inst/SICSRepository
 	url = https://github.com/jcliberatol/SICSRepository.git
+[submodule "inst/irtppcpp"]
+	path = inst/irtppcpp
+	url = https://github.com/SICSresearch/irtppcpp.git

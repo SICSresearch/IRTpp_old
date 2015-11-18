@@ -4,7 +4,7 @@
 # Find out the clusters of items for the proyection of dem all
 # To each cluster assign the principal vector of the transformm yea!
 
-#' @name ParameterInitialization
+#' @name Parameter Initialization
 #' @title parameters.initialize
 #' @author SICS Research Group
 #' @param dataset The dataset to calculate the initial parameters. A matrix of 0's  and 1's

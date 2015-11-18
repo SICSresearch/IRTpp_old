@@ -1,4 +1,4 @@
-#' @name IRTpp-package
+#' @name IRTpp
 #' @docType package
 #' @title IRTpp : Item Response Theory Implemented in R and Cpp
 #' @description IRTpp supports the IRT and MIRT methodologies by implementing 
@@ -17,8 +17,12 @@
 #'@author SICS Research Team
 #'@keywords IRT MIRT Psychometry 
 #'@useDynLib IRTpp
-#' @importFrom Rcpp sourceCpp
+#'@importFrom Rcpp sourceCpp
 #'@section Getting Started:
 #'Get started with the IRTpp package browsing the index of this documentation
 #'if you need help the vignettes should be helpful.
+#'@section Getting Started:
+#'The IRTpp package allows you to use the IRT methodology for simulating, analyzing and scoring tests \cr
+#'You can browse the package vignettes to get started.
+#'
 NULL
