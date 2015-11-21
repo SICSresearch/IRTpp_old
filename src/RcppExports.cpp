@@ -139,6 +139,18 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// uirtestimate
+Rcpp::List uirtestimate(Rcpp::NumericMatrix data, int model);
+RcppExport SEXP IRTpp_uirtestimate(SEXP dataSEXP, SEXP modelSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< int >::type model(modelSEXP);
+    __result = Rcpp::wrap(uirtestimate(data, model));
+    return __result;
+END_RCPP
+}
 // loglikinternal
 Rcpp::List loglikinternal(Rcpp::NumericVector rargs, Rcpp::NumericVector rpars);
 RcppExport SEXP IRTpp_loglikinternal(SEXP rargsSEXP, SEXP rparsSEXP) {

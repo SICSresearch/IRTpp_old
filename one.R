@@ -31,3 +31,4 @@ for (ii in 1:dims) {
 #est = irtpp(dataset = test,model = "3PL", dims = 2 , initialvalues = initialvalues, restricted.items = fi )
 est = irtpp(dataset = test,model = "3PL", dims = 2 , initialvalues = initialvalues, restricted.items = t$clustinit[1:dims] )
 p3 = parameter.matrix(pars = est$zita,model = "3PL",dims = 2)
+p3

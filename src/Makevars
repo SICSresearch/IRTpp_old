@@ -1,9 +1,13 @@
 IRTPPDIR = ../inst/SICSRepository/SICS
 IRTPPCPPDIR = ../inst/irtppcpp
+SPGODIR = ../inst/irtppcpp/include/SPGO/include
+IRTPPCPPLIB = -lirtppcpp
 IRTPPLIB = -lirtpp
 
-PKG_CXXFLAGS=-I$(IRTPPDIR)/src -I$(IRTPPCPPDIR)/src -I./
-PKG_LIBS = -L$(IRTPPDIR) -L$(IRTPPCPPDIR) $(IRTPPLIB) $(LIBM)
+PKG_LIBS = -L$(IRTPPDIR) -L$(IRTPPCPPDIR) $(IRTPPLIB) $(IRTPPCPPLIB) $(LIBM)
+PKG_CXXFLAGS= $(PKG_LIBS) -I$(IRTPPDIR)/src -I$(IRTPPCPPDIR)/src -I$(SPGODIR) -I./
+#PKG_CXXFLAGS=-I$(IRTPPDIR)/src -I$(IRTPPCPPDIR)/src -I./
+
 
 CXXFLAGS = -O3 -Wall -Wno-unused -march=native
 CXX_STD = CXX11
@@ -11,12 +15,18 @@ CXX_STD = CXX11
 MAKE=make -j8
 
 all: irtpp $(SHLIB)
-	(cd $(IRTPPDIR) && $(MAKE) clean -f irtpp.mk)
-	rm $(IRTPPDIR)/libirtpp.a
-	(cd $(IRTPPCPPDIR) && $(MAKE) clean -f irtpp.mk)
-	rm $(IRTPPCPPDIR)/libirtppcpp.a
-
+	#(cd $(IRTPPCPPDIR) && $(MAKE) clean -f irtppcpp.mk)
+	#rm $(IRTPPCPPDIR)/libirtppcpp.a
+	#(cd $(IRTPPDIR) && $(MAKE) clean -f irtpp.mk)
+	#rm $(IRTPPDIR)/libirtpp.a
 irtpp:
-	(cd $(IRTPPDIR) && $(MAKE) -f irtpp.mk)
+	@echo "cristiannosabenada"
+	@echo "holahola"
+	@echo "$(IRTPPCPPDIR)"
+	ls
+	(cd $(IRTPPDIR) && ls &&$(MAKE) -f irtpp.mk && ls)
+	@echo "ñañaña"
+	(cd $(IRTPPCPPDIR) && ls && $(MAKE) -f irtppcpp.mk && ls)
+
 
 .PHONY: irtpp all

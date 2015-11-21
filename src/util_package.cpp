@@ -1,5 +1,6 @@
 #include <util_package.h>
 
+
 PatternMatrix * getPatternMatrix(string r_path)
 {
         PatternMatrix *dataSet;
@@ -38,7 +39,6 @@ PatternMatrix * getPatternMatrix(Rcpp::NumericMatrix r_dataSet)
 
         return dataSet;
 }
-
 
 //' IRTpp multidimensional
 //' @export

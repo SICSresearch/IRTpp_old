@@ -33,6 +33,12 @@ eapinterface <- function(zita_par, dat, e_model, quads, to_file_flag, output_pat
     .Call('IRTpp_eapinterface', PACKAGE = 'IRTpp', zita_par, dat, e_model, quads, to_file_flag, output_path, matrix_flag, prob_matrix)
 }
 
+#' uirtestimate
+#' @export
+uirtestimate <- function(data, model) {
+    .Call('IRTpp_uirtestimate', PACKAGE = 'IRTpp', data, model)
+}
+
 #' IRTpp multidimensional
 #' @export
 loglikinternal <- function(rargs, rpars) {

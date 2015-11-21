@@ -14,6 +14,7 @@
 #include <fstream>
 #include <Rcpp.h>
 
+
 using namespace std;
 
 PatternMatrix * getPatternMatrix(string r_path);

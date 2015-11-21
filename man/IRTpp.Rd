@@ -30,10 +30,7 @@ if you need help the vignettes should be helpful.
 \section{Getting Started}{
 
 The IRTpp package allows you to use the IRT methodology for simulating, analyzing and scoring tests \cr
-You can browse the package vignettes to get started. \href{vignettes/simulateTest.html}{Sim test}
-\href{help/library/IRTpp/doc/index.html}{Sim test2}
-help/library/IRTpp/doc/index.html
-\href{/help/library/IRTpp/doc/index.html}{Sim test3}
+You can browse the package vignettes to get started.
 }
 \author{
 SICS Research Team
