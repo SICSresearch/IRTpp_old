@@ -1,8 +1,8 @@
 Package: IRTpp
 Type: Package
 Title: Estimating IRT parameters using the IRT Methodology
-Version: 0.1.22
-Date: 2015-02-03
+Version: 0.1.3
+Date: 2015-11-23
 Author: Developed by SICS Research Group
 Maintainer: Juan Liberato <jcliberatol@unal.edu.co>
 Description: An implementation of the IRT paradigm for the scoring of diferent
