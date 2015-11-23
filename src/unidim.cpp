@@ -52,11 +52,11 @@ Rcpp::NumericMatrix mat2rcpp(Matrix<double>* mat)
 {
   Rcpp::NumericMatrix x(mat->nR(),mat->nC());
   
-  for (size_t i = 0; i < x.nrow() ; i++)
+  for (int i = 0; i < x.nrow() ; i++)
   {
-    for (size_t j = 0; j < x.ncol(); j++)
+    for (int j = 0; j < x.ncol(); j++)
     {
-      x[i*x.nrow()+j*x.ncol()] = (*mat)(i,j);
+      x[i+j*x.nrow()] = (*mat)(i,j);
     }
   }
   
@@ -66,29 +66,61 @@ Rcpp::NumericMatrix mat2rcpp(Matrix<double>* mat)
 //' uirtestimate
 //' @export
 // [[Rcpp::export]]
-Rcpp::List uirtestimate(Rcpp::NumericMatrix data , int model)
+Rcpp::List uirtestimate(Rcpp::NumericMatrix data , int model_)
 {
-  // Create Dataset.
   void**   status_list;
-  irtpp::dataset* d = NULL;
-  d = mat2dat(data);
-  irtpp::model* m = NULL;
-  // d->print();
-  
-  irtpp::emestimation em(new irtpp::threepl(), d);
-  status_list = em.estimate();
-  cout<<"seis1"<<endl;
-  Matrix<double>* args = em.coef();
-  cout<<"seis2"<<endl;
-  Rcpp::List pars = Rcpp::List::create(
-    Rcpp::_["args"] = mat2rcpp(args),
+  Matrix<double>* args;
+  irtpp::dataset* d = mat2dat(data);
+
+  irtpp::model* m;
+
+  if(model_ == 1)
+  {
+    irtpp::emestimation em(new irtpp::onepl(), d);
+    status_list = em.estimate();
+    args = em.coef();
+  }
+  else if(model_ == 2)
+  {
+    irtpp::emestimation em(new irtpp::twopl(), d);
+    status_list = em.estimate();
+    args = em.coef();
+  }
+  else
+  {
+    irtpp::emestimation em(new irtpp::threepl(), d);
+    status_list = em.estimate();
+    args = em.coef();
+  }
+
+  double* returnpars;
+  Rcpp::NumericVector pars(3*d->size);
+  returnpars = new double[3*d->size];
+
+  for(int i = 0; i < args->nR(); i++)
+  {
+    for(int j = 0; j < args->nC(); j++)
+    {
+      returnpars[i*args->nC() + j] = (*args)(i, j);
+    }
+  }
+
+  if(model_ < 3)
+    for (int i = 2*d->size;i < 3*d->size;i++)
+      returnpars[i]=0;
+
+  for (int i = 0; i < 3*d->size; i++)
+    pars[i] = returnpars[i];
+
+  Rcpp::List result = Rcpp::List::create(
+    Rcpp::_["z"] = pars,
     Rcpp::_["iterations"] = *((int*)status_list[0])
   );
-  
-  cout << "Iterations: " << *((int*)status_list[0]) << endl;
+
   delete (int*)status_list[0];
   delete (bool*)status_list[1];
   delete [] status_list;
-  return pars;
-  
+  delete [] returnpars;
+
+  return result;
 }
