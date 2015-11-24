@@ -10,7 +10,7 @@ autoapply<-function(clist,fun,...){
   r
 }
 
-#' Undefined assignment, Helper function
+#' Undefined assignment, Helper function 
 #' @param var , The variable to test
 #' @param val , The value to return if the tested variables is NULL
 #' @return Returns the value of the tested variable if it is not NULL, otherwise, returns the default
@@ -375,3 +375,47 @@ normalize<-function(x){#normaliza un vector(divide por la norma)
   else
     return(x/matrix(sqrt(apply(x*x,1,sum)),dim(x)[1],dim(x)[2]))
 } # end normalize
+
+
+#' @name test.plot
+#' @author Juan Liberato
+#' @description plots a test or an item.
+#' @param z : Item parameter list
+#' @param i : Optional, item to plot.
+#' 
+#' @return Void, draws a plot of the ICC or the test's ICC's
+#' @export
+test.plot = function(z, i = NULL){
+  #### Añadir list = T a model.transform
+  est = NULL;
+  est$z = z;
+  itms = length(est$z$a);
+  pts  =60
+  pts = ((1:pts)/pts)*10-5
+  itemplot = lapply(pts, function(x){probability.3pl(est$z,theta=x)})
+  probability.3pl(est$z,theta=pts[[1]])
+  probability.3pl(est$z,theta=th$trait[[1]])
+  itpl.matrix= matrix(unlist(itemplot),nrow=length(itemplot),ncol=length(itemplot[[1]]),byrow = T)
+  st = 1;
+  if(!is.null(i)){
+    st = i;
+    itms = i;
+  }
+  for (item in st:itms) {
+    comb.mat2 = cbind(pts,itpl.matrix[,item])
+    comb.mat2 = comb.mat2[order(comb.mat2[,1]),]
+    comb.mat2 = rbind(comb.mat2[1,],comb.mat2,comb.mat2[nrow(comb.mat2),])
+    comb.mat2[1,2] = 0
+    comb.mat2[nrow(comb.mat2),2] = 1
+    theta = comb.mat2[,1]
+    p = comb.mat2[,2]
+    if(item == 1 || !is.null(i)){plot(y=p,x=theta,type='l') 
+    }else{lines(y=p,x=theta) }
+    abline(v=est$z$b[[item]], col = "red");
+    abline(h=est$z$c[[item]], col = "green");
+    a=est$z$a[[item]]
+    b=est$z$b[[item]]
+    c=est$z$c[[item]]
+    # abline(a=-b/2,b=a/5, col = "blue");
+  }
+}
