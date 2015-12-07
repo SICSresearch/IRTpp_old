@@ -2,10 +2,10 @@
 #' @docType package
 #' @title IRTpp : Item Response Theory Implemented in R and Cpp
 #' @description IRTpp supports the IRT and MIRT methodologies by implementing 
-#' many IRT relevant algorithms for model exploration, calibration and fitting, IRTpp
-#' aims to be extremely performant using Cpp where it is needed, focusing in extending
-#' IRT not only to classical applications but also in new applications which sometimes 
-#' need highly performant implementations.
+#' many IRT relevant algorithms for model exploration, calibration and 
+#' fitting, IRTpp aims to be a high IRT performance software, using C++ where it is
+#' needed.  IRTpp can be used not only on classical IRT applications but 
+#' also on data mining. Particularly in textual analysis.
 #' @details
 #' \tabular{ll}{
 #'Package: \tab IRTpp\cr

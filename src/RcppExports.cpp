@@ -139,15 +139,26 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// irtppchol
+Rcpp::List irtppchol(Rcpp::NumericMatrix A);
+RcppExport SEXP IRTpp_irtppchol(SEXP ASEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type A(ASEXP);
+    __result = Rcpp::wrap(irtppchol(A));
+    return __result;
+END_RCPP
+}
 // uirtestimate
-Rcpp::List uirtestimate(Rcpp::NumericMatrix data, int model);
-RcppExport SEXP IRTpp_uirtestimate(SEXP dataSEXP, SEXP modelSEXP) {
+Rcpp::List uirtestimate(Rcpp::NumericMatrix data, int model_);
+RcppExport SEXP IRTpp_uirtestimate(SEXP dataSEXP, SEXP model_SEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type data(dataSEXP);
-    Rcpp::traits::input_parameter< int >::type model(modelSEXP);
-    __result = Rcpp::wrap(uirtestimate(data, model));
+    Rcpp::traits::input_parameter< int >::type model_(model_SEXP);
+    __result = Rcpp::wrap(uirtestimate(data, model_));
     return __result;
 END_RCPP
 }

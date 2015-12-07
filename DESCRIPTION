@@ -2,21 +2,21 @@ Package: IRTpp
 Type: Package
 Title: Estimating IRT parameters using the IRT Methodology
 Version: 0.1.3
-Date: 2015-11-23
+Date: 2015-11-27
 Author: Developed by SICS Research Group
 Maintainer: Juan Liberato <jcliberatol@unal.edu.co>
-Description: An implementation of the IRT paradigm for the scoring of diferent
-  instruments measuring latent traits (a.k.a Abilities) and estimating item parameters
-  for a variety of models, this package is highly optimized using Cpp and carefully written
-  R for the rest of the package, it aims to expand IRT applications to those aplications that
-  require faster and more robust estimation procedures. See the IRTpp documentation and github site
-  for more information and examples.
+Description: IRTpp supports the IRT and MIRT methodologies by implementing 
+    many IRT relevant algorithms for model exploration, calibration and 
+    fitting, IRTpp aims to be a high IRT performance software, using C++ where it is
+    needed.  IRTpp can be used not only on classical IRT applications but 
+    also on data mining. Particularly in textual analysis.
 License: GPL-3
 LinkingTo: Rcpp
-Imports: Rcpp (>= 0.11.0)
-Suggests: testthat,
-    knitr,
-    MASS
+Imports: Rcpp (>= 0.11.0), FactoMineR, numDeriv
+Suggests: testthat, knitr, MASS
 VignetteBuilder: knitr
 URL: http://github.com/SICSResearch/IRTpp
 BugReports: http://github.com/SICSResearch/IRTpp/issues
+RoxygenNote: 5.0.1
+NeedsCompilation: yes
+Packaged: 2015-11-29 12:19:26 UTC; irtpp

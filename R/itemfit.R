@@ -8,8 +8,10 @@
 #' @param G es el numero de grupos
 #' @param FUN es la funcion con la que se calcula la probabilidad esperada en cada grupo
 #' @param B es el numero de iteraciones bootstrap, por defecto es 100
-#' @return est Estadistica X² y P-valor
-itemfit<-function(model,z,patterns,pval.sim,G,FUN,B=NULL){
+#' @return est Estadistica X?? y P-valor
+#' @export
+#' 
+x2_itemf<-function(model,z,patterns,pval.sim,G,FUN,B=NULL){
   
   check.model(model)
   if(is.null(B)){B=100}
@@ -24,7 +26,7 @@ itemfit<-function(model,z,patterns,pval.sim,G,FUN,B=NULL){
   else {
     T.boot <- matrix(0, ncol(patterns[,-c(ncol(patterns)-1,ncol(patterns))]), B)
       for (b in 1:B) {
-      X.new=simulateTest(model,ncol(patterns)-2,individuals = sum(patterns[,ncol(patterns)-1]),itempars = z)$test[[1]]
+      X.new=simulateTest(model,ncol(patterns)-2,individuals = sum(patterns[,ncol(patterns)-1]),itempars = z)$test
       #X.new <- rmvlogis(n, parms, IRT = FALSE) #genera un test
       #object.new <- if (class(object) %in% c("rasch", "tpm")) {
         #update(, data = X.new)
@@ -56,7 +58,7 @@ itemfit<-function(model,z,patterns,pval.sim,G,FUN,B=NULL){
 
 
 #' Z3 PERSONFIT
-#' Calcula la estadística Z3
+#' Calcula la estad??stica Z3
 #' @param data: datos
 #' @param zita: Parametros de los items (con el c en todo R y el d en lugar del b)
 #' @param patterns: Matriz con los patrones, las frecuencias y los trazos.
@@ -73,7 +75,7 @@ z3_personf = function(data,zita,patterns){
   nscores = nrow(patterns) #numero de patrones (scores distintos)
   ninds = nrow(data) #numero de individuos
   
-  #Expansión de patrones sobre los datos originales
+  #Expansi??n de patrones sobre los datos originales
   index = indexPat(data,patterns[,-ncol(patterns)])  #que individuos corresponden a que patron
   scoresTot = numeric(nrow(data)) #define vector donde van a ir los trazos por individuo
   for(mm in 1:nrow(scores)){
@@ -85,7 +87,7 @@ z3_personf = function(data,zita,patterns){
   P=matrix(unlist(P),ncol=nitems,byrow=T)
   
   #Calculo de logverosimilitud
-  LL = matrix(0,ncol = ncol(P),nrow = nrow(P)) #matriz de tamaño ninds*nitems
+  LL = matrix(0,ncol = ncol(P),nrow = nrow(P)) #matriz de tama??o ninds*nitems
   LL[data == 1] = P[data == 1] #p_{i}(theta estimado) para todos los individuos
   LL[data == 0] = 1 - P[data == 0] #q_{i}(theta estimado) para todos los individuos
   LL = rowSums(log(LL)) #log-verosimilitud (7) del articulo
@@ -111,7 +113,7 @@ z3_personf = function(data,zita,patterns){
 
 
 #' Z3 ITEMFIT
-#' Calcula la estadística Z3
+#' Calcula la estad??stica Z3
 #' @param data: datos
 #' @param zita: Parametros de los items (con el c en todo R y el d en lugar del b)
 #' @param patterns: Matriz con los patrones, las frecuencias y los trazos.
@@ -119,7 +121,7 @@ z3_personf = function(data,zita,patterns){
 #' @export 
 
 
-#función  que calcula item fit basado en Z3 
+#funci??n  que calcula item fit basado en Z3 
 z3_itemf = function(data,zita,patterns){
   #zita  = est$zita #est. de los parametros de items
   #zita[,3] = qlogis(zita[,3]) # c en todo R
@@ -128,7 +130,7 @@ z3_itemf = function(data,zita,patterns){
   nscores = nrow(patterns) #numero de patrones (scores distintos)
   ninds = nrow(data) #numero de individuos
   
-  #Expansión de patrones sobre los datos originales
+  #Expansi??n de patrones sobre los datos originales
   index = indexPat(data,patterns[,-ncol(patterns)])  #que individuos corresponden a que patron
   scoresTot = numeric(nrow(data)) #define vector donde van a ir los trazos por individuo
   for(mm in 1:nrow(scores)){
@@ -140,7 +142,7 @@ z3_itemf = function(data,zita,patterns){
     P=matrix(unlist(P),ncol=nitems,byrow=T)
     
   #Calculo de logverosimilitud
-  LL = matrix(0,ncol = ncol(P),nrow = nrow(P)) #matriz de tamaño ninds*nitems
+  LL = matrix(0,ncol = ncol(P),nrow = nrow(P)) #matriz de tama??o ninds*nitems
   LL[data == 1] = P[data == 1] #p_{i}(theta estimado) para todos los individuos
   LL[data == 0] = 1 - P[data == 0] #q_{i}(theta estimado) para todos los individuos
   LL = colSums(log(LL)) #log-verosimilitud (7) del articulo
@@ -190,9 +192,9 @@ orlando_itemf=function(patterns,G,zita,model){
   if(model=="2PL"){mod=2}
   if(model=="1PL"){mod=1}
   
-  pats = patterns[,-ncol(patterns)]   #patrones sin frecuencia
-  frec = patterns[,"x"]     #fr. de los patrones de respuesta
-  patsSinFrec = pats[,-ncol(pats)]   #patrones sin frecuencia
+  pats = as.matrix(patterns[,-ncol(patterns)])   #patrones sin frecuencia
+  frec = as.vector(patterns[,ncol(patterns)-1])     #fr. de los patrones de respuesta
+  patsSinFrec = as.matrix(pats[,-ncol(pats)])   #patrones sin frecuencia
   nitems=ncol(patsSinFrec)
   
   
@@ -255,32 +257,32 @@ orlando_itemf=function(patterns,G,zita,model){
     }
   }
   
-  ### S SIN MOÑO
+  ### S SIN 0
   
-  sact=s_ss(pr,nitems=nitems)
+  sact=s_ss(pr,nitems=nitems,G=G)
   Denom = colSums(matrix(rep(w.cuad,nitems -1 ),ncol = nitems - 1) * sact[,-c(1,ncol(sact))])  
   
   
-  ### S MOÑO
+  ### S 0
   
   nitems = nitems - 1
-  smoño=list()
+  smoo=list();
   
   for(p in 1:(nitems+1)){
-    smoño[[p]]=s_ss(pr[,-p],nitems=nitems) 
+    smoo[[p]]=s_ss(pr[,-p],nitems=nitems,G=G) 
   }
   
   ### Eik   
   
   nitems=ncol(patsSinFrec)
   E=list()
-  for(i in 1:length(smoño)){
-    E[[i]]=cbind(1-colSums(smoño[[i]][,-ncol(smoño[[i]])]*(pr[,i]*w.cuad))/Denom,colSums(smoño[[i]][,-ncol(smoño[[i]])]*(pr[,i]*w.cuad))/Denom)
+  for(i in 1:length(smoo)){
+    E[[i]]=cbind(1-colSums(smoo[[i]][,-ncol(smoo[[i]])]*(pr[,i]*w.cuad))/Denom,colSums(smoo[[i]][,-ncol(smoo[[i]])]*(pr[,i]*w.cuad))/Denom)
   }
   
   
   
-  #Estadística
+  #Estad??stica
   
   S_X2=NULL
   df.S_X2=NULL
@@ -295,8 +297,69 @@ orlando_itemf=function(patterns,G,zita,model){
   
   pval=pchisq(S_X2,df.S_X2,lower.tail = F)
   
-  lista=cbind("S_X2"=S_X2,"df.SX2"=df.S_X2,"p.val.S_X2"=pval)
+    lista=cbind("S_X2"=S_X2,"df.SX2"=df.S_X2,"p.val.S_X2"=pval)
   
   return(lista)
   
+}
+
+
+#' @name test.hessian
+#' @title test.hessian
+#' @param test The original test
+#' @param z. The item parameter list
+#' @param th The expanded latent traits
+#' @param byitems Calculate the hessian by items
+#' @param byinds. Calculate by individuals
+#' @return A list with $itemhessian and $indhessian
+#' @export
+test.hessian<-function(test, z , th , byitems = T , byinds = T){
+  itemhessian = NULL;
+  i=1
+  if(byitems){
+    for (i in 1:ncol(test)) {
+      zi = lapply(z, function(x){x[[i]]})
+      itemhessian[[i]] = item.hessian(test, zi, th);
+    }
+  }
+  indhessian = NULL;
+  i=1;
+  if(byinds){
+    for (i in 1:nrow(test)) {
+      indhessian[[i]] = ind.hessian(test, z, th[i]);
+    }
+    summary(unlist(indhessian))
+  }
+  list(itemhessian,indhessian)
+}
+
+#' @name iitem.hessian
+#' @title item.hessian
+#' @param test The original test
+#' @param zitem. The item
+#' @param th The expanded latent traits
+#' @return A matrix, the hessian
+#' @export
+item.hessian<-function(test , zitem , th){
+  hs = hessian(function(abc){
+    z = list("a"=abc[1],"b"=abc[2],"c"=abc[3]) ;
+    loglik(test = test, z = z , traits = th)
+  },
+  x = unlist(zitem))
+  hs
+}
+
+#' @name ind.hessian
+#' @title ind.hessian
+#' @param pattern The original individual pattern
+#' @param z. The item parameter list
+#' @param trait the individual trait
+#' @return A numeric hessian
+#' @export
+ind.hessian<-function(pattern , z , trait){
+  hs = hessian(function(th){
+    loglik(test = pattern, z = z , traits = trait)
+  },
+  x = full.th[i])
+  hs
 }

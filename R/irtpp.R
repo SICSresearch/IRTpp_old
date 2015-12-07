@@ -58,8 +58,8 @@ irtpp <- function(dataset=NULL,model, dims =1 ,initialvalues = NULL,
           ret = irtppinterfacefilevalues(dataset,model,cuads,initialvalues,!is.null(output),ifelse(is.null(output), "", output))
       }
     }else{
-      ret = uirtestimate(dataset,irtpp.model("3pl",asnumber=T))
-      ret$z = parameter.matrix(ret$z)
+      ret = uirtestimate(dataset,irtpp.model(model,asnumber=T))
+      ret$z = parameter.matrix(ret$z, byrow=T)
       ret$z = parameter.list(ret$z)
     }
     
@@ -116,7 +116,7 @@ individual.traits<-function(model,
 
 individual.traits.aux <- function(output, dataset, est){
   if(is.null(output)){
-    est = list(matrix(est[[1]],ncol=dim(dataset)[[2]],byrow=T),est[[2]])
+    est = list(matrix(est[[1]],ncol=dim(dataset)[[2]],byrow=T),est[[2]]);
     names(est) <- c("patterns","trait")
   }else{
     est = list(est[[3]])

@@ -19,7 +19,7 @@
 #' @return List with model, seed  , itempars, and the test simulated. check the documentation of \code{\link{simulateTestMD}} for information on the return in the Multidimensional case.
 simulateTest = function(model = "3PL" , items = 10 , latentTraits=NULL ,individuals = 1000
                         , boundaries = NULL, dims = 1 , itempars = NULL , verbose = F ,
-                        threshold = 0, seed = NULL , clusters = NULL, repetition = 0){
+                        threshold = 0, seed = 1 , clusters = NULL, repetition = 1){
   ret = NULL;
   
   if(dims > 1){
@@ -386,7 +386,7 @@ testmulti=function(nitems,ninds,dim,model){
 #'   \item clusterlist : The range list of the clusters.
 #' }
 #' @export
-simulateTestMD <- function(items = 10, individuals = 1000, dims = 3, clusters = 4 , seed = 10, z = NULL , repetition=NULL)
+simulateTestMD <- function(items = 10, individuals = 1000, dims = 3, clusters = 4 , seed = 10, z = NULL , repetition=1)
 {
   ####Start here
   ### Decide number of items per cluster.
@@ -396,7 +396,7 @@ simulateTestMD <- function(items = 10, individuals = 1000, dims = 3, clusters = 
   itemlist = rep(nitems/clusters,clusters)
   itemlist[[clusters]] = itemlist[[clusters]] + rem
   ##split
-  print(itemlist)
+  #print(itemlist)
   
   ##determinar direcciones principales
   idnoisy = diag(dims)+matrix(rnorm(dims*dims,0.15,0.05),nrow=dims,ncol=dims);
@@ -480,7 +480,7 @@ simulateTestMD <- function(items = 10, individuals = 1000, dims = 3, clusters = 
   if(!is.null(repetition)){
     coinseed = repetition*3 + seed;
   }
-  set.seed(coinseed);
+  set.seed(as.integer(coinseed));
   nna = (repetition*repetition*coinseed)%%100
   dd = runif(nna);
   U <- matrix(runif(items*individuals),individuals,items);

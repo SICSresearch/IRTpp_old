@@ -1,4 +1,31 @@
 
+
+x2<-function(model,z,patterns,G,FUN){
+  ##Expandir los patrones
+  #fp = full.pattern.expand(patterns,ncol(patterns)-1);
+  #theta = fp[,ncol(patterns)]
+  nitems=ncol(patterns)-2
+  theta = patterns[,ncol(patterns)]
+  frec = patterns[,ncol(patterns)-1]
+  groups = quantile(theta,seq(0, 1, length.out = G + 1))
+  groups[1] = groups[1] - 0.1
+  #summary(theta)
+  groups[G + 1] = groups[G + 1] + 0.1
+  groups.Ind = findInterval(theta,groups)  #que theta pertenece a que intervalo (grupos)
+  groups.Ind = factor(groups.Ind, levels = sort(unique(groups.Ind)))  #volverla un factor
+  thetaG = tapply(rep(theta, frec), rep(groups.Ind, frec), FUN = FUN) #por grupos calcule la mediana
+  #thetaG es los trazos latentes representantes de los grupos
+  prs = matrix(unlist(lapply(thetaG,function(x){probability.3pl(z,theta=x)})),ncol=nitems,byrow = T)
+  z = model.transform(z,"3PL","cp","c")
+  
+  Njs = as.vector(tapply(frec, groups.Ind, sum))
+  Obss2 = rowsum(frec * patterns[,-c(ncol(patterns)-1,ncol(patterns))], groups.Ind, reorder = T)/Njs
+  
+  chi.square = Njs * (Obss2 - prs)^2/(prs * (1 - prs))   #matriz pre estadistica  
+  x2 = colSums(chi.square, na.rm = TRUE)        #estadistica
+  return(x2)
+}
+
 #' Autoapply a lapply to a function if the parameter is a list instead of a parameter.
 #' @param clist Argument that is possibly a list
 #' @param fun The function
@@ -31,17 +58,22 @@ print.sentence<-function(...,sep=" ",verbose=T){
 #' @param pars The parameter list
 #' @param model The model whose the list refers to.
 #' @export
-parameter.matrix<-function(pars, model="3PL", dims = 1){
+parameter.matrix<-function(pars, model="3PL", dims = 1 , byrow = F){
   cols=0;
   if(model=="1PL"){cols=3}
   if(model=="2PL"){cols=3}
   if(model=="3PL"){cols=3}
   if(model=="Rasch"){cols=3}
+  if(model=="mirt"){cols=4}
   if(cols==0){stop("No valid model provided")}
   if(dims>1){
     cols = cols + dims - 1 ;
   }
-  matrix(unlist(pars,use.names=F,recursive=T),ncol=cols)
+  if(model=="mirt"){
+    pars = unlist(pars)
+    matrix(pars[1:(length(pars)-2)],ncol=4,byrow = T)[,1:(dims+2)]
+  }else{ matrix(unlist(pars,use.names=F,recursive=T),ncol=cols,byrow = byrow)}
+  
 }
 
 #' Returns a parameter list from a parameter matrix.
@@ -107,16 +139,16 @@ irtpp.model<-function(model,asnumber=F){
   }
   model = toupper(model)
   checkModel(model);
-
+  
   #If model return needs to be an integer.
-
+  
   if(asnumber){
     if(model=="1PL"){model=1}
     if(model=="2PL"){model=2}
     if(model=="3PL"){model=3}
     if(model=="RASCH"){model=4}
   }
-
+  
   if(model=="RASCH"){model="Rasch"}
   model
 }
@@ -158,8 +190,8 @@ irtpp.models<-function(){
 #' @param target The target parameter of the transform
 #' @return z The parameters with the transform
 #' @export
-model.transform<-function(z,model,src,target){
-  z = parameter.matrix(z);
+model.transform<-function(z,model,src,target, byrow = F){
+  z = parameter.matrix(z, byrow = byrow);
   if(irtpp.model(model)=="3PL"){
     #b = -d/a
     #d = -ab
@@ -186,23 +218,51 @@ model.transform<-function(z,model,src,target){
 }
 
 #' @export
+#' @title pattern.expand
+#' @description Expands a pattern frequency matrix by the frequencies in the last column. Inverse of pattern.freqs
+#' @param pts The pattern matrix with frequencies
+#' 
+#' @return test. The original test of the patterns. 
 pattern.expand = function(pts){
   pts[rep(1:nrow(pts),pts[,ncol(pts)]),-ncol(pts)]
 }
 
+
+
+
 #' @export
-full.pattern.expand = function(pts,expandcol){
+#' @title full.pattern.expand
+#' @description Parameter expansion by a given column.
+#' @param pts A matrix with frequencies in some column
+#' @param expandcol A given frequency column, defaults to the last column
+full.pattern.expand = function(pts,expandcol = ncol(pts)){
   pts[rep(1:nrow(pts),pts[,expandcol]),]
 }
 
+
+#' @name pattern.freqs
+#' @title pattern.freqs
+#' @description Calculates the pattern frequencies given a dataset.
+#' @param test The data matrix
+#' @return Patterns and frequencies in a matrix , the last column are the frequencies
 #' @export
-pattern.freqs = function(data, traitobj){
+pattern.freqs = function(data, traitobj=NULL, onlyTheta = T){
+  ret = NULL;
+  if(is.null(traitobj)){
   d <- data.frame(data)
   ones <- rep(1,nrow(d))
   pts = aggregate(ones,by=as.list(d),FUN=sum)
   plist = lapply(names(pts)[-length(pts)],function(x){c(pts[x])}[[1]])
   plist = do.call(order,plist)
-  pts[plist,]
+  ret = pts[plist,]
+  }else{
+    fr = pattern.freqs(data);
+    fr = cbind(fr,traitobj$trait);
+    print(fr);
+    fr = full.pattern.expand(pts = fr,expandcol = ncol(data)+1) 
+    ret = fr[,ncol(data)+2]
+  }
+  ret
 }
 
 #' expande los patrones (x2 itemfit)
@@ -218,7 +278,7 @@ indexPat = function(data,pats){
 #' @param E, es una lista (de longitud nitems) con fr. esperadas de respuesta incorrectas y correctas para cada item
 #' @param O, es una lista (de longitud nitems) con fr. observadas de respuesta incorrectas y correctas para cada item
 #' @param mincell, es el minimo numero esperado de personas con score k que contestan o no al item j
-
+#' @export
 
 collapseCells <- function(O, E, mincell = 1){
   for(i in 1L:length(O)){ #para i entre 1 y nitems
@@ -254,13 +314,12 @@ collapseCells <- function(O, E, mincell = 1){
   return(list("O"=O, "E"=E))
 }
 
-
 #' Verosimilitudes de los scores clasicos para calcular fr. esperadas en Orlando
 #' Calcula las veorimilitudes
 #' @param pr: matriz de probabilidad
 #' @param nitems, cantidad de items considerados en la matriz de probabilidad
 
-s_ss=function(pr,nitems){
+s_ss=function(pr,nitems,G){
   sact = matrix(0,ncol = nitems +1,nrow = G)   ###con los cambios en los indices se parece mucho mas a mirt
   for(m in 1:G){                 
     sant = rep(0,(nitems))         
@@ -378,6 +437,7 @@ normalize<-function(x){#normaliza un vector(divide por la norma)
 
 
 #' @name test.plot
+#' @title test.plot
 #' @author Juan Liberato
 #' @description plots a test or an item.
 #' @param z : Item parameter list
@@ -393,8 +453,6 @@ test.plot = function(z, i = NULL){
   pts  =60
   pts = ((1:pts)/pts)*10-5
   itemplot = lapply(pts, function(x){probability.3pl(est$z,theta=x)})
-  probability.3pl(est$z,theta=pts[[1]])
-  probability.3pl(est$z,theta=th$trait[[1]])
   itpl.matrix= matrix(unlist(itemplot),nrow=length(itemplot),ncol=length(itemplot[[1]]),byrow = T)
   st = 1;
   if(!is.null(i)){
@@ -419,3 +477,17 @@ test.plot = function(z, i = NULL){
     # abline(a=-b/2,b=a/5, col = "blue");
   }
 }
+
+#' @name z.item
+#' @title z.item
+#' @description Reads of a parameter list by item or items.
+#' @author Juan Liberato
+#' @param i Item or item vector to get.
+#' @return The parameter list with the items specified.
+#' 
+z.item <- function(z,i){
+    lapply(z,function(x){x[i]})  
+}
+
+
+

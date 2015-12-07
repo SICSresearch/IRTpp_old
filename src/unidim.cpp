@@ -18,6 +18,7 @@
 #include <estimation/estep.h>
 #include <estimation/mstep.h>
 
+#include <utils/cholesky.h>
 #include <Rcpp.h>
 
 using std::cout;
@@ -61,6 +62,36 @@ Rcpp::NumericMatrix mat2rcpp(Matrix<double>* mat)
   }
 
   return x;
+}
+
+//' irtppchol
+//' @export
+// [[Rcpp::export]]
+Rcpp::List irtppchol(Rcpp::NumericMatrix A){
+        int count = A.nrow();
+        std::cout << "/* irtppchol */" << std::endl;
+        Matrix<double> a(A.nrow(),A.ncol());
+        Matrix<double> l(A.nrow(),A.ncol());
+        std::cout << "/* Created a and i , about to fill */" << std::endl;
+
+        for (int i = 0; i < count; i++) {
+                for (int j = 0; j < count; j++) {
+                        a(i,j) = A[i,j];
+                }
+        }
+
+        std::cout << "/* Call to chol */" << std::endl;
+        cholesky(a,l);
+
+        std::cout << "/* return */" << std::endl;
+        for (int i = 0; i < count; i++) {
+                for (int j = 0; j < count; j++) {
+                        A(i,j) = l(i,j);
+                }
+        }
+        Rcpp::List result = Rcpp::List::create(
+          Rcpp::_["L"] = A
+        );
 }
 
 //' uirtestimate
