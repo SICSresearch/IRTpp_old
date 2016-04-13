@@ -12,7 +12,7 @@
 irtpp <- function(dataset=NULL,model, dims =1 ,initialvalues = NULL,
                   filename=NULL, output=NULL, restricted.items=c() , m){
   oldscript= F;
-  
+  dataset = data.matrix(dataset); ## Prevents error due to dataType of dataset
   if(dims > 1){
     model = irtpp.model(model,asnumber=T)
     cuads = as.matrix(read.table(system.file("extdata","Cuads10.csv",package="IRTpp"),sep=",",header=T))
